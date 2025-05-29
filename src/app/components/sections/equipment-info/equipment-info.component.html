@@ -1,0 +1,204 @@
+<form [formGroup]="form">
+  <!-- Communication Equipment -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Kommunikasie Toerusting</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="kommunikasie">
+      <ion-item>
+        <ion-label>Radio</ion-label>
+        <ion-toggle formControlName="radio"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Satelliet Foon</ion-label>
+        <ion-toggle formControlName="satellietFoon"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Tweerigtingradio</ion-label>
+        <ion-toggle formControlName="tweerigtingRadio"></ion-toggle>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- Power Generation -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Kragopwekking</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="kragOpwekking">
+      <ion-item>
+        <ion-label>Kragopwekker</ion-label>
+        <ion-toggle formControlName="kragOpwekker"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Sonkragstelsel</ion-label>
+        <ion-toggle formControlName="sonkragStelsel"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Omvormer</ion-label>
+        <ion-toggle formControlName="omvormer"></ion-toggle>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- Water Sources -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Waterbronne</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="waterBronne">
+      <ion-item>
+        <ion-label>Boorgat</ion-label>
+        <ion-toggle formControlName="boorgat"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Watertenk</ion-label>
+        <ion-toggle formControlName="waterTenk"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Waterfiltrasiestelstel</ion-label>
+        <ion-toggle formControlName="waterFiltrasieStelsel"></ion-toggle>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- Defense Equipment -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Verdediging</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="verdediging">
+      <ion-item>
+        <ion-label>Vuurwapens</ion-label>
+        <ion-toggle formControlName="vuurwapens"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Lisensies</ion-label>
+        <ion-toggle formControlName="lisensies"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Opleiding</ion-label>
+        <ion-toggle formControlName="opleiding"></ion-toggle>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- Camping Equipment -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Kampering</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="kampering">
+      <ion-item>
+        <ion-label>Tent</ion-label>
+        <ion-toggle formControlName="tent"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Slaapsak</ion-label>
+        <ion-toggle formControlName="slaapsak"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Kamptoerusting</ion-label>
+        <ion-toggle formControlName="kampToerusting"></ion-toggle>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- Emergency Supplies -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Noodvoorraad</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="noodvoorraad">
+      <ion-item>
+        <ion-label>
+          Kos Voorraad
+          <div class="range-value">{{ form.get('noodvoorraad.kos')?.value }} dae</div>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-range 
+          formControlName="kos"
+          [min]="0"
+          [max]="365"
+          [pin]="true"
+          [ticks]="true"
+          [snaps]="true"
+          [step]="7"
+          [class.ion-invalid]="isFieldInvalid('kos', 'noodvoorraad')"
+          [class.ion-touched]="form.get('noodvoorraad.kos')?.touched"
+        ></ion-range>
+        <ion-text color="danger" *ngIf="isFieldInvalid('kos', 'noodvoorraad')">
+          {{ getErrorMessage('kos', 'noodvoorraad') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          Water Voorraad
+          <div class="range-value">{{ form.get('noodvoorraad.water')?.value }} dae</div>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-range 
+          formControlName="water"
+          [min]="0"
+          [max]="365"
+          [pin]="true"
+          [ticks]="true"
+          [snaps]="true"
+          [step]="7"
+          [class.ion-invalid]="isFieldInvalid('water', 'noodvoorraad')"
+          [class.ion-touched]="form.get('noodvoorraad.water')?.touched"
+        ></ion-range>
+        <ion-text color="danger" *ngIf="isFieldInvalid('water', 'noodvoorraad')">
+          {{ getErrorMessage('water', 'noodvoorraad') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          Brandstof Voorraad
+          <div class="range-value">{{ form.get('noodvoorraad.brandstof')?.value }} dae</div>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-range 
+          formControlName="brandstof"
+          [min]="0"
+          [max]="365"
+          [pin]="true"
+          [ticks]="true"
+          [snaps]="true"
+          [step]="7"
+          [class.ion-invalid]="isFieldInvalid('brandstof', 'noodvoorraad')"
+          [class.ion-touched]="form.get('noodvoorraad.brandstof')?.touched"
+        ></ion-range>
+        <ion-text color="danger" *ngIf="isFieldInvalid('brandstof', 'noodvoorraad')">
+          {{ getErrorMessage('brandstof', 'noodvoorraad') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Mediese Voorraad</ion-label>
+        <ion-toggle formControlName="medies"></ion-toggle>
+      </ion-item>
+    </div>
+  </ion-item-group>
+</form> 

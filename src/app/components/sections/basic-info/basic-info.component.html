@@ -1,0 +1,150 @@
+<form [formGroup]="form">
+  <ion-item>
+    <ion-label position="stacked">Van</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="van"
+      [class.ion-invalid]="isFieldInvalid('van')"
+      [class.ion-touched]="form.get('van')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('van')">
+      {{ getErrorMessage('van') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Noemnaam</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="noemNaam"
+      [class.ion-invalid]="isFieldInvalid('noemNaam')"
+      [class.ion-touched]="form.get('noemNaam')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('noemNaam')">
+      {{ getErrorMessage('noemNaam') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Tweede Naam</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="tweedeNaam"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Huistaal</ion-label>
+    <ion-select 
+      formControlName="huistaal"
+      [class.ion-invalid]="isFieldInvalid('huistaal')"
+      [class.ion-touched]="form.get('huistaal')?.touched"
+    >
+      <ion-select-option value="afrikaans">Afrikaans</ion-select-option>
+      <ion-select-option value="engels">Engels</ion-select-option>
+      <ion-select-option value="ander">Ander</ion-select-option>
+    </ion-select>
+    <ion-text color="danger" *ngIf="isFieldInvalid('huistaal')">
+      {{ getErrorMessage('huistaal') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Geslag</ion-label>
+    <ion-select 
+      formControlName="geslag"
+      [class.ion-invalid]="isFieldInvalid('geslag')"
+      [class.ion-touched]="form.get('geslag')?.touched"
+    >
+      <ion-select-option value="manlik">Manlik</ion-select-option>
+      <ion-select-option value="vroulik">Vroulik</ion-select-option>
+    </ion-select>
+    <ion-text color="danger" *ngIf="isFieldInvalid('geslag')">
+      {{ getErrorMessage('geslag') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Geboortedatum</ion-label>
+    <ion-input 
+      type="date" 
+      formControlName="geboorteDatum"
+      [max]="maxDate"
+      [class.ion-invalid]="isFieldInvalid('geboorteDatum')"
+      [class.ion-touched]="form.get('geboorteDatum')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('geboorteDatum')">
+      {{ getErrorMessage('geboorteDatum') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Ouderdom</ion-label>
+    <ion-input 
+      type="number" 
+      formControlName="ouderdom"
+      [class.ion-invalid]="isFieldInvalid('ouderdom')"
+      [class.ion-touched]="form.get('ouderdom')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('ouderdom')">
+      {{ getErrorMessage('ouderdom') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">ID Nommer</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="idNommer"
+      maxlength="13"
+      [class.ion-invalid]="isFieldInvalid('idNommer')"
+      [class.ion-touched]="form.get('idNommer')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('idNommer')">
+      {{ getErrorMessage('idNommer') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Selfoon Nommer</ion-label>
+    <ion-input 
+      type="tel" 
+      formControlName="cellNommer"
+      [class.ion-invalid]="isFieldInvalid('cellNommer')"
+      [class.ion-touched]="form.get('cellNommer')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('cellNommer')">
+      {{ getErrorMessage('cellNommer') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">E-pos Adres</ion-label>
+    <ion-input 
+      type="email" 
+      formControlName="email"
+      [class.ion-invalid]="isFieldInvalid('email')"
+      [class.ion-touched]="form.get('email')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('email')">
+      {{ getErrorMessage('email') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Huwelikstatus</ion-label>
+    <ion-select 
+      formControlName="huwelikStatus"
+      [class.ion-invalid]="isFieldInvalid('huwelikStatus')"
+      [class.ion-touched]="form.get('huwelikStatus')?.touched"
+    >
+      <ion-select-option value="ongetroud">Ongetroud</ion-select-option>
+      <ion-select-option value="getroud">Getroud</ion-select-option>
+      <ion-select-option value="geskei">Geskei</ion-select-option>
+      <ion-select-option value="weduwee">Weduwee/Wewenaar</ion-select-option>
+    </ion-select>
+    <ion-text color="danger" *ngIf="isFieldInvalid('huwelikStatus')">
+      {{ getErrorMessage('huwelikStatus') }}
+    </ion-text>
+  </ion-item>
+</form> 

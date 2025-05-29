@@ -1,0 +1,103 @@
+<form [formGroup]="form">
+  <ion-item>
+    <ion-label position="stacked">Bloedgroep</ion-label>
+    <ion-select 
+      formControlName="bloedGroep"
+      [class.ion-invalid]="isFieldInvalid('bloedGroep')"
+      [class.ion-touched]="form.get('bloedGroep')?.touched"
+    >
+      <ion-select-option value="A+">A+</ion-select-option>
+      <ion-select-option value="A-">A-</ion-select-option>
+      <ion-select-option value="B+">B+</ion-select-option>
+      <ion-select-option value="B-">B-</ion-select-option>
+      <ion-select-option value="AB+">AB+</ion-select-option>
+      <ion-select-option value="AB-">AB-</ion-select-option>
+      <ion-select-option value="O+">O+</ion-select-option>
+      <ion-select-option value="O-">O-</ion-select-option>
+    </ion-select>
+    <ion-text color="danger" *ngIf="isFieldInvalid('bloedGroep')">
+      {{ getErrorMessage('bloedGroep') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Chroniese Siektes</ion-label>
+    <ion-textarea 
+      formControlName="chroniesesiektes" 
+      placeholder="Lys enige chroniese siektes"
+      [rows]="3"
+      [autoGrow]="true"
+    ></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Medikasie</ion-label>
+    <ion-textarea 
+      formControlName="medikasie" 
+      placeholder="Lys huidige medikasie"
+      [rows]="3"
+      [autoGrow]="true"
+    ></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Allergieë</ion-label>
+    <ion-textarea 
+      formControlName="allergies" 
+      placeholder="Lys enige allergieë"
+      [rows]="3"
+      [autoGrow]="true"
+    ></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Mediese Fonds</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="medieseFonds"
+      placeholder="Naam van mediese fonds"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Mediese Fonds Nommer</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="medieseFondsNommer"
+      placeholder="Jou mediese fonds nommer"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Huisdokter</ion-label>
+    <ion-input 
+      type="text" 
+      formControlName="huisDokter"
+      placeholder="Naam van huisdokter"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Huisdokter Nommer</ion-label>
+    <ion-input 
+      type="tel" 
+      formControlName="huisDokterNommer"
+      placeholder="Kontaknommer van huisdokter"
+      [class.ion-invalid]="isFieldInvalid('huisDokterNommer')"
+      [class.ion-touched]="form.get('huisDokterNommer')?.touched"
+    ></ion-input>
+    <ion-text color="danger" *ngIf="isFieldInvalid('huisDokterNommer')">
+      {{ getErrorMessage('huisDokterNommer') }}
+    </ion-text>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Mediese Notas</ion-label>
+    <ion-textarea 
+      formControlName="medieseNotas" 
+      placeholder="Enige addisionele mediese inligting"
+      [rows]="4"
+      [autoGrow]="true"
+    ></ion-textarea>
+  </ion-item>
+</form> 

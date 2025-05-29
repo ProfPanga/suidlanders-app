@@ -1,0 +1,177 @@
+<form [formGroup]="form">
+  <!-- Basic Skills Section -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Beroep en Vaardighede</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label position="stacked">Beroep</ion-label>
+      <ion-input 
+        type="text" 
+        formControlName="beroep"
+        [class.ion-invalid]="isFieldInvalid('beroep')"
+        [class.ion-touched]="form.get('beroep')?.touched"
+      ></ion-input>
+      <ion-text color="danger" *ngIf="isFieldInvalid('beroep')">
+        {{ getErrorMessage('beroep') }}
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Kwalifikasies</ion-label>
+      <ion-textarea 
+        formControlName="kwalifikasies"
+        placeholder="Lys enige relevante kwalifikasies"
+        [autoGrow]="true"
+        rows="3"
+      ></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Spesialis Vaardighede</ion-label>
+      <ion-textarea 
+        formControlName="spesialisVaardighede"
+        placeholder="Beskryf enige spesialis vaardighede"
+        [autoGrow]="true"
+        rows="3"
+      ></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Tale Kennis</ion-label>
+      <ion-textarea 
+        formControlName="taleKennis"
+        placeholder="Lys tale wat u kan praat"
+        [autoGrow]="true"
+        rows="2"
+      ></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Rekenaar Vaardig</ion-label>
+      <ion-toggle formControlName="rekenaarVaardig"></ion-toggle>
+    </ion-item>
+  </ion-item-group>
+
+  <!-- Driver's License Section -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Bestuurslisensie</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="bestuurslisensie">
+      <ion-item>
+        <ion-label position="stacked">Lisensie Kode</ion-label>
+        <ion-select 
+          formControlName="kode"
+          [class.ion-invalid]="isFieldInvalid('kode', 'bestuurslisensie')"
+          [class.ion-touched]="form.get('bestuurslisensie.kode')?.touched"
+        >
+          <ion-select-option value="A">A - Motorfiets</ion-select-option>
+          <ion-select-option value="A1">A1 - Ligte Motorfiets</ion-select-option>
+          <ion-select-option value="B">B - Ligte Motorvoertuig</ion-select-option>
+          <ion-select-option value="C">C - Swaar Motorvoertuig</ion-select-option>
+          <ion-select-option value="C1">C1 - Ligte Swaar Motorvoertuig</ion-select-option>
+          <ion-select-option value="EC">EC - Extra Swaar Motorvoertuig</ion-select-option>
+          <ion-select-option value="EC1">EC1 - Swaar Artikuleervoertuig</ion-select-option>
+        </ion-select>
+        <ion-text color="danger" *ngIf="isFieldInvalid('kode', 'bestuurslisensie')">
+          {{ getErrorMessage('kode', 'bestuurslisensie') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Het PDP</ion-label>
+        <ion-toggle formControlName="pdp"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Verval Datum</ion-label>
+        <ion-input 
+          type="date" 
+          formControlName="vervalDatum"
+          [min]="today"
+          [class.ion-invalid]="isFieldInvalid('vervalDatum', 'bestuurslisensie')"
+          [class.ion-touched]="form.get('bestuurslisensie.vervalDatum')?.touched"
+        ></ion-input>
+        <ion-text color="danger" *ngIf="isFieldInvalid('vervalDatum', 'bestuurslisensie')">
+          {{ getErrorMessage('vervalDatum', 'bestuurslisensie') }}
+        </ion-text>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- First Aid Section -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Noodhulp</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="noodhulp">
+      <ion-item>
+        <ion-label position="stacked">Vlak</ion-label>
+        <ion-select formControlName="vlak">
+          <ion-select-option value="level1">Vlak 1</ion-select-option>
+          <ion-select-option value="level2">Vlak 2</ion-select-option>
+          <ion-select-option value="level3">Vlak 3</ion-select-option>
+          <ion-select-option value="intermediate">Intermediêr</ion-select-option>
+          <ion-select-option value="advanced">Gevorderd</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Verval Datum</ion-label>
+        <ion-input 
+          type="date" 
+          formControlName="vervalDatum"
+          [min]="today"
+        ></ion-input>
+      </ion-item>
+    </div>
+  </ion-item-group>
+
+  <!-- Radio License Section -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Amateur Radio</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="radio">
+      <ion-item>
+        <ion-label>Het Amateur Radio Lisensie</ion-label>
+        <ion-toggle formControlName="amateurRadioLisensie"></ion-toggle>
+      </ion-item>
+
+      <ng-container *ngIf="isRadioLicenseVisible()">
+        <ion-item>
+          <ion-label position="stacked">Roepsein</ion-label>
+          <ion-input 
+            type="text" 
+            formControlName="roepsein"
+            [class.ion-invalid]="isFieldInvalid('roepsein', 'radio')"
+            [class.ion-touched]="form.get('radio.roepsein')?.touched"
+          ></ion-input>
+          <ion-text color="danger" *ngIf="isFieldInvalid('roepsein', 'radio')">
+            {{ getErrorMessage('roepsein', 'radio') }}
+          </ion-text>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Radio Toerusting</ion-label>
+          <ion-textarea 
+            formControlName="toerusting"
+            placeholder="Beskryf u radio toerusting"
+            [autoGrow]="true"
+            rows="3"
+            [class.ion-invalid]="isFieldInvalid('toerusting', 'radio')"
+            [class.ion-touched]="form.get('radio.toerusting')?.touched"
+          ></ion-textarea>
+          <ion-text color="danger" *ngIf="isFieldInvalid('toerusting', 'radio')">
+            {{ getErrorMessage('toerusting', 'radio') }}
+          </ion-text>
+        </ion-item>
+      </ng-container>
+    </div>
+  </ion-item-group>
+</form> 

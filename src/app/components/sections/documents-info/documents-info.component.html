@@ -1,0 +1,171 @@
+<form [formGroup]="form">
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Dokumente</ion-label>
+    </ion-item-divider>
+
+    <!-- ID Document -->
+    <ion-item>
+      <ion-label position="stacked">ID Dokument</ion-label>
+      <div class="file-list" *ngIf="form.get('idDokument')?.value as file">
+        <div class="file-item">
+          <ion-icon name="document-outline"></ion-icon>
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          <ion-button fill="clear" color="danger" (click)="removeFile('idDokument')">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      <ion-button 
+        class="upload-button" 
+        expand="block" 
+        fill="outline" 
+        *ngIf="!form.get('idDokument')?.value"
+        (click)="fileInput.click()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Laai ID Dokument
+      </ion-button>
+      <input 
+        #fileInput
+        type="file" 
+        class="file-input" 
+        [accept]="acceptedFileTypes"
+        (change)="onFileSelected($event, 'idDokument')">
+      <div class="helper-text">
+        Laai 'n kopie van u ID dokument (PDF, JPG, of PNG formaat, maksimum 5MB)
+      </div>
+    </ion-item>
+
+    <!-- Driver's License -->
+    <ion-item>
+      <ion-label position="stacked">Bestuurslisensie</ion-label>
+      <div class="file-list" *ngIf="form.get('bestuurslisensie')?.value as file">
+        <div class="file-item">
+          <ion-icon name="document-outline"></ion-icon>
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          <ion-button fill="clear" color="danger" (click)="removeFile('bestuurslisensie')">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      <ion-button 
+        class="upload-button" 
+        expand="block" 
+        fill="outline" 
+        *ngIf="!form.get('bestuurslisensie')?.value"
+        (click)="licenseInput.click()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Laai Bestuurslisensie
+      </ion-button>
+      <input 
+        #licenseInput
+        type="file" 
+        class="file-input" 
+        [accept]="acceptedFileTypes"
+        (change)="onFileSelected($event, 'bestuurslisensie')">
+      <div class="helper-text">
+        Laai 'n kopie van u bestuurslisensie (PDF, JPG, of PNG formaat, maksimum 5MB)
+      </div>
+    </ion-item>
+
+    <!-- Firearm License -->
+    <ion-item>
+      <ion-label position="stacked">Vuurwapenlisensie</ion-label>
+      <div class="file-list" *ngIf="form.get('vuurwapenlisensie')?.value as file">
+        <div class="file-item">
+          <ion-icon name="document-outline"></ion-icon>
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          <ion-button fill="clear" color="danger" (click)="removeFile('vuurwapenlisensie')">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      <ion-button 
+        class="upload-button" 
+        expand="block" 
+        fill="outline" 
+        *ngIf="!form.get('vuurwapenlisensie')?.value"
+        (click)="firearmInput.click()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Laai Vuurwapenlisensie
+      </ion-button>
+      <input 
+        #firearmInput
+        type="file" 
+        class="file-input" 
+        [accept]="acceptedFileTypes"
+        (change)="onFileSelected($event, 'vuurwapenlisensie')">
+      <div class="helper-text">
+        Laai 'n kopie van u vuurwapenlisensie (PDF, JPG, of PNG formaat, maksimum 5MB)
+      </div>
+    </ion-item>
+
+    <!-- First Aid Certificate -->
+    <ion-item>
+      <ion-label position="stacked">EHBO Sertifikaat</ion-label>
+      <div class="file-list" *ngIf="form.get('ehboSertifikaat')?.value as file">
+        <div class="file-item">
+          <ion-icon name="document-outline"></ion-icon>
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          <ion-button fill="clear" color="danger" (click)="removeFile('ehboSertifikaat')">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      <ion-button 
+        class="upload-button" 
+        expand="block" 
+        fill="outline" 
+        *ngIf="!form.get('ehboSertifikaat')?.value"
+        (click)="ehboInput.click()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Laai EHBO Sertifikaat
+      </ion-button>
+      <input 
+        #ehboInput
+        type="file" 
+        class="file-input" 
+        [accept]="acceptedFileTypes"
+        (change)="onFileSelected($event, 'ehboSertifikaat')">
+      <div class="helper-text">
+        Laai 'n kopie van u EHBO sertifikaat (PDF, JPG, of PNG formaat, maksimum 5MB)
+      </div>
+    </ion-item>
+
+    <!-- Other Documents -->
+    <ion-item>
+      <ion-label position="stacked">Ander Dokumente</ion-label>
+      <div class="file-list" *ngIf="form.get('ander')?.value as files">
+        <div class="file-item" *ngFor="let file of files; let i = index">
+          <ion-icon name="document-outline"></ion-icon>
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          <ion-button fill="clear" color="danger" (click)="removeFile('ander', i)">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      <ion-button 
+        class="upload-button" 
+        expand="block" 
+        fill="outline" 
+        (click)="otherInput.click()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Voeg Ander Dokumente By
+      </ion-button>
+      <input 
+        #otherInput
+        type="file" 
+        class="file-input" 
+        [accept]="acceptedFileTypes"
+        (change)="onFileSelected($event, 'ander')">
+      <div class="helper-text">
+        Laai enige ander relevante dokumente (PDF, JPG, of PNG formaat, maksimum 5MB per dokument)
+      </div>
+    </ion-item>
+  </ion-item-group>
+</form> 

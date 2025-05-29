@@ -1,0 +1,107 @@
+{
+  "basicInfo": {
+    "van": "Van der Merwe",
+    "noemNaam": "Johan",
+    "tweedeNaam": "Pieter",
+    "huistaal": "Afrikaans",
+    "geslag": "Manlik",
+    "ouderdom": 35,
+    "geboorteDatum": "1988-06-15",
+    "idNommer": "8806155012087",
+    "cellNommer": "0821234567",
+    "email": "johan@example.com",
+    "huwelikStatus": "Getroud"
+  },
+  "memberInfo": {
+    "lidNommer": "SL2023001",
+    "reddingsVerwysing": "JHB-001",
+    "bevelstruktuur": "Kommando",
+    "radioRoepsein": "Delta1",
+    "noodKontakNaam": "Maria van der Merwe",
+    "noodKontakNommer": "0829876543",
+    "noodKontakVerwantskap": "Eggenoot",
+    "wapenlisensie": true,
+    "skietErvaring": "5 jaar",
+    "ehboKwalifikasie": true,
+    "ehboVlak": "Level 2",
+    "ehboVervalDatum": "2024-12-31"
+  },
+  "addressInfo": {
+    "straatAdres": "123 Bosman Straat",
+    "voorstad": "Centurion",
+    "stad": "Pretoria",
+    "provinsie": "Gauteng",
+    "posKode": "0157",
+    "gpsLat": -25.8416,
+    "gpsLng": 28.1900,
+    "naasteHospitaal": "Unitas Hospital",
+    "naastePolisie": "Lyttelton SAPD"
+  },
+  "medicalInfo": {
+    "bloedGroep": "O+",
+    "chronieseSiektes": "None",
+    "medikasie": "None",
+    "allergies": "Penicillin",
+    "medieseFonds": "Discovery Health",
+    "medieseFondsNommer": "12345678",
+    "huisDokter": "Dr. Botha",
+    "huisDokterNommer": "0123456789",
+    "medieseNotas": "No specific conditions"
+  },
+  "vehicleInfo": {
+    "isPrimary": true,
+    "fabrikaat": "Toyota",
+    "model": "Hilux",
+    "jaar": 2020,
+    "registrasieNommer": "GP123456",
+    "brandstofTipe": "Diesel",
+    "kilometerStand": 50000,
+    "bandeToestand": "Good"
+  },
+  "skillsInfo": {
+    "beroep": "Ingenieur",
+    "kwalifikasies": "B.Eng",
+    "spesialisVaardighede": "Electrical systems",
+    "taleKennis": "Afrikaans, English",
+    "rekenaarVaardig": true,
+    "bestuurslisensieKode": "EB",
+    "bestuurslisensiePdp": true,
+    "bestuurslisensieVerval": "2025-12-31",
+    "amateurRadioLisensie": true,
+    "radioRoepsein": "ZS6ABC",
+    "radioToerusting": "Yaesu FT-891"
+  },
+  "equipmentInfo": {
+    "kommunikasieRadio": true,
+    "kommunikasieSatelliet": false,
+    "kommunikasieTweerigtingradio": true,
+    "kragGenerator": true,
+    "kragSonkrag": true,
+    "kragOmvormer": true,
+    "waterBoorgat": false,
+    "waterTenk": true,
+    "waterFiltrasie": true,
+    "verdedigingVuurwapens": true,
+    "verdedigingLisensies": true,
+    "verdedigingOpleiding": true,
+    "kamperingTent": true,
+    "kamperingSlaapsak": true,
+    "kamperingToerusting": true,
+    "noodvoorraadKos": 30,
+    "noodvoorraadWater": 100,
+    "noodvoorraadBrandstof": 200,
+    "noodvoorraadMedies": true
+  },
+  "campInfo": {
+    "kampProvinsie": "Gauteng",
+    "kampNaam": "Pretoria-Oos",
+    "datumInKamp": "2023-01-01"
+  },
+  "otherInfo": {
+    "addisioneleNotas": "Active community member",
+    "spesialeVaardighede": "First Aid Instructor",
+    "belangstellings": "Radio communications",
+    "beskikbaarheid": "Weekends",
+    "vrywilligerWerk": "Community patrol"
+  }
+} 
