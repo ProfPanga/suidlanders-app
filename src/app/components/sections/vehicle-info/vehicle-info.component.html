@@ -7,93 +7,111 @@
 
     <div formGroupName="primereVoertuig">
       <ion-item>
-        <ion-label position="stacked">Fabrikaat</ion-label>
-        <ion-input 
-          type="text" 
-          formControlName="fabrikaat"
-          [class.ion-invalid]="isFieldInvalid('fabrikaat', 'primereVoertuig')"
-          [class.ion-touched]="form.get('primereVoertuig.fabrikaat')?.touched"
-        ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('fabrikaat', 'primereVoertuig')">
-          {{ getErrorMessage('fabrikaat', 'primereVoertuig') }}
-        </ion-text>
-      </ion-item>
-
-      <ion-item>
         <ion-label position="stacked">Model</ion-label>
-        <ion-input 
-          type="text" 
+        <ion-input
+          type="text"
           formControlName="model"
           [class.ion-invalid]="isFieldInvalid('model', 'primereVoertuig')"
           [class.ion-touched]="form.get('primereVoertuig.model')?.touched"
         ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('model', 'primereVoertuig')">
-          {{ getErrorMessage('model', 'primereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('model', 'primereVoertuig')"
+        >
+          {{ getErrorMessage("model", "primereVoertuig") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Jaar</ion-label>
-        <ion-input 
-          type="number" 
+        <ion-input
+          type="number"
           formControlName="jaar"
           [class.ion-invalid]="isFieldInvalid('jaar', 'primereVoertuig')"
           [class.ion-touched]="form.get('primereVoertuig.jaar')?.touched"
         ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('jaar', 'primereVoertuig')">
-          {{ getErrorMessage('jaar', 'primereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('jaar', 'primereVoertuig')"
+        >
+          {{ getErrorMessage("jaar", "primereVoertuig") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Registrasie Nommer</ion-label>
-        <ion-input 
-          type="text" 
+        <ion-input
+          type="text"
           formControlName="registrasieNommer"
-          [class.ion-invalid]="isFieldInvalid('registrasieNommer', 'primereVoertuig')"
-          [class.ion-touched]="form.get('primereVoertuig.registrasieNommer')?.touched"
+          [class.ion-invalid]="
+            isFieldInvalid('registrasieNommer', 'primereVoertuig')
+          "
+          [class.ion-touched]="
+            form.get('primereVoertuig.registrasieNommer')?.touched
+          "
         ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('registrasieNommer', 'primereVoertuig')">
-          {{ getErrorMessage('registrasieNommer', 'primereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('registrasieNommer', 'primereVoertuig')"
+        >
+          {{ getErrorMessage("registrasieNommer", "primereVoertuig") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Brandstof Tipe</ion-label>
-        <ion-select 
+        <ion-select
           formControlName="brandstofTipe"
-          [class.ion-invalid]="isFieldInvalid('brandstofTipe', 'primereVoertuig')"
-          [class.ion-touched]="form.get('primereVoertuig.brandstofTipe')?.touched"
+          [class.ion-invalid]="
+            isFieldInvalid('brandstofTipe', 'primereVoertuig')
+          "
+          [class.ion-touched]="
+            form.get('primereVoertuig.brandstofTipe')?.touched
+          "
         >
           <ion-select-option value="petrol">Petrol</ion-select-option>
           <ion-select-option value="diesel">Diesel</ion-select-option>
           <ion-select-option value="hybrid">Hibried</ion-select-option>
           <ion-select-option value="electric">Elektries</ion-select-option>
         </ion-select>
-        <ion-text color="danger" *ngIf="isFieldInvalid('brandstofTipe', 'primereVoertuig')">
-          {{ getErrorMessage('brandstofTipe', 'primereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('brandstofTipe', 'primereVoertuig')"
+        >
+          {{ getErrorMessage("brandstofTipe", "primereVoertuig") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Kilometer Stand</ion-label>
-        <ion-input 
-          type="number" 
+        <ion-input
+          type="number"
           formControlName="kilometerStand"
-          [class.ion-invalid]="isFieldInvalid('kilometerStand', 'primereVoertuig')"
-          [class.ion-touched]="form.get('primereVoertuig.kilometerStand')?.touched"
+          [class.ion-invalid]="
+            isFieldInvalid('kilometerStand', 'primereVoertuig')
+          "
+          [class.ion-touched]="
+            form.get('primereVoertuig.kilometerStand')?.touched
+          "
         ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('kilometerStand', 'primereVoertuig')">
-          {{ getErrorMessage('kilometerStand', 'primereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('kilometerStand', 'primereVoertuig')"
+        >
+          {{ getErrorMessage("kilometerStand", "primereVoertuig") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Bande Toestand</ion-label>
-        <ion-select 
+        <ion-select
           formControlName="bandeToestand"
-          [class.ion-invalid]="isFieldInvalid('bandeToestand', 'primereVoertuig')"
-          [class.ion-touched]="form.get('primereVoertuig.bandeToestand')?.touched"
+          [class.ion-invalid]="
+            isFieldInvalid('bandeToestand', 'primereVoertuig')
+          "
+          [class.ion-touched]="
+            form.get('primereVoertuig.bandeToestand')?.touched
+          "
         >
           <ion-select-option value="nuut">Nuut</ion-select-option>
           <ion-select-option value="goed">Goed</ion-select-option>
@@ -101,8 +119,11 @@
           <ion-select-option value="swak">Swak</ion-select-option>
           <ion-select-option value="kritiek">Kritiek</ion-select-option>
         </ion-select>
-        <ion-text color="danger" *ngIf="isFieldInvalid('bandeToestand', 'primereVoertuig')">
-          {{ getErrorMessage('bandeToestand', 'primereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('bandeToestand', 'primereVoertuig')"
+        >
+          {{ getErrorMessage("bandeToestand", "primereVoertuig") }}
         </ion-text>
       </ion-item>
     </div>
@@ -116,40 +137,29 @@
 
     <div formGroupName="sekondereVoertuig">
       <ion-item>
-        <ion-label position="stacked">Fabrikaat</ion-label>
-        <ion-input 
-          type="text" 
-          formControlName="fabrikaat"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
         <ion-label position="stacked">Model</ion-label>
-        <ion-input 
-          type="text" 
-          formControlName="model"
-        ></ion-input>
+        <ion-input type="text" formControlName="model"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Jaar</ion-label>
-        <ion-input 
-          type="number" 
+        <ion-input
+          type="number"
           formControlName="jaar"
           [class.ion-invalid]="isFieldInvalid('jaar', 'sekondereVoertuig')"
           [class.ion-touched]="form.get('sekondereVoertuig.jaar')?.touched"
         ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('jaar', 'sekondereVoertuig')">
-          {{ getErrorMessage('jaar', 'sekondereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('jaar', 'sekondereVoertuig')"
+        >
+          {{ getErrorMessage("jaar", "sekondereVoertuig") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Registrasie Nommer</ion-label>
-        <ion-input 
-          type="text" 
-          formControlName="registrasieNommer"
-        ></ion-input>
+        <ion-input type="text" formControlName="registrasieNommer"></ion-input>
       </ion-item>
 
       <ion-item>
@@ -164,14 +174,21 @@
 
       <ion-item>
         <ion-label position="stacked">Kilometer Stand</ion-label>
-        <ion-input 
-          type="number" 
+        <ion-input
+          type="number"
           formControlName="kilometerStand"
-          [class.ion-invalid]="isFieldInvalid('kilometerStand', 'sekondereVoertuig')"
-          [class.ion-touched]="form.get('sekondereVoertuig.kilometerStand')?.touched"
+          [class.ion-invalid]="
+            isFieldInvalid('kilometerStand', 'sekondereVoertuig')
+          "
+          [class.ion-touched]="
+            form.get('sekondereVoertuig.kilometerStand')?.touched
+          "
         ></ion-input>
-        <ion-text color="danger" *ngIf="isFieldInvalid('kilometerStand', 'sekondereVoertuig')">
-          {{ getErrorMessage('kilometerStand', 'sekondereVoertuig') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('kilometerStand', 'sekondereVoertuig')"
+        >
+          {{ getErrorMessage("kilometerStand", "sekondereVoertuig") }}
         </ion-text>
       </ion-item>
 
@@ -201,15 +218,15 @@
 
     <ion-item *ngIf="isSleepwaVisible()">
       <ion-label position="stacked">Sleepwa Kapasiteit (kg)</ion-label>
-      <ion-input 
-        type="number" 
+      <ion-input
+        type="number"
         formControlName="sleepwaKapasiteit"
         [class.ion-invalid]="isFieldInvalid('sleepwaKapasiteit')"
         [class.ion-touched]="form.get('sleepwaKapasiteit')?.touched"
       ></ion-input>
       <ion-text color="danger" *ngIf="isFieldInvalid('sleepwaKapasiteit')">
-        {{ getErrorMessage('sleepwaKapasiteit') }}
+        {{ getErrorMessage("sleepwaKapasiteit") }}
       </ion-text>
     </ion-item>
   </ion-item-group>
-</form> 
+</form>

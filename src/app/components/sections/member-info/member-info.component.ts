@@ -1,24 +1,33 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonInput, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+  Validators,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
   IonToggle,
-  IonText
+  IonText,
 } from '@ionic/angular/standalone';
 import { MemberInfo } from '../../../interfaces/form-sections.interface';
 
 @Component({
   selector: 'app-member-info',
   templateUrl: './member-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -27,15 +36,15 @@ import { MemberInfo } from '../../../interfaces/form-sections.interface';
     IonLabel,
     IonInput,
     IonToggle,
-    IonText
+    IonText,
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => MemberInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class MemberInfoComponent implements ControlValueAccessor {
   form: FormGroup;
@@ -47,33 +56,27 @@ export class MemberInfoComponent implements ControlValueAccessor {
       reddingsVerwysing: [''],
       bevelstruktuur: [''],
       radioRoepsein: [''],
-      noodKontakNaam: ['', Validators.required],
-      noodKontakNommer: ['', [Validators.required, Validators.pattern(/^(\+27|0)\d{9}$/)]],
-      noodKontakVerwantskap: ['', Validators.required],
+      noodKontakNaam: [''],
+      noodKontakNommer: ['', Validators.pattern(/^(\+27|0)\d{9}$/)],
+      noodKontakVerwantskap: [''],
       wapenlisensie: [false],
       skietervaring: [''],
       ehboKwalifikasie: [false],
       ehboVlak: [''],
-      ehboVervalDatum: ['']
+      ehboVervalDatum: [''],
     });
 
-    // Subscribe to EHBO qualification changes
-    this.form.get('ehboKwalifikasie')?.valueChanges.subscribe(hasEhbo => {
+    // Subscribe to EHBO qualification changes - fields are optional but if filled, both should be provided
+    this.form.get('ehboKwalifikasie')?.valueChanges.subscribe((hasEhbo) => {
       const ehboVlakControl = this.form.get('ehboVlak');
       const ehboVervalDatumControl = this.form.get('ehboVervalDatum');
 
-      if (hasEhbo) {
-        ehboVlakControl?.setValidators([Validators.required]);
-        ehboVervalDatumControl?.setValidators([Validators.required]);
-      } else {
-        ehboVlakControl?.clearValidators();
-        ehboVervalDatumControl?.clearValidators();
+      if (!hasEhbo) {
+        // Clear fields when EHBO is turned off
         ehboVlakControl?.setValue('');
         ehboVervalDatumControl?.setValue('');
       }
-
-      ehboVlakControl?.updateValueAndValidity();
-      ehboVervalDatumControl?.updateValueAndValidity();
+      // Note: We don't add validators anymore since all fields are optional
     });
   }
 
@@ -123,10 +126,12 @@ export class MemberInfoComponent implements ControlValueAccessor {
 
   isFieldInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
 
   isEhboFieldsVisible(): boolean {
     return this.form.get('ehboKwalifikasie')?.value === true;
   }
-} 
+}

@@ -1,26 +1,35 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonInput, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+  Validators,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
   IonSelect,
   IonSelectOption,
   IonText,
-  IonTextarea
+  IonTextarea,
 } from '@ionic/angular/standalone';
 import { MedicalInfo } from '../../../interfaces/form-sections.interface';
 
 @Component({
   selector: 'app-medical-info',
   templateUrl: './medical-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -31,15 +40,15 @@ import { MedicalInfo } from '../../../interfaces/form-sections.interface';
     IonSelect,
     IonSelectOption,
     IonText,
-    IonTextarea
+    IonTextarea,
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => MedicalInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class MedicalInfoComponent implements ControlValueAccessor {
   form: FormGroup;
@@ -47,7 +56,7 @@ export class MedicalInfoComponent implements ControlValueAccessor {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      bloedGroep: ['', Validators.required],
+      bloedGroep: [''],
       chroniesesiektes: [''],
       medikasie: [''],
       allergies: [''],
@@ -55,7 +64,7 @@ export class MedicalInfoComponent implements ControlValueAccessor {
       medieseFondsNommer: [''],
       huisDokter: [''],
       huisDokterNommer: ['', [Validators.pattern(/^(\+27|0)\d{9}$/)]],
-      medieseNotas: ['']
+      medieseNotas: [''],
     });
   }
 
@@ -105,6 +114,8 @@ export class MedicalInfoComponent implements ControlValueAccessor {
 
   isFieldInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
-} 
+}

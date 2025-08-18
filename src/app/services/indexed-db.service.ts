@@ -70,7 +70,6 @@ interface VehicleInfo {
   id: string;
   member_id: string;
   is_primary: boolean;
-  fabrikaat: string;
   model: string;
   jaar: number;
   registrasie_nommer: string;
@@ -171,7 +170,7 @@ export class SuidlandersDB extends Dexie {
       equipment_info: 'member_id',
       camp_info: 'member_id',
       other_info: 'member_id',
-      documents: 'id, member_id, type'
+      documents: 'id, member_id, type',
     });
   }
 
@@ -181,10 +180,20 @@ export class SuidlandersDB extends Dexie {
 
     // Start transaction
     try {
-      await this.transaction('rw', 
-        [this.members, this.basic_info, this.member_info, this.address_info,
-         this.medical_info, this.vehicle_info, this.skills_info,
-         this.equipment_info, this.camp_info, this.other_info], 
+      await this.transaction(
+        'rw',
+        [
+          this.members,
+          this.basic_info,
+          this.member_info,
+          this.address_info,
+          this.medical_info,
+          this.vehicle_info,
+          this.skills_info,
+          this.equipment_info,
+          this.camp_info,
+          this.other_info,
+        ],
         async () => {
           // Create member record
           await this.members.put({
@@ -192,26 +201,27 @@ export class SuidlandersDB extends Dexie {
             created_at: now,
             updated_at: now,
             status: 'active',
-            version: 1
+            version: 1,
           });
 
           // Insert each section if it exists
           if (memberData.basicInfo) {
             await this.basic_info.put({
               member_id: memberId,
-              ...memberData.basicInfo
+              ...memberData.basicInfo,
             });
           }
 
           if (memberData.memberInfo) {
             await this.member_info.put({
               member_id: memberId,
-              ...memberData.memberInfo
+              ...memberData.memberInfo,
             });
           }
 
           // ... similar for other sections
-      });
+        }
+      );
 
       return memberId;
     } catch (error) {
@@ -238,7 +248,7 @@ export class SuidlandersDB extends Dexie {
         equipmentInfo,
         campInfo,
         otherInfo,
-        documents
+        documents,
       ] = await Promise.all([
         this.basic_info.get(memberId),
         this.member_info.get(memberId),
@@ -249,7 +259,7 @@ export class SuidlandersDB extends Dexie {
         this.equipment_info.get(memberId),
         this.camp_info.get(memberId),
         this.other_info.get(memberId),
-        this.documents.where('member_id').equals(memberId).toArray()
+        this.documents.where('member_id').equals(memberId).toArray(),
       ]);
 
       return {
@@ -263,7 +273,7 @@ export class SuidlandersDB extends Dexie {
         equipmentInfo,
         campInfo,
         otherInfo,
-        documents
+        documents,
       };
     } catch (error) {
       console.error('Error getting member:', error);
@@ -279,9 +289,7 @@ export class SuidlandersDB extends Dexie {
         .reverse()
         .sortBy('created_at');
 
-      return Promise.all(
-        members.map(member => this.getMember(member.id))
-      );
+      return Promise.all(members.map((member) => this.getMember(member.id)));
     } catch (error) {
       console.error('Error getting all members:', error);
       throw error;
@@ -290,26 +298,37 @@ export class SuidlandersDB extends Dexie {
 
   async updateMember(memberId: string, memberData: any): Promise<void> {
     try {
-      await this.transaction('rw',
-        [this.members, this.basic_info, this.member_info, this.address_info,
-         this.medical_info, this.vehicle_info, this.skills_info,
-         this.equipment_info, this.camp_info, this.other_info],
+      await this.transaction(
+        'rw',
+        [
+          this.members,
+          this.basic_info,
+          this.member_info,
+          this.address_info,
+          this.medical_info,
+          this.vehicle_info,
+          this.skills_info,
+          this.equipment_info,
+          this.camp_info,
+          this.other_info,
+        ],
         async () => {
           // Update member record
           await this.members.update(memberId, {
-            updated_at: Date.now()
+            updated_at: Date.now(),
           });
 
           // Update each section if it exists
           if (memberData.basicInfo) {
             await this.basic_info.put({
               member_id: memberId,
-              ...memberData.basicInfo
+              ...memberData.basicInfo,
             });
           }
 
           // ... similar for other sections
-      });
+        }
+      );
     } catch (error) {
       console.error('Error updating member:', error);
       throw error;
@@ -320,7 +339,7 @@ export class SuidlandersDB extends Dexie {
     try {
       await this.members.update(memberId, {
         status: 'deleted',
-        updated_at: Date.now()
+        updated_at: Date.now(),
       });
     } catch (error) {
       console.error('Error deleting member:', error);
@@ -338,4 +357,4 @@ export class SuidlandersDB extends Dexie {
     const seconds = String(now.getSeconds()).padStart(2, '0');
     return `ID${year}${month}${day}${hours}${minutes}${seconds}`;
   }
-} 
+}

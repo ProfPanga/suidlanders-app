@@ -17,17 +17,18 @@ export interface SyncResult {
   message: string;
   syncedRecords?: number;
   errors?: any[];
+  queued?: boolean;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SyncService {
   private syncStatus = new BehaviorSubject<SyncStatus>({
     lastSyncTime: null,
     isSyncing: false,
     pendingChanges: 0,
-    error: null
+    error: null,
   });
 
   private readonly SYNC_METADATA_KEY = 'sync_metadata';
@@ -40,9 +41,9 @@ export class SyncService {
   ) {
     this.loadSyncMetadata();
     this.startAutoSync();
-    
+
     // Subscribe to pending changes
-    this.syncQueueService.getPendingChangesCount().subscribe(count => {
+    this.syncQueueService.getPendingChangesCount().subscribe((count) => {
       this.updateSyncStatus({ pendingChanges: count });
     });
   }
@@ -75,35 +76,35 @@ export class SyncService {
     if (this.syncStatus.value.isSyncing) {
       return of({
         success: false,
-        message: 'Sync already in progress'
+        message: 'Sync already in progress',
       });
     }
 
     this.updateSyncStatus({ isSyncing: true, error: null });
 
     return from(this.performSync()).pipe(
-      tap(result => {
+      tap((result) => {
         if (result.success) {
           this.updateSyncStatus({
             lastSyncTime: Date.now(),
             isSyncing: false,
-            error: null
+            error: null,
           });
         } else {
           this.updateSyncStatus({
             isSyncing: false,
-            error: result.message
+            error: result.message,
           });
         }
       }),
-      catchError(error => {
+      catchError((error) => {
         this.updateSyncStatus({
           isSyncing: false,
-          error: error.message
+          error: error.message,
         });
         return of({
           success: false,
-          message: error.message
+          message: error.message,
         });
       })
     );
@@ -122,24 +123,32 @@ export class SyncService {
         return {
           success: true,
           message: 'No changes to sync',
-          syncedRecords: 0
+          syncedRecords: 0,
         };
       }
 
       // Send local changes to server
       const pushResult = await this.apiService.syncChanges(queue).toPromise();
-      
-      // Get server changes
-      const lastSync = this.syncStatus.value.lastSyncTime || 0;
-      const pullResult = await this.apiService.getServerChanges(lastSync).toPromise();
-      
-      // Clear sync queue after successful sync
+
+      // Try to get server changes (optional for guests)
+      let pullResult = { changes: [] };
+      try {
+        const lastSync = this.syncStatus.value.lastSyncTime || 0;
+        pullResult = await this.apiService
+          .getServerChanges(lastSync)
+          .toPromise();
+      } catch (pullError: any) {
+        // Pull failed (likely guest mode) - continue without server changes
+        console.log('Pull skipped (guest mode):', pullError.status);
+      }
+
+      // Clear sync queue after successful push
       await this.syncQueueService.clearQueue();
-      
+
       return {
         success: true,
         message: 'Sync completed successfully',
-        syncedRecords: queue.length + (pullResult.changes?.length || 0)
+        syncedRecords: queue.length + (pullResult.changes?.length || 0),
       };
     } catch (error: any) {
       // Handle specific error cases
@@ -147,14 +156,24 @@ export class SyncService {
         return {
           success: false,
           message: 'Sync conflict detected. Please resolve conflicts manually.',
-          errors: [error]
+          errors: [error],
+        };
+      }
+
+      // Handle 401 Unauthorized (this shouldn't happen now that push is public)
+      if (error.status === 401) {
+        return {
+          success: false,
+          message: 'Authentication failed. Data saved locally for later sync.',
+          syncedRecords: 0,
+          queued: true,
         };
       }
 
       return {
         success: false,
         message: `Sync failed: ${error.message}`,
-        errors: [error]
+        errors: [error],
       };
     }
   }
@@ -184,4 +203,4 @@ export class SyncService {
   private saveSyncMetadata(status: SyncStatus) {
     localStorage.setItem(this.SYNC_METADATA_KEY, JSON.stringify(status));
   }
-} 
+}

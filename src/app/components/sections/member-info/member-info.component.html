@@ -23,40 +23,40 @@
   <!-- Emergency Contact Information -->
   <ion-item>
     <ion-label position="stacked">Nood Kontak Naam</ion-label>
-    <ion-input 
-      type="text" 
+    <ion-input
+      type="text"
       formControlName="noodKontakNaam"
       [class.ion-invalid]="isFieldInvalid('noodKontakNaam')"
       [class.ion-touched]="form.get('noodKontakNaam')?.touched"
     ></ion-input>
     <ion-text color="danger" *ngIf="isFieldInvalid('noodKontakNaam')">
-      {{ getErrorMessage('noodKontakNaam') }}
+      {{ getErrorMessage("noodKontakNaam") }}
     </ion-text>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Nood Kontak Nommer</ion-label>
-    <ion-input 
-      type="tel" 
+    <ion-input
+      type="tel"
       formControlName="noodKontakNommer"
       [class.ion-invalid]="isFieldInvalid('noodKontakNommer')"
       [class.ion-touched]="form.get('noodKontakNommer')?.touched"
     ></ion-input>
     <ion-text color="danger" *ngIf="isFieldInvalid('noodKontakNommer')">
-      {{ getErrorMessage('noodKontakNommer') }}
+      {{ getErrorMessage("noodKontakNommer") }}
     </ion-text>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Nood Kontak Verwantskap</ion-label>
-    <ion-input 
-      type="text" 
+    <ion-input
+      type="text"
       formControlName="noodKontakVerwantskap"
       [class.ion-invalid]="isFieldInvalid('noodKontakVerwantskap')"
       [class.ion-touched]="form.get('noodKontakVerwantskap')?.touched"
     ></ion-input>
     <ion-text color="danger" *ngIf="isFieldInvalid('noodKontakVerwantskap')">
-      {{ getErrorMessage('noodKontakVerwantskap') }}
+      {{ getErrorMessage("noodKontakVerwantskap") }}
     </ion-text>
   </ion-item>
 
@@ -73,35 +73,35 @@
 
   <!-- First Aid Information -->
   <ion-item>
-    <ion-label>EHBO Kwalifikasie</ion-label>
+    <ion-label>Noodhulp Kwalifikasie</ion-label>
     <ion-toggle formControlName="ehboKwalifikasie"></ion-toggle>
   </ion-item>
 
   <ng-container *ngIf="isEhboFieldsVisible()">
     <ion-item>
-      <ion-label position="stacked">EHBO Vlak</ion-label>
-      <ion-input 
-        type="text" 
+      <ion-label position="stacked">Noodhulp Vlak</ion-label>
+      <ion-input
+        type="text"
         formControlName="ehboVlak"
         [class.ion-invalid]="isFieldInvalid('ehboVlak')"
         [class.ion-touched]="form.get('ehboVlak')?.touched"
       ></ion-input>
       <ion-text color="danger" *ngIf="isFieldInvalid('ehboVlak')">
-        {{ getErrorMessage('ehboVlak') }}
+        {{ getErrorMessage("ehboVlak") }}
       </ion-text>
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">EHBO Verval Datum</ion-label>
-      <ion-input 
-        type="date" 
+      <ion-label position="stacked">Noodhulp Verval Datum</ion-label>
+      <ion-input
+        type="date"
         formControlName="ehboVervalDatum"
         [class.ion-invalid]="isFieldInvalid('ehboVervalDatum')"
         [class.ion-touched]="form.get('ehboVervalDatum')?.touched"
       ></ion-input>
       <ion-text color="danger" *ngIf="isFieldInvalid('ehboVervalDatum')">
-        {{ getErrorMessage('ehboVervalDatum') }}
+        {{ getErrorMessage("ehboVervalDatum") }}
       </ion-text>
     </ion-item>
   </ng-container>
-</form> 
+</form>

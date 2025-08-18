@@ -1,27 +1,36 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonInput, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+  Validators,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
   IonSelect,
   IonSelectOption,
   IonText,
   IonItemDivider,
-  IonItemGroup
+  IonItemGroup,
 } from '@ionic/angular/standalone';
 import { AddressInfo } from '../../../interfaces/form-sections.interface';
 
 @Component({
   selector: 'app-address-info',
   templateUrl: './address-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -33,15 +42,15 @@ import { AddressInfo } from '../../../interfaces/form-sections.interface';
     IonSelectOption,
     IonText,
     IonItemDivider,
-    IonItemGroup
+    IonItemGroup,
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => AddressInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class AddressInfoComponent implements ControlValueAccessor {
   form: FormGroup;
@@ -57,16 +66,19 @@ export class AddressInfoComponent implements ControlValueAccessor {
       woonagtig: ['', Validators.required],
       gpsKoordinate: this.fb.group({
         lat: ['', [Validators.pattern(/^-?([0-8]?[0-9]|90)\.[0-9]{1,8}$/)]],
-        lng: ['', [Validators.pattern(/^-?((1[0-7]|[0-9])?[0-9]|180)\.[0-9]{1,8}$/)]]
+        lng: [
+          '',
+          [Validators.pattern(/^-?((1[0-7]|[0-9])?[0-9]|180)\.[0-9]{1,8}$/)],
+        ],
       }),
       naaste: this.fb.group({
-        hospitaal: ['', Validators.required],
-        hospitaalAfstand: ['', [Validators.required, Validators.min(0)]],
-        polisie: ['', Validators.required],
-        polisieAfstand: ['', [Validators.required, Validators.min(0)]],
-        winkel: ['', Validators.required],
-        winkelAfstand: ['', [Validators.required, Validators.min(0)]]
-      })
+        hospitaal: [''],
+        hospitaalAfstand: ['', [Validators.min(0)]],
+        polisie: [''],
+        polisieAfstand: ['', [Validators.min(0)]],
+        winkel: [''],
+        winkelAfstand: ['', [Validators.min(0)]],
+      }),
     });
   }
 
@@ -125,12 +137,16 @@ export class AddressInfoComponent implements ControlValueAccessor {
 
   isFieldInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
 
   isNestedFieldInvalid(path: string): boolean {
     const control = this.form.get(path);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
 
   getNestedErrorMessage(path: string): string {
@@ -152,4 +168,4 @@ export class AddressInfoComponent implements ControlValueAccessor {
     }
     return '';
   }
-} 
+}

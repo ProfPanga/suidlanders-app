@@ -1,10 +1,17 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonInput, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+  Validators,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
   IonSelect,
   IonSelectOption,
   IonText,
@@ -14,19 +21,21 @@ import {
   IonDatetimeButton,
   IonModal,
   IonItemDivider,
-  IonItemGroup
+  IonItemGroup,
 } from '@ionic/angular/standalone';
 import { SkillsInfo } from '../../../interfaces/form-sections.interface';
 
 @Component({
   selector: 'app-skills-info',
   templateUrl: './skills-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -43,15 +52,15 @@ import { SkillsInfo } from '../../../interfaces/form-sections.interface';
     IonDatetimeButton,
     IonModal,
     IonItemDivider,
-    IonItemGroup
+    IonItemGroup,
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => SkillsInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class SkillsInfoComponent implements ControlValueAccessor {
   form: FormGroup;
@@ -60,45 +69,42 @@ export class SkillsInfoComponent implements ControlValueAccessor {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      beroep: ['', Validators.required],
+      beroep: [''],
       kwalifikasies: [''],
       spesialisVaardighede: [''],
       taleKennis: [''],
       rekenaarVaardig: [false],
       bestuurslisensie: this.fb.group({
-        kode: ['', Validators.required],
+        kode: [''],
         pdp: [false],
-        vervalDatum: ['', Validators.required]
+        vervalDatum: [''],
       }),
       noodhulp: this.fb.group({
         vlak: [''],
-        vervalDatum: ['']
+        vervalDatum: [''],
       }),
       radio: this.fb.group({
         amateurRadioLisensie: [false],
         roepsein: [''],
-        toerusting: ['']
-      })
+        toerusting: [''],
+      }),
     });
 
     // Subscribe to radio license changes
-    this.form.get('radio.amateurRadioLisensie')?.valueChanges.subscribe(hasLicense => {
-      const roepseinControl = this.form.get('radio.roepsein');
-      const toerustingControl = this.form.get('radio.toerusting');
-      
-      if (hasLicense) {
-        roepseinControl?.setValidators([Validators.required]);
-        toerustingControl?.setValidators([Validators.required]);
-      } else {
-        roepseinControl?.clearValidators();
-        toerustingControl?.clearValidators();
-        roepseinControl?.setValue('');
-        toerustingControl?.setValue('');
-      }
-      
-      roepseinControl?.updateValueAndValidity();
-      toerustingControl?.updateValueAndValidity();
-    });
+    this.form
+      .get('radio.amateurRadioLisensie')
+      ?.valueChanges.subscribe((hasLicense) => {
+        const roepseinControl = this.form.get('radio.roepsein');
+        const toerustingControl = this.form.get('radio.toerusting');
+
+        if (!hasLicense) {
+          roepseinControl?.setValue('');
+          toerustingControl?.setValue('');
+        }
+
+        roepseinControl?.updateValueAndValidity();
+        toerustingControl?.updateValueAndValidity();
+      });
   }
 
   // ControlValueAccessor implementation
@@ -130,9 +136,9 @@ export class SkillsInfoComponent implements ControlValueAccessor {
   }
 
   getErrorMessage(controlName: string, groupName: string = ''): string {
-    const control = groupName ? 
-      this.form.get(`${groupName}.${controlName}`) : 
-      this.form.get(controlName);
+    const control = groupName
+      ? this.form.get(`${groupName}.${controlName}`)
+      : this.form.get(controlName);
 
     if (control && control.errors && (control.dirty || control.touched)) {
       if (control.errors['required']) {
@@ -143,13 +149,15 @@ export class SkillsInfoComponent implements ControlValueAccessor {
   }
 
   isFieldInvalid(controlName: string, groupName: string = ''): boolean {
-    const control = groupName ? 
-      this.form.get(`${groupName}.${controlName}`) : 
-      this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    const control = groupName
+      ? this.form.get(`${groupName}.${controlName}`)
+      : this.form.get(controlName);
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
 
   isRadioLicenseVisible(): boolean {
     return this.form.get('radio.amateurRadioLisensie')?.value === true;
   }
-} 
+}

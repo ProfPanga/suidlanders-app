@@ -1,28 +1,37 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonInput, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+  Validators,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
   IonSelect,
   IonSelectOption,
   IonText,
   IonToggle,
   IonItemDivider,
-  IonItemGroup
+  IonItemGroup,
 } from '@ionic/angular/standalone';
 import { VehicleInfo } from '../../../interfaces/form-sections.interface';
 
 @Component({
   selector: 'app-vehicle-info',
   templateUrl: './vehicle-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -35,15 +44,15 @@ import { VehicleInfo } from '../../../interfaces/form-sections.interface';
     IonText,
     IonToggle,
     IonItemDivider,
-    IonItemGroup
+    IonItemGroup,
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => VehicleInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class VehicleInfoComponent implements ControlValueAccessor {
   form: FormGroup;
@@ -53,32 +62,30 @@ export class VehicleInfoComponent implements ControlValueAccessor {
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       primereVoertuig: this.fb.group({
-        fabrikaat: ['', Validators.required],
-        model: ['', Validators.required],
-        jaar: ['', [Validators.required, Validators.min(1900), Validators.max(this.currentYear)]],
-        registrasieNommer: ['', Validators.required],
-        brandstofTipe: ['', Validators.required],
-        kilometerStand: ['', [Validators.required, Validators.min(0)]],
-        bandeToestand: ['', Validators.required]
+        model: [''],
+        jaar: ['', [Validators.min(1900), Validators.max(this.currentYear)]],
+        registrasieNommer: [''],
+        brandstofTipe: [''],
+        kilometerStand: ['', [Validators.min(0)]],
+        bandeToestand: [''],
       }),
       sekondereVoertuig: this.fb.group({
-        fabrikaat: [''],
         model: [''],
         jaar: ['', [Validators.min(1900), Validators.max(this.currentYear)]],
         registrasieNommer: [''],
         brandstofTipe: [''],
         kilometerStand: ['', Validators.min(0)],
-        bandeToestand: ['']
+        bandeToestand: [''],
       }),
       sleepwa: [false],
-      sleepwaKapasiteit: ['']
+      sleepwaKapasiteit: [''],
     });
 
     // Subscribe to sleepwa changes to handle conditional validation
-    this.form.get('sleepwa')?.valueChanges.subscribe(hasSleepwa => {
+    this.form.get('sleepwa')?.valueChanges.subscribe((hasSleepwa) => {
       const sleepwaKapasiteitControl = this.form.get('sleepwaKapasiteit');
       if (hasSleepwa) {
-        sleepwaKapasiteitControl?.setValidators([Validators.required, Validators.min(0)]);
+        sleepwaKapasiteitControl?.setValidators([Validators.min(0)]);
       } else {
         sleepwaKapasiteitControl?.clearValidators();
         sleepwaKapasiteitControl?.setValue('');
@@ -116,9 +123,9 @@ export class VehicleInfoComponent implements ControlValueAccessor {
   }
 
   getErrorMessage(controlName: string, groupName: string = ''): string {
-    const control = groupName ? 
-      this.form.get(`${groupName}.${controlName}`) : 
-      this.form.get(controlName);
+    const control = groupName
+      ? this.form.get(`${groupName}.${controlName}`)
+      : this.form.get(controlName);
 
     if (control && control.errors && (control.dirty || control.touched)) {
       if (control.errors['required']) {
@@ -141,13 +148,15 @@ export class VehicleInfoComponent implements ControlValueAccessor {
   }
 
   isFieldInvalid(controlName: string, groupName: string = ''): boolean {
-    const control = groupName ? 
-      this.form.get(`${groupName}.${controlName}`) : 
-      this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    const control = groupName
+      ? this.form.get(`${groupName}.${controlName}`)
+      : this.form.get(controlName);
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
 
   isSleepwaVisible(): boolean {
     return this.form.get('sleepwa')?.value === true;
   }
-} 
+}

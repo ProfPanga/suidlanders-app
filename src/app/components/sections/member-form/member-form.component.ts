@@ -1,10 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { 
-  IonContent, 
-  IonButton, 
+import {
+  IonContent,
+  IonButton,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -14,7 +21,7 @@ import {
   IonAccordionGroup,
   IonAccordion,
   IonItem,
-  IonLabel
+  IonLabel,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { documentOutline, qrCode } from 'ionicons/icons';
@@ -31,18 +38,8 @@ import { DocumentsInfoComponent } from '../documents-info/documents-info.compone
 import { DatabaseService } from '../../../services/database.service';
 import { ExportService } from '../../../services/export.service';
 import { QRService } from '../../../services/qr.service';
-import { 
-  BasicInfo, 
-  MemberInfo, 
-  AddressInfo, 
-  MedicalInfo, 
-  VehicleInfo, 
-  SkillsInfo,
-  EquipmentInfo,
-  CampInfo,
-  OtherInfo,
-  DocumentsInfo 
-} from '../../../interfaces/form-sections.interface';
+import { SyncService } from '../../../services/sync.service';
+// Interfaces are not used directly in this component; imports removed to satisfy linter
 
 @Component({
   selector: 'app-member-form',
@@ -68,21 +65,14 @@ import {
             </div>
           </ion-accordion>
 
-          <ion-accordion value="memberInfo">
-            <ion-item slot="header">
-              <ion-label>Lid Inligting</ion-label>
-            </ion-item>
-            <div class="section ion-padding" slot="content">
-              <app-member-info formControlName="memberInfo"></app-member-info>
-            </div>
-          </ion-accordion>
-
           <ion-accordion value="addressInfo">
             <ion-item slot="header">
               <ion-label>Adres Inligting</ion-label>
             </ion-item>
             <div class="section ion-padding" slot="content">
-              <app-address-info formControlName="addressInfo"></app-address-info>
+              <app-address-info
+                formControlName="addressInfo"
+              ></app-address-info>
             </div>
           </ion-accordion>
 
@@ -91,7 +81,9 @@ import {
               <ion-label>Mediese Inligting</ion-label>
             </ion-item>
             <div class="section ion-padding" slot="content">
-              <app-medical-info formControlName="medicalInfo"></app-medical-info>
+              <app-medical-info
+                formControlName="medicalInfo"
+              ></app-medical-info>
             </div>
           </ion-accordion>
 
@@ -100,7 +92,9 @@ import {
               <ion-label>Voertuig Inligting</ion-label>
             </ion-item>
             <div class="section ion-padding" slot="content">
-              <app-vehicle-info formControlName="vehicleInfo"></app-vehicle-info>
+              <app-vehicle-info
+                formControlName="vehicleInfo"
+              ></app-vehicle-info>
             </div>
           </ion-accordion>
 
@@ -118,7 +112,9 @@ import {
               <ion-label>Toerusting & Hulpbronne</ion-label>
             </ion-item>
             <div class="section ion-padding" slot="content">
-              <app-equipment-info formControlName="equipmentInfo"></app-equipment-info>
+              <app-equipment-info
+                formControlName="equipmentInfo"
+              ></app-equipment-info>
             </div>
           </ion-accordion>
 
@@ -140,32 +136,62 @@ import {
             </div>
           </ion-accordion>
 
+          <ion-accordion value="memberInfo">
+            <ion-item slot="header">
+              <ion-label>Lid Inligting</ion-label>
+            </ion-item>
+            <div class="section ion-padding" slot="content">
+              <app-member-info formControlName="memberInfo"></app-member-info>
+            </div>
+          </ion-accordion>
+
           <ion-accordion value="documentsInfo">
             <ion-item slot="header">
               <ion-label>Dokumente</ion-label>
             </ion-item>
             <div class="section ion-padding" slot="content">
-              <app-documents-info formControlName="documentsInfo"></app-documents-info>
+              <app-documents-info
+                formControlName="documentsInfo"
+              ></app-documents-info>
             </div>
           </ion-accordion>
         </ion-accordion-group>
 
         <div class="button-container ion-padding">
-          <ion-button expand="block" (click)="onSubmit()" [disabled]="!form.valid">
+          <ion-button
+            expand="block"
+            (click)="onSubmit()"
+            [disabled]="!form.valid"
+          >
             Dien Vorm In
           </ion-button>
 
-          <ion-button expand="block" color="secondary" (click)="exportFormData()" class="ion-margin-top">
+          <ion-button
+            expand="block"
+            color="secondary"
+            (click)="exportFormData()"
+            class="ion-margin-top"
+          >
             <ion-icon name="document-outline" slot="start"></ion-icon>
             Eksporteer as HTML
           </ion-button>
 
-          <ion-button expand="block" color="tertiary" (click)="generateQRCode()" class="ion-margin-top">
+          <ion-button
+            expand="block"
+            color="tertiary"
+            (click)="generateQRCode()"
+            class="ion-margin-top"
+          >
             <ion-icon name="qr-code" slot="start"></ion-icon>
             Genereer QR Kode
           </ion-button>
 
-          <ion-button expand="block" fill="outline" (click)="goToHome()" class="ion-margin-top">
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="goToHome()"
+            class="ion-margin-top"
+          >
             Terug na Tuisblad
           </ion-button>
         </div>
@@ -177,39 +203,41 @@ import {
       </div>
     </ion-content>
   `,
-  styles: [`
-    .section {
-      background: var(--ion-color-light);
-    }
+  styles: [
+    `
+      .section {
+        background: var(--ion-color-light);
+      }
 
-    .button-container {
-      margin-top: 2rem;
-    }
+      .button-container {
+        margin-top: 2rem;
+      }
 
-    .submitted-data {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: var(--ion-color-light);
-      border-radius: 8px;
-    }
+      .submitted-data {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: var(--ion-color-light);
+        border-radius: 8px;
+      }
 
-    pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      background: var(--ion-color-light-shade);
-      padding: 1rem;
-      border-radius: 4px;
-      font-size: 0.9rem;
-    }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background: var(--ion-color-light-shade);
+        padding: 1rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
 
-    ion-accordion {
-      margin-bottom: 0.5rem;
-    }
+      ion-accordion {
+        margin-bottom: 0.5rem;
+      }
 
-    ion-accordion-group {
-      margin-bottom: 1rem;
-    }
-  `],
+      ion-accordion-group {
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -235,23 +263,70 @@ import {
     EquipmentInfoComponent,
     CampInfoComponent,
     OtherInfoComponent,
-    DocumentsInfoComponent
-  ]
+    DocumentsInfoComponent,
+  ],
 })
 export class MemberFormComponent {
+  @ViewChild(BasicInfoComponent) basicInfoComponent!: BasicInfoComponent;
   form: FormGroup;
   submittedData: any;
 
+  // Custom validator for basic info section
+  private basicInfoValidator = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
+    const value = control.value;
+
+    // If no value, let required validator handle it
+    if (!value) {
+      return null;
+    }
+
+    // Check if basic required fields have values
+    // For testing purposes, only require ID Nommer
+    const requiredFields = [
+      'idNommer', // Only ID number required for testing
+      // 'van',
+      // 'noemNaam',
+      // 'huistaal',
+      // 'geslag',
+      // 'ouderdom',
+      // 'geboorteDatum',
+      // 'cellNommer',
+      // 'email',
+      // 'huwelikStatus',
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !value[field] || value[field].toString().trim() === ''
+    );
+
+    if (missingFields.length > 0) {
+      return { missingRequiredFields: { fields: missingFields } };
+    }
+
+    // Additional validation checks
+    if (value.idNommer && !/^\d{13}$/.test(value.idNommer)) {
+      return { invalidIdNumber: true };
+    }
+
+    if (value.cellNommer && !/^(\+27|0)\d{9}$/.test(value.cellNommer)) {
+      return { invalidCellNumber: true };
+    }
+
+    return null; // Valid
+  };
+
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private databaseService: DatabaseService,
-    private exportService: ExportService,
-    private qrService: QRService
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly databaseService: DatabaseService,
+    private readonly exportService: ExportService,
+    private readonly qrService: QRService,
+    private readonly syncService: SyncService
   ) {
     addIcons({ documentOutline, qrCode });
     this.form = this.fb.group({
-      basicInfo: [null],
+      basicInfo: [null, [Validators.required, this.basicInfoValidator]], // Add custom validator
       memberInfo: [null],
       addressInfo: [null],
       medicalInfo: [null],
@@ -260,16 +335,22 @@ export class MemberFormComponent {
       equipmentInfo: [null],
       campInfo: [null],
       otherInfo: [null],
-      documentsInfo: [null]
+      documentsInfo: [null],
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.form.valid) {
       this.submittedData = this.form.value;
       console.log('Form submitted:', this.submittedData);
       // Here you would typically save to the database
-      this.databaseService.saveEntry(this.submittedData);
+      await this.databaseService.saveEntry(this.submittedData);
+
+      // Immediately attempt a sync to backend for testing
+      // Keeps offline-first: if offline, sync service will handle gracefully
+      this.syncService.sync().subscribe((result) => {
+        console.log('Manual sync result:', result);
+      });
     } else {
       console.log('Form is invalid');
       this.markFormGroupTouched(this.form);
@@ -291,7 +372,7 @@ export class MemberFormComponent {
       try {
         const basicInfo = this.form.get('basicInfo')?.value;
         const memberInfo = this.form.get('memberInfo')?.value;
-        
+
         if (!basicInfo) {
           console.error('Basiese inligting ontbreek');
           return;
@@ -302,12 +383,12 @@ export class MemberFormComponent {
           van: basicInfo.van || '',
           noemNaam: basicInfo.noemNaam || '',
           lidNommer: memberInfo?.lidNommer || '',
-          reddingsVerwysing: memberInfo?.reddingsVerwysing || ''
+          reddingsVerwysing: memberInfo?.reddingsVerwysing || '',
         };
 
         // Log the data being sent to QR generation
         console.log('Generating QR code with data:', qrData);
-        
+
         await this.qrService.generateQRCode(qrData);
       } catch (error) {
         console.error('Error generating QR code:', error);
@@ -323,7 +404,7 @@ export class MemberFormComponent {
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
 
       if (control instanceof FormGroup) {
@@ -331,4 +412,4 @@ export class MemberFormComponent {
       }
     });
   }
-} 
+}

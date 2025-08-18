@@ -63,7 +63,6 @@ export interface MedicalInfo {
 
 export interface VehicleInfo {
   primereVoertuig: {
-    fabrikaat: string;
     model: string;
     jaar: number;
     registrasieNommer: string;
@@ -72,7 +71,6 @@ export interface VehicleInfo {
     bandeToestand: string;
   };
   sekondereVoertuig: {
-    fabrikaat: string;
     model: string;
     jaar: number;
     registrasieNommer: string;
@@ -173,4 +171,4 @@ export interface CompleteFormData {
   campInfo: CampInfo;
   otherInfo: OtherInfo;
   documentsInfo: DocumentsInfo;
-} 
+}
