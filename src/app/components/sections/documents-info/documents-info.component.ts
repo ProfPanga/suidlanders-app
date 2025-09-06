@@ -1,16 +1,19 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
   IonButton,
   IonIcon,
-  IonText,
   IonItemDivider,
   IonItemGroup,
-  IonChip,
-  IonBadge
 } from '@ionic/angular/standalone';
 import { DocumentsInfo } from '../../../interfaces/form-sections.interface';
 import { addCircleOutline, documentOutline, closeCircle } from 'ionicons/icons';
@@ -19,55 +22,57 @@ import { addIcons } from 'ionicons';
 @Component({
   selector: 'app-documents-info',
   templateUrl: './documents-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
 
-    .file-input {
-      display: none;
-    }
+      .file-input {
+        display: none;
+      }
 
-    .upload-button {
-      margin: 1rem 0;
-    }
+      .upload-button {
+        margin: 1rem 0;
+      }
 
-    .file-list {
-      margin: 1rem 0;
-    }
+      .file-list {
+        margin: 1rem 0;
+      }
 
-    .file-item {
-      display: flex;
-      align-items: center;
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background: var(--ion-color-light);
-      border-radius: 4px;
-    }
+      .file-item {
+        display: flex;
+        align-items: center;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        background: var(--ion-color-light);
+        border-radius: 4px;
+      }
 
-    .file-name {
-      flex: 1;
-      margin-left: 0.5rem;
-    }
+      .file-name {
+        flex: 1;
+        margin-left: 0.5rem;
+      }
 
-    .file-size {
-      color: var(--ion-color-medium);
-      font-size: 0.8rem;
-      margin-left: 0.5rem;
-    }
+      .file-size {
+        color: var(--ion-color-medium);
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+      }
 
-    .helper-text {
-      font-size: 0.8rem;
-      color: var(--ion-color-medium);
-      margin-top: 0.25rem;
-      margin-left: 1rem;
-    }
+      .helper-text {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+        margin-top: 0.25rem;
+        margin-left: 1rem;
+      }
 
-    ion-chip {
-      margin: 0.25rem;
-    }
-  `],
+      ion-chip {
+        margin: 0.25rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -76,19 +81,16 @@ import { addIcons } from 'ionicons';
     IonLabel,
     IonButton,
     IonIcon,
-    IonText,
     IonItemDivider,
     IonItemGroup,
-    IonChip,
-    IonBadge
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => DocumentsInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class DocumentsInfoComponent implements ControlValueAccessor {
   form: FormGroup;
@@ -98,13 +100,13 @@ export class DocumentsInfoComponent implements ControlValueAccessor {
 
   constructor(private fb: FormBuilder) {
     addIcons({ addCircleOutline, documentOutline, closeCircle });
-    
+
     this.form = this.fb.group({
       idDokument: [null],
       bestuurslisensie: [null],
       vuurwapenlisensie: [null],
       ehboSertifikaat: [null],
-      ander: [[]]
+      ander: [[]],
     });
   }
 
@@ -117,11 +119,11 @@ export class DocumentsInfoComponent implements ControlValueAccessor {
         if (controlName === 'ander') {
           const currentFiles = this.form.get('ander')?.value || [];
           this.form.patchValue({
-            ander: [...currentFiles, file]
+            ander: [...currentFiles, file],
           });
         } else {
           this.form.patchValue({
-            [controlName]: file
+            [controlName]: file,
           });
         }
         this.onChange(this.form.value);
@@ -147,7 +149,9 @@ export class DocumentsInfoComponent implements ControlValueAccessor {
     }
 
     const fileType = file.name.toLowerCase().split('.').pop();
-    const validTypes = this.acceptedFileTypes.split(',').map(type => type.replace('.', ''));
+    const validTypes = this.acceptedFileTypes
+      .split(',')
+      .map((type) => type.replace('.', ''));
     if (!fileType || !validTypes.includes(fileType)) {
       alert('Ongeldige lêertipe. Aanvaarde tipes: PDF, JPG, JPEG, PNG');
       return false;
@@ -207,6 +211,8 @@ export class DocumentsInfoComponent implements ControlValueAccessor {
 
   isFieldInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
-} 
+}

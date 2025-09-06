@@ -6,7 +6,7 @@ alwaysApply: true
 
 ---
 
-description: "Guidelines and context for the PractiTest to Notion integration project."
+description: "Guidelines and context for the Suidlanders-app project."
 globs: ["**/*"]
 alwaysApply: true
 
@@ -18,7 +18,7 @@ alwaysApply: true
 
 ### What is this project?
 
-This is a cross-platform Ionic/Angular application for managing Suidlanders emergency plan information. It's built with Angular 19, Ionic 8, and Capacitor 7, providing native mobile apps (iOS/Android) and web application functionality. The app serves as a comprehensive member registration and information management system for emergency preparedness.
+This is a cross-platform Ionic/Angular application for managing Suidlanders emergency plan information. It's built with Angular 19, Ionic 8, and Capacitor 7, providing native mobile apps (iOS/Android) and web functionality. The system is now designed for 100% offline operation with a local “camp server” (NestJS) running on a Raspberry Pi using SQLite. Devices sync over a local LAN/mesh via QR-provisioned server URLs and short-lived sync tokens, with optional USB-based encrypted export/import as a fallback.
 
 ### Key Features Implemented:
 
@@ -32,7 +32,7 @@ This is a cross-platform Ionic/Angular application for managing Suidlanders emer
 ### Technology Stack:
 
 - **Frontend**: Angular 19 + Ionic 8 + Capacitor 7
-- **Database**: SQLite (mobile) + IndexedDB (web) + planned NestJS backend
+- **Database**: SQLite (mobile) + IndexedDB (web) + NestJS camp-server (SQLite on Raspberry Pi)
 - **Languages**: TypeScript, HTML, SCSS
 - **Key Libraries**: RxJS, CryptoJS, Dexie, QRCode, Pako
 
@@ -64,10 +64,13 @@ This is a cross-platform Ionic/Angular application for managing Suidlanders emer
   - [x] 1.2. Implement member CRUD API endpoints (GET list/one, POST, PUT, DELETE)
   - [x] 1.3. Implement sync endpoints (`/sync/push`, `/sync/pull`) with DB persistence
   - [x] 1.4. Add authentication system (JWT) — Backend + Frontend integrated; guards + interceptor + login page; e2e passing
-  - [ ] 1.5. Set up database schema matching SQLite structure (PARTIAL: `Member` JSONB + `nationalId` unique + upsert by nationalId; full 11-table mapping pending)
+  - [ ] 1.5. Set up database schema matching SQLite structure (PARTIAL: `Member.payload` now `simple-json` for SQLite; `nationalId` unique + upsert by nationalId; full 11-table mapping pending)
   - [ ] 1.6. Test API integration with frontend (PARTIAL: sync + auth integrated; comprehensive TESTING.md added; CRUD UI wiring pending)
   - [x] 1.7. Add camp sync endpoints and temporary sync tokens (QR init/exchange) — Done
   - [ ] 1.8. Wire QR scanner to camp sync flow in app UI — PARTIAL (QR test page + "Verbind na Kamp" button; full flow polish pending)
+  - [x] 1.9. Add Pi mode (SQLite) with env switch and scripts — Done
+  - [x] 1.10. Include multiple `serverUrls` (mDNS, detected IP, AP default, fallback) in camp QR init — Done
+  - [ ] 1.11. Provide systemd unit and installer for Pi auto-start — PARTIAL (unit and scripts added; installation guide pending)
 
 - [ ] **Phase 2: Complete Core Features (HIGH PRIORITY)**
 
@@ -153,17 +156,19 @@ This is a cross-platform Ionic/Angular application for managing Suidlanders emer
 
 ### Sync Strategy
 
-- **Offline-First**: App works completely offline, syncs when connection available
+- **Offline-Only by Default**: No internet required; sync occurs over local LAN/mesh to a camp-server on Raspberry Pi
+- **LAN Provisioning via QR**: Staff generates QR with multiple `serverUrls` + short-lived sync token; device tries each URL until one works, then syncs
 - **Queue-Based**: Changes queued locally, synced in batches
+- **USB Fallback**: Encrypted export/import bundles for offline transfer via USB when networking is unavailable
 - **Conflict Resolution**: Timestamp-based conflict detection
 - **Auto-Sync**: Automatic sync every 5 minutes with manual trigger option
 
 ### Security Considerations
 
-- **Data Encryption**: Local data encrypted before storage
-- **Input Validation**: Comprehensive client-side validation with server-side backup planned
+- **Data Encryption**: Local data encrypted before storage; USB bundles encrypted and integrity-checked
+- **Input Validation**: Comprehensive client-side validation with server-side backup on camp-server
 - **File Upload Security**: File type and size validation
-- **Authentication**: JWT-based authentication planned for backend
+- **Authentication**: JWT-based auth for staff; short-lived sync-only tokens for guest device sync in camps (no internet required)
 
 ## 3. Development Rules & Best Practices
 

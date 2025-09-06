@@ -204,7 +204,15 @@ export class HomePage implements OnInit {
     try {
       const data = JSON.parse(qrData);
       if (data.code && data.campId) {
-        this.exchangeCampCode(data.code, data.campId);
+        // Prefer first reachable serverUrl; fall back to environment base
+        const urls: string[] = Array.isArray(data.serverUrls)
+          ? data.serverUrls
+          : data.serverUrl
+          ? [data.serverUrl]
+          : [];
+
+        // Try each URL sequentially for exchange
+        this.tryCampExchange(urls, data.code, data.campId);
       } else {
         this.showToast('Ongeldige kamp QR kode');
       }
@@ -244,6 +252,50 @@ export class HomePage implements OnInit {
       error: (err) => {
         console.error('Camp code exchange failed:', err);
         this.showToast('Kan nie na kamp verbind nie');
+      },
+    });
+  }
+
+  private tryCampExchange(urls: string[], code: string, campId: string) {
+    if (!urls.length) {
+      // Fallback to default API URL flow
+      this.exchangeCampCode(code, campId);
+      return;
+    }
+
+    const [current, ...rest] = urls;
+    // Set base URL temporarily for this attempt
+    this.authService.setCampBaseUrl(current.replace(/\/$/, ''));
+
+    this.authService.exchangeCampCodeAt(current, code, campId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Persist chosen base URL for subsequent sync calls
+          this.authService.setCampBaseUrl(current.replace(/\/$/, ''));
+          this.authService.setSyncToken(response.syncToken);
+          this.showToast(
+            'Suksesvol verbind na kamp - data sal nou sinkroniseer'
+          );
+
+          this.syncService.sync().subscribe({
+            next: (result) => {
+              if (result.success) {
+                this.showToast(
+                  `Sinkronisasie voltooi: ${result.syncedRecords} rekords`
+                );
+                this.authService.setSyncToken(null);
+              }
+            },
+            error: () => this.showToast('Sinkronisasie gefaal'),
+          });
+        } else {
+          // Try next URL
+          this.tryCampExchange(rest, code, campId);
+        }
+      },
+      error: () => {
+        // Try next URL on error
+        this.tryCampExchange(rest, code, campId);
       },
     });
   }

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class ApiService {
     members: '/members',
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   // Sync endpoints
   syncChanges(changes: any[]): Observable<any> {
@@ -49,8 +50,9 @@ export class ApiService {
 
   // Generic HTTP methods with error handling
   private get(path: string, options: any = {}): Observable<any> {
+    const base = this.auth.getCampBaseUrl() || this.API_URL;
     return this.http
-      .get(`${this.API_URL}${path}`, this.addHeaders(options))
+      .get(`${base}${path}`, this.addHeaders(options))
       .pipe(catchError(this.handleError));
   }
 
@@ -59,8 +61,9 @@ export class ApiService {
     body: any = {},
     options: any = {}
   ): Observable<any> {
+    const base = this.auth.getCampBaseUrl() || this.API_URL;
     return this.http
-      .post(`${this.API_URL}${path}`, body, this.addHeaders(options))
+      .post(`${base}${path}`, body, this.addHeaders(options))
       .pipe(catchError(this.handleError));
   }
 
@@ -69,14 +72,16 @@ export class ApiService {
     body: any = {},
     options: any = {}
   ): Observable<any> {
+    const base = this.auth.getCampBaseUrl() || this.API_URL;
     return this.http
-      .put(`${this.API_URL}${path}`, body, this.addHeaders(options))
+      .put(`${base}${path}`, body, this.addHeaders(options))
       .pipe(catchError(this.handleError));
   }
 
   private delete(path: string, options: any = {}): Observable<any> {
+    const base = this.auth.getCampBaseUrl() || this.API_URL;
     return this.http
-      .delete(`${this.API_URL}${path}`, this.addHeaders(options))
+      .delete(`${base}${path}`, this.addHeaders(options))
       .pipe(catchError(this.handleError));
   }
 

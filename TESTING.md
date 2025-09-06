@@ -4,9 +4,26 @@ This document provides step-by-step testing procedures for quality assurance and
 
 ## Prerequisites
 
-- Docker installed and running
+- Docker installed and running (for Postgres mode)
 - Node.js and npm installed
 - Both backend and frontend repositories cloned and dependencies installed
+
+## Backend Modes
+
+### A) Postgres (existing)
+
+Use Docker and `npm run start:dev` as before for full online testing and CI.
+
+### B) Pi Mode (SQLite, Offline Preferred)
+
+```bash
+cd /Users/corneloots/Development/suidlanders-backend
+npm install
+npm run start:pi:dev
+
+# Health check
+curl -sS http://localhost:3000/api/health | jq .
+```
 
 ## Cleanup
 
@@ -54,15 +71,10 @@ npm run test:e2e
 ### 2. Manual API Testing
 
 ```bash
-# Start PostgreSQL
-docker ps --filter name=suidlanders-postgres
-# If not running:
-docker start suidlanders-postgres
+# Start backend (Pi mode recommended for offline testing)
+cd /Users/corneloots/Development/suidlanders-backend
+npm run start:pi:dev
 
-# Start backend (keep running)
-npm run start:dev
-
-# Test health endpoint
 curl -sS http://localhost:3000/api/health
 
 # Register test user
@@ -324,7 +336,7 @@ curl -sS -X POST http://localhost:3000/api/auth/camp/init \
   -d '{"campId":"CAMP-001"}' | jq .
 ```
 
-- **Expected:** Returns QR data with `code`, `campId`, `serverUrl`
+- **Expected:** Returns QR data with `code`, `campId`, `serverUrls` (mDNS, detected IP, AP default, fallback)
 
 #### Step 2: Guest Scans Camp QR
 
@@ -342,6 +354,34 @@ curl -sS -X POST http://localhost:3000/api/auth/camp/exchange \
 - **Expected:** Returns temporary sync token
 - **In App:** Should show "Suksesvol verbind na kamp" message
 - **Expected:** Automatic sync should complete with success message
+
+Alternative: simulate QR in browser on `http://localhost:4200/qr-test` → DevTools Console:
+
+```javascript
+const qr = {
+  code: "<NEW_CODE>",
+  campId: "CAMP-001",
+  serverUrls: ["http://localhost:3000/api", "http://camp.local:3000/api", "http://192.168.4.1:3000/api"],
+};
+(async () => {
+  for (const base of qr.serverUrls) {
+    try {
+      const res = await fetch(`${base}/auth/camp/exchange`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: qr.code, campId: qr.campId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem("camp_base_url", base.replace(/\/$/, ""));
+        localStorage.setItem("camp_sync_token", data.syncToken);
+        console.log("Connected to camp:", base);
+        break;
+      }
+    } catch {}
+  }
+})();
+```
 
 ### 8. Offline Testing
 

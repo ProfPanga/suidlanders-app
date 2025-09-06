@@ -10,6 +10,7 @@ interface LoginResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'access_token';
+  private readonly CAMP_BASE_URL_KEY = 'camp_base_url';
   private readonly apiUrl = environment.apiUrl;
   private tokenSubject = new BehaviorSubject<string | null>(
     typeof localStorage !== 'undefined'
@@ -53,6 +54,15 @@ export class AuthService {
     });
   }
 
+  // Exchange against a specific base URL (used for LAN camp URLs)
+  exchangeCampCodeAt(
+    baseUrl: string,
+    code: string,
+    campId: string
+  ): Observable<any> {
+    return this.http.post(`${baseUrl}/auth/camp/exchange`, { code, campId });
+  }
+
   setSyncToken(token: string | null): void {
     if (typeof localStorage !== 'undefined') {
       if (token) localStorage.setItem('camp_sync_token', token);
@@ -63,6 +73,20 @@ export class AuthService {
   getSyncToken(): string | null {
     if (typeof localStorage !== 'undefined') {
       return localStorage.getItem('camp_sync_token');
+    }
+    return null;
+  }
+
+  setCampBaseUrl(url: string | null): void {
+    if (typeof localStorage !== 'undefined') {
+      if (url) localStorage.setItem(this.CAMP_BASE_URL_KEY, url);
+      else localStorage.removeItem(this.CAMP_BASE_URL_KEY);
+    }
+  }
+
+  getCampBaseUrl(): string | null {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem(this.CAMP_BASE_URL_KEY);
     }
     return null;
   }
