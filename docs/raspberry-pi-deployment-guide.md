@@ -97,52 +97,45 @@ git --version
 sudo apt install -y git
 ```
 
-### Step 2.3: Create Project Directory Structure
+### Step 2.3: Clone Project Repository
 
 ```bash
-# Create directory for the project
-mkdir -p ~/suidlanders
-cd ~/suidlanders
+# Clone the repository from GitHub
+cd ~
+git clone https://github.com/ProfPanga/suidlanders-app.git
+cd suidlanders-app
 
-# Create subdirectories
-mkdir -p backend
-mkdir -p dashboard
+# Create logs directory
 mkdir -p logs
 ```
 
 **Directory structure:**
 ```
-/home/pi/suidlanders/
-├── backend/          ← Backend API files
-├── dashboard/        ← Frontend build files (www/)
-└── logs/            ← Log files for debugging
+/home/pi/suidlanders-app/
+├── backend/          ← Backend API files (already in repo)
+├── src/              ← Frontend source code
+├── docs/             ← Documentation
+├── logs/             ← Log files for debugging (created above)
+└── www/              ← Frontend build files (created during build)
 ```
+
+**Why clone instead of manual transfer?**
+- ✅ Backend is already in the repo
+- ✅ Easy updates with `git pull`
+- ✅ Everything stays in sync
+- ✅ Cleaner organization
 
 ---
 
 ## Part 3: Deploy Backend API
 
-### Step 3.1: Transfer Backend Files to Pi
+### Step 3.1: Install Backend Dependencies
 
-**On your development computer** (NOT on Pi):
-
-```bash
-# Navigate to your project directory
-cd /Users/corneloots/Development/suidlanders-app
-
-# Transfer backend directory to Pi using scp
-scp -r backend/ pi@192.168.1.100:~/suidlanders/
-```
-
-**What this does:** Copies entire `backend/` folder to Pi's `~/suidlanders/backend/`
-
-### Step 3.2: Install Backend Dependencies on Pi
-
-**Back on Pi SSH session:**
+**On Pi SSH session:**
 
 ```bash
-# Navigate to backend directory
-cd ~/suidlanders/backend
+# Navigate to backend directory (already cloned from repo)
+cd ~/suidlanders-app/backend
 
 # Install npm dependencies (this may take 5-10 minutes)
 npm install
@@ -151,10 +144,10 @@ npm install
 ls node_modules/  # Should see many folders
 ```
 
-### Step 3.3: Create Demo Data
+### Step 3.2: Create Demo Data
 
 ```bash
-# Still in ~/suidlanders/backend
+# Still in ~/suidlanders-app/backend
 npm run seed
 ```
 
@@ -169,7 +162,7 @@ npm run seed
 ✅ Seed data created successfully!
 ```
 
-### Step 3.4: Test Backend Manually
+### Step 3.3: Test Backend Manually
 
 ```bash
 # Start backend (foreground test)
@@ -202,18 +195,28 @@ curl http://localhost:3000/api/members
 
 ## Part 4: Deploy Frontend Dashboard
 
-### Step 4.1: Build Production Frontend on Your Computer
+### Step 4.1: Install Frontend Dependencies on Pi
 
-**On your development computer:**
+**On Pi SSH session:**
 
 ```bash
-cd /Users/corneloots/Development/suidlanders-app
+# Navigate to project root
+cd ~/suidlanders-app
 
-# Build production version
-npm run build
-
-# Output will be in: www/ directory
+# Install npm dependencies (this may take 10-15 minutes on Pi)
+npm install
 ```
+
+**Note:** Building on Pi is slower but ensures compatibility and eliminates file transfer steps.
+
+### Step 4.2: Build Production Frontend on Pi
+
+```bash
+# Still in ~/suidlanders-app
+npm run build
+```
+
+**This will create:** `www/` directory with production build
 
 **Verify build succeeded:**
 ```bash
@@ -221,23 +224,10 @@ ls www/
 # Should see: index.html, assets/, polyfills.*.js, main.*.js, etc.
 ```
 
-### Step 4.2: Transfer Frontend Build to Pi
-
-**Still on your development computer:**
+### Step 4.3: Install Web Server (Python3)
 
 ```bash
-# Transfer www/ directory to Pi
-scp -r www/ pi@192.168.1.100:~/suidlanders/dashboard/
-```
-
-**What this does:** Copies `www/` folder to Pi's `~/suidlanders/dashboard/www/`
-
-### Step 4.3: Install Web Server on Pi
-
-**Back on Pi SSH session:**
-
-```bash
-# Install Python3 (usually pre-installed on Pi OS)
+# Check Python3 (usually pre-installed on Pi OS)
 python3 --version
 
 # If not installed:
@@ -249,8 +239,8 @@ sudo apt install -y python3
 ### Step 4.4: Test Frontend Manually
 
 ```bash
-# Navigate to dashboard directory
-cd ~/suidlanders/dashboard/www
+# Navigate to www directory
+cd ~/suidlanders-app/www
 
 # Start web server (foreground test)
 python3 -m http.server 8080
@@ -293,12 +283,12 @@ After=network.target
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/suidlanders/backend
+WorkingDirectory=/home/pi/suidlanders-app/backend
 ExecStart=/usr/bin/npm start
 Restart=always
 RestartSec=10
-StandardOutput=append:/home/pi/suidlanders/logs/backend.log
-StandardError=append:/home/pi/suidlanders/logs/backend.log
+StandardOutput=append:/home/pi/suidlanders-app/logs/backend.log
+StandardError=append:/home/pi/suidlanders-app/logs/backend.log
 
 [Install]
 WantedBy=multi-user.target
@@ -323,12 +313,12 @@ After=network.target suidlanders-backend.service
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/suidlanders/dashboard/www
+WorkingDirectory=/home/pi/suidlanders-app/www
 ExecStart=/usr/bin/python3 -m http.server 8080
 Restart=always
 RestartSec=10
-StandardOutput=append:/home/pi/suidlanders/logs/dashboard.log
-StandardError=append:/home/pi/suidlanders/logs/dashboard.log
+StandardOutput=append:/home/pi/suidlanders-app/logs/dashboard.log
+StandardError=append:/home/pi/suidlanders-app/logs/dashboard.log
 
 [Install]
 WantedBy=multi-user.target
@@ -419,7 +409,7 @@ curl http://localhost:3000/api/members | jq .
 **If it fails:**
 ```bash
 # Check logs
-tail -f ~/suidlanders/logs/backend.log
+tail -f ~/suidlanders-app/logs/backend.log
 ```
 
 ### Test 7.2: Dashboard Web Server Test
@@ -482,13 +472,13 @@ sudo systemctl status suidlanders-dashboard
 
 ```bash
 # Backend logs
-tail -f ~/suidlanders/logs/backend.log
+tail -f ~/suidlanders-app/logs/backend.log
 
 # Dashboard logs
-tail -f ~/suidlanders/logs/dashboard.log
+tail -f ~/suidlanders-app/logs/dashboard.log
 
 # Both at once
-tail -f ~/suidlanders/logs/*.log
+tail -f ~/suidlanders-app/logs/*.log
 ```
 
 ### Restart Services
@@ -518,42 +508,68 @@ sudo systemctl stop suidlanders-dashboard
 
 ## Part 9: Updating Your Code After Changes
 
-### Update Backend
+**Workflow:** Push changes to GitHub from your computer, then pull on Pi
+
+### Step 1: Push Changes from Your Computer
 
 **On your development computer:**
 
 ```bash
-# Transfer updated backend
 cd /Users/corneloots/Development/suidlanders-app
-scp -r backend/ pi@192.168.1.100:~/suidlanders/
+
+# Stage and commit your changes
+git add .
+git commit -m "Your commit message"
+
+# Push to GitHub
+git push origin main
 ```
 
-**On Pi:**
+### Step 2: Pull Changes on Pi
+
+**On Pi SSH session:**
 
 ```bash
-cd ~/suidlanders/backend
-npm install  # If package.json changed
-sudo systemctl restart suidlanders-backend
-```
+# Navigate to project directory
+cd ~/suidlanders-app
 
-### Update Frontend
+# Pull latest changes from GitHub
+git pull origin main
 
-**On your development computer:**
+# If backend changed: reinstall dependencies
+cd backend
+npm install  # Only if package.json changed
 
-```bash
-# Rebuild
-cd /Users/corneloots/Development/suidlanders-app
+# If frontend changed: rebuild
+cd ~/suidlanders-app
 npm run build
 
-# Transfer
-scp -r www/ pi@192.168.1.100:~/suidlanders/dashboard/
+# Restart services
+sudo systemctl restart suidlanders-backend suidlanders-dashboard
 ```
 
-**On Pi:**
+**Quick Update Script (Optional):**
 
 ```bash
-# Just restart (no npm install needed for frontend)
-sudo systemctl restart suidlanders-dashboard
+# Create update script
+nano ~/update-suidlanders.sh
+```
+
+**Paste:**
+```bash
+#!/bin/bash
+cd ~/suidlanders-app
+git pull origin main
+cd backend && npm install
+cd ~/suidlanders-app && npm run build
+sudo systemctl restart suidlanders-backend suidlanders-dashboard
+echo "✅ Update complete!"
+```
+
+**Make executable and run:**
+```bash
+chmod +x ~/update-suidlanders.sh
+~/update-suidlanders.sh
 ```
 
 ---
@@ -564,7 +580,7 @@ sudo systemctl restart suidlanders-dashboard
 
 ```bash
 # Check logs
-tail -50 ~/suidlanders/logs/backend.log
+tail -50 ~/suidlanders-app/logs/backend.log
 
 # Common issues:
 # 1. Port 3000 already in use
@@ -572,17 +588,20 @@ sudo lsof -i :3000
 sudo kill -9 <PID>
 
 # 2. Database permissions
-ls -la ~/suidlanders/backend/data/
-chmod 644 ~/suidlanders/backend/data/camp.db
+ls -la ~/suidlanders-app/backend/data/
+chmod 644 ~/suidlanders-app/backend/data/camp.db
 ```
 
 ### Problem: Dashboard shows 404
 
 ```bash
 # Check if www/ directory exists
-ls ~/suidlanders/dashboard/www/
+ls ~/suidlanders-app/www/
 
-# If empty, rebuild and transfer from dev computer
+# If empty, rebuild on Pi
+cd ~/suidlanders-app
+npm run build
+sudo systemctl restart suidlanders-dashboard
 ```
 
 ### Problem: "Kon nie lede laai nie" error persists
@@ -670,21 +689,36 @@ chromium-browser --kiosk http://localhost:8080/reception &
 
 ## Summary of What You've Deployed
 
+**Project Structure:**
+```
+~/suidlanders-app/
+├── backend/          Backend API (NestJS + SQLite)
+├── www/              Frontend build (Ionic/Angular)
+└── logs/             Service logs
+```
+
 **Backend API (Port 3000):**
 - NestJS + SQLite
 - Serves: GET /api/members
 - Auto-starts on boot
-- Logs: `~/suidlanders/logs/backend.log`
+- Logs: `~/suidlanders-app/logs/backend.log`
+- Location: `~/suidlanders-app/backend/`
 
 **Frontend Dashboard (Port 8080):**
 - Ionic/Angular web build
 - Static files served by Python HTTP server
 - Auto-starts on boot
-- Logs: `~/suidlanders/logs/dashboard.log`
+- Logs: `~/suidlanders-app/logs/dashboard.log`
+- Location: `~/suidlanders-app/www/`
 
 **Chromium Kiosk Mode:**
 - Auto-launches on desktop startup
 - Fullscreen dashboard at: http://localhost:8080/reception
 - No toolbars, no distractions
 
-**Ready for March 6th demo!** 🎉
+**Deployment Method:**
+- Git-based: Clone repo → Pull updates → Rebuild
+- All code in one directory
+- Easy to update with `git pull`
+
+**Ready for deployment!** 🎉
