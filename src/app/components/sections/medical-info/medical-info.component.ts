@@ -65,7 +65,79 @@ export class MedicalInfoComponent implements ControlValueAccessor {
       huisDokter: [''],
       huisDokterNommer: ['', [Validators.pattern(/^(\+27|0)\d{9}$/)]],
       medieseNotas: [''],
+      // New Patient additions
+      opChronieseMedikasie: [false],
+      hetMedikasieBy: [{ value: false, disabled: true }], // Disabled by default
+      entstowweSedert2020: [false],
+      covidEntstof: [''],
+      griepEntstof: [false],
+      loopStyl: [''],
+      nekVorentoe: [false],
+      nekBuigbaar: [true],
+      koorsig: [false],
+      koorsDuur: [''],
+      nekOfHoofpyn: [false],
+      hoofpynDuur: [''],
+      vorigeBeroertes: [false],
+      beroerteTekens: [[]],
+      oeVoorkoms: [''],
+      tongVoorkoms: [''],
+      tongDuur: [''],
+      respiratorieseSimptome: [[]],
+      respiratorieseDuur: [''],
+      hartLongProbleme: [[]],
+      vandagMedikasieGeneem: [false],
+      hetEkstraMedikasie: [false],
+      hoes: [false],
+      hoesTye: [[]],
+      giSimptome: [false],
+      giDuur: [''],
+      stoelVoorkoms: [''],
+      buikpynLigging: [''],
+      buikpynDuur: [''],
+      rugpynLigging: [''],
+      rugpynDuur: [''],
+      angstig: [false],
+      borsOfHoofpyn: [false],
+      anderPyn: [''],
+      velVoorkoms: [''],
+      velLigging: [''],
+      diabeet: [false],
+      diabetesBehandeling: [''],
+      vandagDiabetesMedikasie: [false],
+      hetEkstraDiabetesMedikasie: [false],
+      laasGeet: [''],
+      laasKos: [''],
+      laasGedrink: [''],
+      laasDrink: [''],
+      waterBron: [''],
+      waterVloei: [''],
+      waterVoorkoms: [''],
+      stapReisDuur: [''],
+      beserings: [false],
+      beseringLigging: [''],
     });
+
+    // Set up form dependency: hetMedikasieBy only enabled when opChronieseMedikasie is true
+    this.form.get('opChronieseMedikasie')?.valueChanges.subscribe((hasChronicIllness) => {
+      const hetMedikasieByControl = this.form.get('hetMedikasieBy');
+      if (hasChronicIllness === true) {
+        hetMedikasieByControl?.enable({ emitEvent: false }); // Enable without triggering valueChanges
+      } else {
+        hetMedikasieByControl?.setValue(false, { emitEvent: false }); // Reset to false
+        hetMedikasieByControl?.disable({ emitEvent: false }); // Disable without triggering valueChanges
+      }
+    });
+
+    // Set initial state immediately (since valueChanges only fires on changes, not on init)
+    const initialChronicValue = this.form.get('opChronieseMedikasie')?.value;
+    const hetMedikasieByControl = this.form.get('hetMedikasieBy');
+
+    if (initialChronicValue === true) {
+      hetMedikasieByControl?.enable({ emitEvent: false });
+    } else {
+      hetMedikasieByControl?.disable({ emitEvent: false });
+    }
   }
 
   // ControlValueAccessor implementation

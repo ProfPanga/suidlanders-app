@@ -23,22 +23,6 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Jaar</ion-label>
-        <ion-input
-          type="number"
-          formControlName="jaar"
-          [class.ion-invalid]="isFieldInvalid('jaar', 'primereVoertuig')"
-          [class.ion-touched]="form.get('primereVoertuig.jaar')?.touched"
-        ></ion-input>
-        <ion-text
-          color="danger"
-          *ngIf="isFieldInvalid('jaar', 'primereVoertuig')"
-        >
-          {{ getErrorMessage("jaar", "primereVoertuig") }}
-        </ion-text>
-      </ion-item>
-
-      <ion-item>
         <ion-label position="stacked">Registrasie Nommer</ion-label>
         <ion-input
           type="text"
@@ -83,26 +67,6 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Kilometer Stand</ion-label>
-        <ion-input
-          type="number"
-          formControlName="kilometerStand"
-          [class.ion-invalid]="
-            isFieldInvalid('kilometerStand', 'primereVoertuig')
-          "
-          [class.ion-touched]="
-            form.get('primereVoertuig.kilometerStand')?.touched
-          "
-        ></ion-input>
-        <ion-text
-          color="danger"
-          *ngIf="isFieldInvalid('kilometerStand', 'primereVoertuig')"
-        >
-          {{ getErrorMessage("kilometerStand", "primereVoertuig") }}
-        </ion-text>
-      </ion-item>
-
-      <ion-item>
         <ion-label position="stacked">Bande Toestand</ion-label>
         <ion-select
           formControlName="bandeToestand"
@@ -142,22 +106,6 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Jaar</ion-label>
-        <ion-input
-          type="number"
-          formControlName="jaar"
-          [class.ion-invalid]="isFieldInvalid('jaar', 'sekondereVoertuig')"
-          [class.ion-touched]="form.get('sekondereVoertuig.jaar')?.touched"
-        ></ion-input>
-        <ion-text
-          color="danger"
-          *ngIf="isFieldInvalid('jaar', 'sekondereVoertuig')"
-        >
-          {{ getErrorMessage("jaar", "sekondereVoertuig") }}
-        </ion-text>
-      </ion-item>
-
-      <ion-item>
         <ion-label position="stacked">Registrasie Nommer</ion-label>
         <ion-input type="text" formControlName="registrasieNommer"></ion-input>
       </ion-item>
@@ -170,26 +118,6 @@
           <ion-select-option value="hybrid">Hibried</ion-select-option>
           <ion-select-option value="electric">Elektries</ion-select-option>
         </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Kilometer Stand</ion-label>
-        <ion-input
-          type="number"
-          formControlName="kilometerStand"
-          [class.ion-invalid]="
-            isFieldInvalid('kilometerStand', 'sekondereVoertuig')
-          "
-          [class.ion-touched]="
-            form.get('sekondereVoertuig.kilometerStand')?.touched
-          "
-        ></ion-input>
-        <ion-text
-          color="danger"
-          *ngIf="isFieldInvalid('kilometerStand', 'sekondereVoertuig')"
-        >
-          {{ getErrorMessage("kilometerStand", "sekondereVoertuig") }}
-        </ion-text>
       </ion-item>
 
       <ion-item>
@@ -213,7 +141,7 @@
 
     <ion-item>
       <ion-label>Het Sleepwa</ion-label>
-      <ion-toggle formControlName="sleepwa"></ion-toggle>
+      <ion-toggle slot="end" formControlName="sleepwa"></ion-toggle>
     </ion-item>
 
     <ion-item *ngIf="isSleepwaVisible()">

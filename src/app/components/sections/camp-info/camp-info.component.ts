@@ -1,27 +1,42 @@
 import { Component, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonInput, 
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+} from '@angular/forms';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
   IonSelect,
   IonSelectOption,
   IonText,
   IonItemDivider,
-  IonItemGroup
+  IonItemGroup,
+  IonIcon,
+  IonButton,
+  IonDatetimeButton,
+  IonDatetime,
+  IonModal,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { calendarOutline } from 'ionicons/icons';
 import { CampInfo } from '../../../interfaces/form-sections.interface';
 
 @Component({
   selector: 'app-camp-info',
   templateUrl: './camp-info.component.html',
-  styles: [`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `,
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -33,38 +48,45 @@ import { CampInfo } from '../../../interfaces/form-sections.interface';
     IonSelectOption,
     IonText,
     IonItemDivider,
-    IonItemGroup
+    IonItemGroup,
+    IonIcon,
+    IonButton,
+    IonDatetimeButton,
+    IonDatetime,
+    IonModal,
   ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CampInfoComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class CampInfoComponent implements ControlValueAccessor {
   form: FormGroup;
   isDisabled = false;
   today = new Date().toISOString();
+  isDateOpen = false;
 
   provinces = [
     'Gauteng',
-    'Wes-Kaap',
-    'Oos-Kaap',
-    'Noord-Kaap',
     'KwaZulu-Natal',
-    'Vrystaat',
-    'Noordwes',
     'Limpopo',
-    'Mpumalanga'
+    'Mpumalanga',
+    'Noord-Kaap',
+    'Noordwes',
+    'Oos-Kaap',
+    'Vrystaat',
+    'Wes-Kaap',
   ];
 
   constructor(private fb: FormBuilder) {
+    addIcons({ calendarOutline });
     this.form = this.fb.group({
       kampProvinsie: [''],
       kampNaam: [''],
-      datumInKamp: ['']
+      datumInKamp: [''],
     });
   }
 
@@ -109,6 +131,16 @@ export class CampInfoComponent implements ControlValueAccessor {
 
   isFieldInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control ? (control.invalid && (control.dirty || control.touched)) : false;
+    return control
+      ? control.invalid && (control.dirty || control.touched)
+      : false;
   }
-} 
+
+  openDate(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.isDateOpen = true;
+  }
+}

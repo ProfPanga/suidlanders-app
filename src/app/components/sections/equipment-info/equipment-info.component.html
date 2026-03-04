@@ -8,17 +8,17 @@
     <div formGroupName="kommunikasie">
       <ion-item>
         <ion-label>Radio</ion-label>
-        <ion-toggle formControlName="radio"></ion-toggle>
+        <ion-toggle slot="end" formControlName="radio"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Satelliet Foon</ion-label>
-        <ion-toggle formControlName="satellietFoon"></ion-toggle>
+        <ion-toggle slot="end" formControlName="satellietFoon"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Tweerigtingradio</ion-label>
-        <ion-toggle formControlName="tweerigtingRadio"></ion-toggle>
+        <ion-toggle slot="end" formControlName="tweerigtingRadio"></ion-toggle>
       </ion-item>
     </div>
   </ion-item-group>
@@ -32,17 +32,17 @@
     <div formGroupName="kragOpwekking">
       <ion-item>
         <ion-label>Kragopwekker</ion-label>
-        <ion-toggle formControlName="kragOpwekker"></ion-toggle>
+        <ion-toggle slot="end" formControlName="kragOpwekker"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Sonkragstelsel</ion-label>
-        <ion-toggle formControlName="sonkragStelsel"></ion-toggle>
+        <ion-toggle slot="end" formControlName="sonkragStelsel"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Omvormer</ion-label>
-        <ion-toggle formControlName="omvormer"></ion-toggle>
+        <ion-toggle slot="end" formControlName="omvormer"></ion-toggle>
       </ion-item>
     </div>
   </ion-item-group>
@@ -56,17 +56,20 @@
     <div formGroupName="waterBronne">
       <ion-item>
         <ion-label>Boorgat</ion-label>
-        <ion-toggle formControlName="boorgat"></ion-toggle>
+        <ion-toggle slot="end" formControlName="boorgat"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Watertenk</ion-label>
-        <ion-toggle formControlName="waterTenk"></ion-toggle>
+        <ion-toggle slot="end" formControlName="waterTenk"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Waterfiltrasiestelstel</ion-label>
-        <ion-toggle formControlName="waterFiltrasieStelsel"></ion-toggle>
+        <ion-toggle
+          slot="end"
+          formControlName="waterFiltrasieStelsel"
+        ></ion-toggle>
       </ion-item>
     </div>
   </ion-item-group>
@@ -80,17 +83,17 @@
     <div formGroupName="verdediging">
       <ion-item>
         <ion-label>Vuurwapens</ion-label>
-        <ion-toggle formControlName="vuurwapens"></ion-toggle>
+        <ion-toggle slot="end" formControlName="vuurwapens"></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>Lisensies</ion-label>
-        <ion-toggle formControlName="lisensies"></ion-toggle>
+        <ion-label>Ammunusie</ion-label>
+        <ion-toggle slot="end" formControlName="lisensies"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Opleiding</ion-label>
-        <ion-toggle formControlName="opleiding"></ion-toggle>
+        <ion-toggle slot="end" formControlName="opleiding"></ion-toggle>
       </ion-item>
     </div>
   </ion-item-group>
@@ -104,17 +107,17 @@
     <div formGroupName="kampering">
       <ion-item>
         <ion-label>Tent</ion-label>
-        <ion-toggle formControlName="tent"></ion-toggle>
+        <ion-toggle slot="end" formControlName="tent"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Slaapsak</ion-label>
-        <ion-toggle formControlName="slaapsak"></ion-toggle>
+        <ion-toggle slot="end" formControlName="slaapsak"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label>Kamptoerusting</ion-label>
-        <ion-toggle formControlName="kampToerusting"></ion-toggle>
+        <ion-toggle slot="end" formControlName="kampToerusting"></ion-toggle>
       </ion-item>
     </div>
   </ion-item-group>
@@ -129,11 +132,13 @@
       <ion-item>
         <ion-label>
           Kos Voorraad
-          <div class="range-value">{{ form.get('noodvoorraad.kos')?.value }} dae</div>
+          <div class="range-value">
+            {{ form.get("noodvoorraad.kos")?.value }} dae
+          </div>
         </ion-label>
       </ion-item>
       <ion-item>
-        <ion-range 
+        <ion-range
           formControlName="kos"
           [min]="0"
           [max]="365"
@@ -145,18 +150,20 @@
           [class.ion-touched]="form.get('noodvoorraad.kos')?.touched"
         ></ion-range>
         <ion-text color="danger" *ngIf="isFieldInvalid('kos', 'noodvoorraad')">
-          {{ getErrorMessage('kos', 'noodvoorraad') }}
+          {{ getErrorMessage("kos", "noodvoorraad") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label>
           Water Voorraad
-          <div class="range-value">{{ form.get('noodvoorraad.water')?.value }} dae</div>
+          <div class="range-value">
+            {{ form.get("noodvoorraad.water")?.value }} dae
+          </div>
         </ion-label>
       </ion-item>
       <ion-item>
-        <ion-range 
+        <ion-range
           formControlName="water"
           [min]="0"
           [max]="365"
@@ -167,19 +174,24 @@
           [class.ion-invalid]="isFieldInvalid('water', 'noodvoorraad')"
           [class.ion-touched]="form.get('noodvoorraad.water')?.touched"
         ></ion-range>
-        <ion-text color="danger" *ngIf="isFieldInvalid('water', 'noodvoorraad')">
-          {{ getErrorMessage('water', 'noodvoorraad') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('water', 'noodvoorraad')"
+        >
+          {{ getErrorMessage("water", "noodvoorraad") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label>
           Brandstof Voorraad
-          <div class="range-value">{{ form.get('noodvoorraad.brandstof')?.value }} dae</div>
+          <div class="range-value">
+            {{ form.get("noodvoorraad.brandstof")?.value }} dae
+          </div>
         </ion-label>
       </ion-item>
       <ion-item>
-        <ion-range 
+        <ion-range
           formControlName="brandstof"
           [min]="0"
           [max]="365"
@@ -190,15 +202,18 @@
           [class.ion-invalid]="isFieldInvalid('brandstof', 'noodvoorraad')"
           [class.ion-touched]="form.get('noodvoorraad.brandstof')?.touched"
         ></ion-range>
-        <ion-text color="danger" *ngIf="isFieldInvalid('brandstof', 'noodvoorraad')">
-          {{ getErrorMessage('brandstof', 'noodvoorraad') }}
+        <ion-text
+          color="danger"
+          *ngIf="isFieldInvalid('brandstof', 'noodvoorraad')"
+        >
+          {{ getErrorMessage("brandstof", "noodvoorraad") }}
         </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label>Mediese Voorraad</ion-label>
-        <ion-toggle formControlName="medies"></ion-toggle>
+        <ion-toggle slot="end" formControlName="medies"></ion-toggle>
       </ion-item>
     </div>
   </ion-item-group>
-</form> 
+</form>

@@ -25,62 +25,48 @@ import {
 import { HeaderComponent } from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { SyncService } from '../../services/sync.service';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-home',
   template: `
-    <app-header title="Suidlander Inligtingsvorm"></app-header>
+    <app-header title="Suidlanders"></app-header>
 
     <ion-content class="ion-padding">
+      <!-- Data Status Card (staff only) -->
+      <ion-card *ngIf="isStaff && entryCount !== null">
+        <ion-card-header>
+          <ion-card-title>Data Status</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>
+            Totale lede geregistreer: <strong>{{ entryCount }}</strong>
+          </p>
+          <ion-button fill="clear" (click)="refreshDataCount()">
+            <ion-icon name="refresh" slot="start"></ion-icon>
+            Herlaai
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
       <ion-grid>
         <ion-row>
           <ion-col size="12" size-md="6">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>Nuwe Lid Registrasie</ion-card-title>
+                <ion-card-title>Lid Inligting</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <p>
-                  Registreer 'n nuwe lid met volledige inligting en
-                  dokumentasie.
-                </p>
+                <p>Voltooi of opdateer jou persoonlike inligting.</p>
                 <ion-button expand="block" (click)="navigateToMemberForm()">
                   <ion-icon name="person-add" slot="start"></ion-icon>
-                  Begin Registrasie
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-
-          <ion-col size="12" size-md="6">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Lede Bestuur</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <p>Bestuur bestaande lede se inligting en dokumentasie.</p>
-                <ion-button expand="block" color="secondary" disabled>
-                  <ion-icon name="settings" slot="start"></ion-icon>
-                  Bestuur Lede
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-
-          <ion-col size="12" size-md="6">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>QR Kode Skandeerder</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <p>Skandeer QR kode om data na kamp te sinkroniseer.</p>
-                <ion-button
-                  expand="block"
-                  color="tertiary"
-                  (click)="navigateToQRScanner()"
-                >
-                  <ion-icon name="qr-code" slot="start"></ion-icon>
-                  Verbind na Kamp
+                  {{
+                    isStaff
+                      ? 'Begin Registrasie'
+                      : hasMemberProfile
+                      ? 'Opdateer Lid Inligting'
+                      : 'Voltooi Lid Inligting'
+                  }}
                 </ion-button>
               </ion-card-content>
             </ion-card>
@@ -105,7 +91,60 @@ import { SyncService } from '../../services/sync.service';
             </ion-card>
           </ion-col>
 
-          <ion-col size="12" size-md="6">
+          <ion-col size="12" size-md="6" *ngIf="isStaff">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Lede Bestuur</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <p>Bestuur bestaande lede se inligting en dokumentasie.</p>
+                <ion-button expand="block" color="secondary">
+                  <ion-icon name="settings" slot="start"></ion-icon>
+                  Bestuur Lede
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <ion-col size="12" size-md="6" *ngIf="showDebugTools">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>QR Kode Skandeerder</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <p>Skandeer QR kode om data na kamp te sinkroniseer.</p>
+                <ion-button
+                  expand="block"
+                  color="tertiary"
+                  (click)="navigateToQRScanner()"
+                >
+                  <ion-icon name="qr-code" slot="start"></ion-icon>
+                  Verbind na Kamp
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <ion-col size="12" size-md="6" *ngIf="showDebugTools">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Personeel Aanmelding</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <p>Meld aan as personeel.</p>
+                <ion-button
+                  expand="block"
+                  color="warning"
+                  (click)="navigateToLogin()"
+                >
+                  <ion-icon name="log-in" slot="start"></ion-icon>
+                  Personeel Aanmelding
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <ion-col size="12" size-md="6" *ngIf="showDebugTools">
             <ion-card>
               <ion-card-header>
                 <ion-card-title>Dokumentasie</ion-card-title>
@@ -176,16 +215,52 @@ import { SyncService } from '../../services/sync.service';
 export class HomePage implements OnInit {
   toastMessage = '';
   isToastOpen = false;
+  entryCount: number | null = null;
+  isStaff = false;
+  hasMemberProfile = false;
+  // Temporarily hide QR Scanner and Dokumentasie for debugging (1.21)
+  showDebugTools = false;
 
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
-    private readonly syncService: SyncService
+    private readonly syncService: SyncService,
+    private readonly databaseService: DatabaseService
   ) {
     addIcons({ personAdd, documentText, qrCode, settings, logIn });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.isStaff = this.authService.isAuthenticated();
+    this.refreshDataCount();
+    this.loadMemberProfileFlag();
+  }
+
+  // Ensure Home reflects latest state when navigated back to
+  ionViewWillEnter() {
+    this.isStaff = this.authService.isAuthenticated();
+    this.refreshDataCount();
+    this.loadMemberProfileFlag();
+  }
+
+  async refreshDataCount() {
+    try {
+      const entries = await this.databaseService.getAllEntries();
+      this.entryCount = entries.length;
+    } catch (error) {
+      console.error('Error loading entry count:', error);
+      this.entryCount = 0;
+    }
+  }
+
+  private async loadMemberProfileFlag() {
+    try {
+      const current = await this.databaseService.getCurrentMemberEntry();
+      this.hasMemberProfile = !!current;
+    } catch {
+      this.hasMemberProfile = false;
+    }
+  }
 
   navigateToMemberForm() {
     this.router.navigate(['/member-form']);

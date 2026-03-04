@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -22,6 +22,7 @@ import {
   IonAccordion,
   IonItem,
   IonLabel,
+  IonToast,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { documentOutline, qrCode } from 'ionicons/icons';
@@ -35,28 +36,23 @@ import { EquipmentInfoComponent } from '../equipment-info/equipment-info.compone
 import { CampInfoComponent } from '../camp-info/camp-info.component';
 import { OtherInfoComponent } from '../other-info/other-info.component';
 import { DocumentsInfoComponent } from '../documents-info/documents-info.component';
+import { DependentsComponent } from '../dependents/dependents.component';
 import { DatabaseService } from '../../../services/database.service';
 import { ExportService } from '../../../services/export.service';
 import { QRService } from '../../../services/qr.service';
 import { SyncService } from '../../../services/sync.service';
 // Interfaces are not used directly in this component; imports removed to satisfy linter
+import { HeaderComponent } from '../../header/header.component';
 
 @Component({
   selector: 'app-member-form',
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/home"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Lid Registrasie</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <app-header title="Suidlander Inligtingsvorm"></app-header>
 
     <ion-content class="ion-padding">
       <form [formGroup]="form">
-        <ion-accordion-group>
-          <ion-accordion value="basicInfo">
+        <ion-accordion-group (ionChange)="onAccordionChange($event)">
+          <ion-accordion id="accordion-basicInfo" value="basicInfo">
             <ion-item slot="header">
               <ion-label>Basiese Inligting</ion-label>
             </ion-item>
@@ -65,7 +61,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="addressInfo">
+          <ion-accordion id="accordion-addressInfo" value="addressInfo">
             <ion-item slot="header">
               <ion-label>Adres Inligting</ion-label>
             </ion-item>
@@ -76,7 +72,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="medicalInfo">
+          <ion-accordion id="accordion-medicalInfo" value="medicalInfo">
             <ion-item slot="header">
               <ion-label>Mediese Inligting</ion-label>
             </ion-item>
@@ -87,7 +83,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="vehicleInfo">
+          <ion-accordion id="accordion-vehicleInfo" value="vehicleInfo">
             <ion-item slot="header">
               <ion-label>Voertuig Inligting</ion-label>
             </ion-item>
@@ -98,7 +94,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="skillsInfo">
+          <ion-accordion id="accordion-skillsInfo" value="skillsInfo">
             <ion-item slot="header">
               <ion-label>Vaardighede & Ervaring</ion-label>
             </ion-item>
@@ -107,7 +103,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="equipmentInfo">
+          <ion-accordion id="accordion-equipmentInfo" value="equipmentInfo">
             <ion-item slot="header">
               <ion-label>Toerusting & Hulpbronne</ion-label>
             </ion-item>
@@ -118,7 +114,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="campInfo">
+          <ion-accordion id="accordion-campInfo" value="campInfo">
             <ion-item slot="header">
               <ion-label>Kamp Inligting</ion-label>
             </ion-item>
@@ -127,7 +123,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="otherInfo">
+          <ion-accordion id="accordion-otherInfo" value="otherInfo">
             <ion-item slot="header">
               <ion-label>Ander Inligting</ion-label>
             </ion-item>
@@ -136,7 +132,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="memberInfo">
+          <ion-accordion id="accordion-memberInfo" value="memberInfo">
             <ion-item slot="header">
               <ion-label>Lid Inligting</ion-label>
             </ion-item>
@@ -145,7 +141,7 @@ import { SyncService } from '../../../services/sync.service';
             </div>
           </ion-accordion>
 
-          <ion-accordion value="documentsInfo">
+          <ion-accordion id="accordion-documentsInfo" value="documentsInfo">
             <ion-item slot="header">
               <ion-label>Dokumente</ion-label>
             </ion-item>
@@ -155,13 +151,22 @@ import { SyncService } from '../../../services/sync.service';
               ></app-documents-info>
             </div>
           </ion-accordion>
+
+          <ion-accordion id="accordion-dependents" value="dependents">
+            <ion-item slot="header">
+              <ion-label>Afhanklikes</ion-label>
+            </ion-item>
+            <div class="section ion-padding" slot="content">
+              <app-dependents formControlName="dependents"></app-dependents>
+            </div>
+          </ion-accordion>
         </ion-accordion-group>
 
         <div class="button-container ion-padding">
           <ion-button
             expand="block"
             (click)="onSubmit()"
-            [disabled]="!form.valid"
+            [disabled]="!form.valid || !form.dirty"
           >
             Dien Vorm In
           </ion-button>
@@ -201,12 +206,34 @@ import { SyncService } from '../../../services/sync.service';
         <h3>Ingedien:</h3>
         <pre>{{ submittedData | json }}</pre>
       </div>
+
+      <!-- Toast notifications -->
+      <ion-toast
+        [isOpen]="showSuccessToast"
+        message="Vorm suksesvol ingedien"
+        duration="3000"
+        position="top"
+        color="success"
+        cssClass="toast-center-text"
+        (didDismiss)="showSuccessToast = false"
+      ></ion-toast>
+
+      <ion-toast
+        [isOpen]="showErrorToast"
+        [message]="errorMessage"
+        duration="5000"
+        position="top"
+        color="danger"
+        (didDismiss)="showErrorToast = false"
+      ></ion-toast>
     </ion-content>
   `,
   styles: [
     `
       .section {
-        background: var(--ion-color-light);
+        background: transparent;
+        border-left: 4px solid var(--ion-color-primary);
+        border-radius: 4px;
       }
 
       .button-container {
@@ -223,7 +250,7 @@ import { SyncService } from '../../../services/sync.service';
       pre {
         white-space: pre-wrap;
         word-wrap: break-word;
-        background: var(--ion-color-light-shade);
+        background: var(--ion-color-step-100);
         padding: 1rem;
         border-radius: 4px;
         font-size: 0.9rem;
@@ -235,6 +262,10 @@ import { SyncService } from '../../../services/sync.service';
 
       ion-accordion-group {
         margin-bottom: 1rem;
+      }
+
+      .toast-center-text::part(message) {
+        text-align: center;
       }
     `,
   ],
@@ -254,6 +285,8 @@ import { SyncService } from '../../../services/sync.service';
     IonAccordion,
     IonItem,
     IonLabel,
+    IonToast,
+    HeaderComponent,
     BasicInfoComponent,
     MemberInfoComponent,
     AddressInfoComponent,
@@ -264,10 +297,17 @@ import { SyncService } from '../../../services/sync.service';
     CampInfoComponent,
     OtherInfoComponent,
     DocumentsInfoComponent,
+    DependentsComponent,
   ],
 })
-export class MemberFormComponent {
+export class MemberFormComponent implements OnInit {
+  @ViewChild(IonContent) content!: IonContent;
   @ViewChild(BasicInfoComponent) basicInfoComponent!: BasicInfoComponent;
+
+  // Toast notification properties
+  showSuccessToast = false;
+  showErrorToast = false;
+  errorMessage = '';
   form: FormGroup;
   submittedData: any;
 
@@ -336,24 +376,104 @@ export class MemberFormComponent {
       campInfo: [null],
       otherInfo: [null],
       documentsInfo: [null],
+      dependents: [[]],
     });
+  }
+
+  ngOnInit() {
+    this.loadExistingMember();
+  }
+
+  private async loadExistingMember() {
+    try {
+      const existing = await this.databaseService.getCurrentMemberEntry();
+      if (existing) {
+        this.form.patchValue({
+          basicInfo: existing.basicInfo || null,
+          memberInfo: existing.memberInfo || null,
+          addressInfo: existing.addressInfo || null,
+          medicalInfo: existing.medicalInfo || null,
+          vehicleInfo: existing.vehicleInfo || null,
+          skillsInfo: existing.skillsInfo || null,
+          equipmentInfo: existing.equipmentInfo || null,
+          campInfo: existing.campInfo || null,
+          otherInfo: existing.otherInfo || null,
+          documentsInfo: existing.documentsInfo || null,
+          dependents: existing.dependents || [],
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load existing member entry:', err);
+    }
   }
 
   async onSubmit() {
     if (this.form.valid) {
-      this.submittedData = this.form.value;
-      console.log('Form submitted:', this.submittedData);
-      // Here you would typically save to the database
-      await this.databaseService.saveEntry(this.submittedData);
+      try {
+        this.submittedData = this.form.value;
+        console.log('Form submitted:', this.submittedData);
 
-      // Immediately attempt a sync to backend for testing
-      // Keeps offline-first: if offline, sync service will handle gracefully
-      this.syncService.sync().subscribe((result) => {
-        console.log('Manual sync result:', result);
-      });
+        // Save to the database
+        await this.databaseService.saveEntry(this.submittedData);
+
+        // Show success message
+        this.showSuccessToast = true;
+        // Mark form as pristine but keep values for further updates
+        this.form.markAsPristine();
+
+        // Immediately attempt a sync to backend for testing
+        // Keeps offline-first: if offline, sync service will handle gracefully
+        this.syncService.sync().subscribe({
+          next: (result) => {
+            console.log('Manual sync result:', result);
+          },
+          error: (error) => {
+            console.error('Sync error:', error);
+            // Don't show error for sync failures as the data is saved locally
+          },
+        });
+      } catch (error) {
+        console.error('Error saving form:', error);
+        this.errorMessage = 'Fout by stoor van vorm. Probeer weer.';
+        this.showErrorToast = true;
+      }
     } else {
       console.log('Form is invalid');
       this.markFormGroupTouched(this.form);
+      this.errorMessage =
+        'Vorm is nie volledig ingevul nie. Kontroleer alle velde.';
+      this.showErrorToast = true;
+    }
+  }
+
+  async onAccordionChange(event: CustomEvent) {
+    try {
+      const value = event.detail.value as string | null;
+      if (!value || !this.content) return;
+
+      const elementId = `accordion-${value}`;
+      const el = document.getElementById(elementId);
+      if (!el) return;
+
+      const scrollEl = await this.content.getScrollElement();
+      const header = document.querySelector('ion-header') as HTMLElement | null;
+      const toolbarHeight = header?.clientHeight ?? 56;
+
+      const elRect = el.getBoundingClientRect();
+      const contentRect = scrollEl.getBoundingClientRect();
+
+      // Distance of the accordion header from the top of the scrollable content
+      const distanceFromTop = elRect.top - contentRect.top;
+      // If already aligned (within 4px), skip
+      if (Math.abs(distanceFromTop - toolbarHeight) <= 4) return;
+
+      const currentTop = scrollEl.scrollTop;
+      const elementTopWithinContent =
+        currentTop + (elRect.top - contentRect.top);
+      const targetY = Math.max(elementTopWithinContent - toolbarHeight, 0);
+      await this.content.scrollToPoint(0, targetY, 300);
+    } catch {
+      // no-op
     }
   }
 

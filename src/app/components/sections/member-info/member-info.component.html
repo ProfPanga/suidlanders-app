@@ -71,37 +71,5 @@
     <ion-input type="text" formControlName="skietervaring"></ion-input>
   </ion-item>
 
-  <!-- First Aid Information -->
-  <ion-item>
-    <ion-label>Noodhulp Kwalifikasie</ion-label>
-    <ion-toggle formControlName="ehboKwalifikasie"></ion-toggle>
-  </ion-item>
-
-  <ng-container *ngIf="isEhboFieldsVisible()">
-    <ion-item>
-      <ion-label position="stacked">Noodhulp Vlak</ion-label>
-      <ion-input
-        type="text"
-        formControlName="ehboVlak"
-        [class.ion-invalid]="isFieldInvalid('ehboVlak')"
-        [class.ion-touched]="form.get('ehboVlak')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isFieldInvalid('ehboVlak')">
-        {{ getErrorMessage("ehboVlak") }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Noodhulp Verval Datum</ion-label>
-      <ion-input
-        type="date"
-        formControlName="ehboVervalDatum"
-        [class.ion-invalid]="isFieldInvalid('ehboVervalDatum')"
-        [class.ion-touched]="form.get('ehboVervalDatum')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isFieldInvalid('ehboVervalDatum')">
-        {{ getErrorMessage("ehboVervalDatum") }}
-      </ion-text>
-    </ion-item>
-  </ng-container>
+  <!-- First Aid now captured under Vaardighede & Ervaring; removed here -->
 </form>

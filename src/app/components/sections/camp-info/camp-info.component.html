@@ -6,30 +6,53 @@
 
     <ion-item>
       <ion-label position="stacked">Provinsie</ion-label>
-      <ion-select formControlName="kampProvinsie" interface="action-sheet" placeholder="Kies provinsie">
-        <ion-select-option *ngFor="let province of provinces" [value]="province">
+      <ion-select formControlName="kampProvinsie" placeholder="Kies provinsie">
+        <ion-select-option
+          *ngFor="let province of provinces"
+          [value]="province"
+        >
           {{ province }}
         </ion-select-option>
       </ion-select>
       <ion-text color="danger" *ngIf="isFieldInvalid('kampProvinsie')">
-        {{ getErrorMessage('kampProvinsie') }}
+        {{ getErrorMessage("kampProvinsie") }}
       </ion-text>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Kamp Naam</ion-label>
-      <ion-input formControlName="kampNaam" type="text" placeholder="Voer kamp naam in"></ion-input>
+      <ion-input
+        formControlName="kampNaam"
+        type="text"
+        placeholder="Voer kamp naam in"
+      ></ion-input>
       <ion-text color="danger" *ngIf="isFieldInvalid('kampNaam')">
-        {{ getErrorMessage('kampNaam') }}
+        {{ getErrorMessage("kampNaam") }}
       </ion-text>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Datum in Kamp</ion-label>
-      <ion-input formControlName="datumInKamp" type="date" [max]="today"></ion-input>
+    <ion-item button detail="false" (click)="openDate($event)">
+      <ion-label>Datum in Kamp</ion-label>
+      <ion-datetime-button slot="end" datetime="kampDate"></ion-datetime-button>
       <ion-text color="danger" *ngIf="isFieldInvalid('datumInKamp')">
-        {{ getErrorMessage('datumInKamp') }}
+        {{ getErrorMessage("datumInKamp") }}
       </ion-text>
     </ion-item>
+
+    <ion-modal
+      keepContentsMounted="true"
+      [isOpen]="isDateOpen"
+      (didDismiss)="isDateOpen = false"
+    >
+      <ng-template>
+        <ion-datetime
+          id="kampDate"
+          presentation="date"
+          [max]="today"
+          formControlName="datumInKamp"
+          (ionChange)="isDateOpen = false"
+        ></ion-datetime>
+      </ng-template>
+    </ion-modal>
   </ion-item-group>
-</form> 
+</form>

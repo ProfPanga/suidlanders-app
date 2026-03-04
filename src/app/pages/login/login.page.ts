@@ -10,6 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   selector: 'app-login',
@@ -22,8 +23,10 @@ import { AuthService } from '../../services/auth.service';
     IonInput,
     IonItem,
     IonLabel,
+    HeaderComponent,
   ],
   template: `
+    <app-header title="Personeel Aanmelding"></app-header>
     <ion-content class="ion-padding">
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <ion-item>

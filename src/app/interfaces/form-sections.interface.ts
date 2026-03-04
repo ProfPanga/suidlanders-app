@@ -23,15 +23,11 @@ export interface MemberInfo {
   noodKontakVerwantskap: string;
   wapenlisensie: boolean;
   skietervaring?: string;
-  ehboKwalifikasie: boolean;
-  ehboVlak?: string;
-  ehboVervalDatum?: string;
 }
 
 export interface AddressInfo {
   straatAdres: string;
   voorstad: string;
-  stad: string;
   provinsie: string;
   posKode: string;
   woonagtig: string;
@@ -59,23 +55,69 @@ export interface MedicalInfo {
   huisDokter?: string;
   huisDokterNommer?: string;
   medieseNotas?: string;
+  opChronieseMedikasie?: boolean;
+  hetMedikasieBy?: boolean;
+  entstowweSedert2020?: boolean;
+  covidEntstof?: 'Pfizer' | 'J&J' | '';
+  griepEntstof?: boolean;
+  loopStyl?: string;
+  nekVorentoe?: boolean;
+  nekBuigbaar?: boolean;
+  koorsig?: boolean;
+  koorsDuur?: string;
+  nekOfHoofpyn?: boolean;
+  hoofpynDuur?: string;
+  vorigeBeroertes?: boolean;
+  beroerteTekens?: string[];
+  oeVoorkoms?: string;
+  tongVoorkoms?: string;
+  tongDuur?: string;
+  respiratorieseSimptome?: string[];
+  respiratorieseDuur?: string;
+  hartLongProbleme?: string[];
+  vandagMedikasieGeneem?: boolean;
+  hetEkstraMedikasie?: boolean;
+  hoes?: boolean;
+  hoesTye?: string[];
+  giSimptome?: boolean;
+  giDuur?: string;
+  stoelVoorkoms?: string;
+  buikpynLigging?: string;
+  buikpynDuur?: string;
+  rugpynLigging?: string;
+  rugpynDuur?: string;
+  angstig?: boolean;
+  borsOfHoofpyn?: boolean;
+  anderPyn?: string;
+  velVoorkoms?: string;
+  velLigging?: string;
+  diabeet?: boolean;
+  diabetesBehandeling?: 'Insulien' | 'Oraal';
+  vandagDiabetesMedikasie?: boolean;
+  hetEkstraDiabetesMedikasie?: boolean;
+  laasGeet?: string;
+  laasKos?: string;
+  laasGedrink?: string;
+  laasDrink?: string;
+  waterBron?: 'Dam' | 'Rivier' | '';
+  waterVloei?: 'Vloeiend' | 'Stil' | '';
+  waterVoorkoms?: string;
+  stapReisDuur?: string;
+  beserings?: boolean;
+  beseringLigging?: string;
 }
 
 export interface VehicleInfo {
   primereVoertuig: {
     model: string;
-    jaar: number;
     registrasieNommer: string;
     brandstofTipe: string;
-    kilometerStand: number;
     bandeToestand: string;
   };
   sekondereVoertuig: {
     model: string;
-    jaar: number;
     registrasieNommer: string;
     brandstofTipe: string;
-    kilometerStand: number;
     bandeToestand: string;
   };
   sleepwa: boolean;
@@ -138,6 +180,20 @@ export interface EquipmentInfo {
   };
 }
 
+export interface DependentInfo {
+  id?: string;
+  fullName: string;
+  idNommer?: string;
+  geboorteDatum?: string;
+  ouderdom?: number;
+  geslag?: string;
+  verhouding: string; // Seun/Dogter/Maat/Ander
+  allergies?: string;
+  chronies?: string;
+  medikasie?: string;
+  notas?: string;
+}
+
 export interface CampInfo {
   kampProvinsie: string;
   kampNaam: string;
@@ -152,12 +208,19 @@ export interface OtherInfo {
   vrywilligerWerk?: string;
 }
 
+export interface StoredFileMeta {
+  name: string;
+  size: number;
+  type: string;
+  path: string;
+}
+
 export interface DocumentsInfo {
-  idDokument?: File;
-  bestuurslisensie?: File;
-  vuurwapenlisensie?: File;
-  ehboSertifikaat?: File;
-  ander: File[];
+  idDokument: StoredFileMeta[];
+  bestuurslisensie: StoredFileMeta[];
+  vuurwapenlisensie: StoredFileMeta[];
+  ehboSertifikaat: StoredFileMeta[];
+  ander: StoredFileMeta[];
 }
 
 export interface CompleteFormData {
@@ -171,4 +234,5 @@ export interface CompleteFormData {
   campInfo: CampInfo;
   otherInfo: OtherInfo;
   documentsInfo: DocumentsInfo;
+  dependents?: DependentInfo[];
 }

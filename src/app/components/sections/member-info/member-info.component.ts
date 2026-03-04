@@ -61,22 +61,6 @@ export class MemberInfoComponent implements ControlValueAccessor {
       noodKontakVerwantskap: [''],
       wapenlisensie: [false],
       skietervaring: [''],
-      ehboKwalifikasie: [false],
-      ehboVlak: [''],
-      ehboVervalDatum: [''],
-    });
-
-    // Subscribe to EHBO qualification changes - fields are optional but if filled, both should be provided
-    this.form.get('ehboKwalifikasie')?.valueChanges.subscribe((hasEhbo) => {
-      const ehboVlakControl = this.form.get('ehboVlak');
-      const ehboVervalDatumControl = this.form.get('ehboVervalDatum');
-
-      if (!hasEhbo) {
-        // Clear fields when EHBO is turned off
-        ehboVlakControl?.setValue('');
-        ehboVervalDatumControl?.setValue('');
-      }
-      // Note: We don't add validators anymore since all fields are optional
     });
   }
 

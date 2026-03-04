@@ -4,6 +4,9 @@
     <ion-input
       type="text"
       formControlName="van"
+      #vanInput
+      inputmode="text"
+      autocapitalize="words"
       [class.ion-invalid]="isFieldInvalid('van')"
       [class.ion-touched]="form.get('van')?.touched"
     ></ion-input>
@@ -17,6 +20,8 @@
     <ion-input
       type="text"
       formControlName="noemNaam"
+      inputmode="text"
+      autocapitalize="words"
       [class.ion-invalid]="isFieldInvalid('noemNaam')"
       [class.ion-touched]="form.get('noemNaam')?.touched"
     ></ion-input>
@@ -26,8 +31,12 @@
   </ion-item>
 
   <ion-item>
-    <ion-label position="stacked">Tweede Name</ion-label>
-    <ion-input type="text" formControlName="tweedeNaam"></ion-input>
+    <ion-label position="stacked">Tweede Naam</ion-label>
+    <ion-input
+      type="text"
+      formControlName="tweedeNaam"
+      autocapitalize="words"
+    ></ion-input>
   </ion-item>
 
   <ion-item>
@@ -44,6 +53,16 @@
     <ion-text color="danger" *ngIf="isFieldInvalid('huistaal')">
       {{ getErrorMessage("huistaal") }}
     </ion-text>
+  </ion-item>
+
+  <ion-item *ngIf="form.get('huistaal')?.value === 'ander'">
+    <ion-label position="stacked">Spesifiseer Huistaal</ion-label>
+    <ion-input
+      type="text"
+      formControlName="huistaalAnder"
+      autocapitalize="words"
+      #huistaalAnderInput
+    ></ion-input>
   </ion-item>
 
   <ion-item>
@@ -142,6 +161,7 @@
       <ion-select-option value="ongetroud">Ongetroud</ion-select-option>
       <ion-select-option value="getroud">Getroud</ion-select-option>
       <ion-select-option value="geskei">Geskei</ion-select-option>
+      <ion-select-option value="verloof">Verloof</ion-select-option>
       <ion-select-option value="weduwee">Weduwee/Wewenaar</ion-select-option>
     </ion-select>
     <ion-text color="danger" *ngIf="isFieldInvalid('huwelikStatus')">

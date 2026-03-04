@@ -46,4 +46,8 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
+  {
+    path: 'reception',
+    loadComponent: () => import('./pages/reception/reception.page').then( m => m.ReceptionPage)
+  },
 ];

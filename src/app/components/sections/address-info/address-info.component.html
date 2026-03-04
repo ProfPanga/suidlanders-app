@@ -2,82 +2,70 @@
   <!-- Basic Address Information -->
   <ion-item>
     <ion-label position="stacked">Straat Adres</ion-label>
-    <ion-input 
-      type="text" 
+    <ion-input
+      type="text"
       formControlName="straatAdres"
       [class.ion-invalid]="isFieldInvalid('straatAdres')"
       [class.ion-touched]="form.get('straatAdres')?.touched"
     ></ion-input>
     <ion-text color="danger" *ngIf="isFieldInvalid('straatAdres')">
-      {{ getErrorMessage('straatAdres') }}
+      {{ getErrorMessage("straatAdres") }}
     </ion-text>
   </ion-item>
 
   <ion-item>
-    <ion-label position="stacked">Voorstad</ion-label>
-    <ion-input 
-      type="text" 
+    <ion-label position="stacked">Dorp</ion-label>
+    <ion-input
+      type="text"
       formControlName="voorstad"
       [class.ion-invalid]="isFieldInvalid('voorstad')"
       [class.ion-touched]="form.get('voorstad')?.touched"
     ></ion-input>
     <ion-text color="danger" *ngIf="isFieldInvalid('voorstad')">
-      {{ getErrorMessage('voorstad') }}
-    </ion-text>
-  </ion-item>
-
-  <ion-item>
-    <ion-label position="stacked">Stad</ion-label>
-    <ion-input 
-      type="text" 
-      formControlName="stad"
-      [class.ion-invalid]="isFieldInvalid('stad')"
-      [class.ion-touched]="form.get('stad')?.touched"
-    ></ion-input>
-    <ion-text color="danger" *ngIf="isFieldInvalid('stad')">
-      {{ getErrorMessage('stad') }}
+      {{ getErrorMessage("voorstad") }}
     </ion-text>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Provinsie</ion-label>
-    <ion-select 
+    <ion-select
       formControlName="provinsie"
       [class.ion-invalid]="isFieldInvalid('provinsie')"
       [class.ion-touched]="form.get('provinsie')?.touched"
+      placeholder="Kies provinsie"
     >
-      <ion-select-option value="gauteng">Gauteng</ion-select-option>
-      <ion-select-option value="vrystaat">Vrystaat</ion-select-option>
-      <ion-select-option value="limpopo">Limpopo</ion-select-option>
-      <ion-select-option value="mpumalanga">Mpumalanga</ion-select-option>
-      <ion-select-option value="noordwes">Noordwes</ion-select-option>
-      <ion-select-option value="noordkaap">Noord-Kaap</ion-select-option>
-      <ion-select-option value="ooskaap">Oos-Kaap</ion-select-option>
-      <ion-select-option value="weskaap">Wes-Kaap</ion-select-option>
-      <ion-select-option value="kwazulunatal">KwaZulu-Natal</ion-select-option>
+      <ion-select-option value="Gauteng">Gauteng</ion-select-option>
+      <ion-select-option value="KwaZulu-Natal">KwaZulu-Natal</ion-select-option>
+      <ion-select-option value="Limpopo">Limpopo</ion-select-option>
+      <ion-select-option value="Mpumalanga">Mpumalanga</ion-select-option>
+      <ion-select-option value="Noord-Kaap">Noord-Kaap</ion-select-option>
+      <ion-select-option value="Noordwes">Noordwes</ion-select-option>
+      <ion-select-option value="Oos-Kaap">Oos-Kaap</ion-select-option>
+      <ion-select-option value="Vrystaat">Vrystaat</ion-select-option>
+      <ion-select-option value="Wes-Kaap">Wes-Kaap</ion-select-option>
     </ion-select>
     <ion-text color="danger" *ngIf="isFieldInvalid('provinsie')">
-      {{ getErrorMessage('provinsie') }}
+      {{ getErrorMessage("provinsie") }}
     </ion-text>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Poskode</ion-label>
-    <ion-input 
-      type="text" 
+    <ion-input
+      type="text"
       formControlName="posKode"
       maxlength="4"
       [class.ion-invalid]="isFieldInvalid('posKode')"
       [class.ion-touched]="form.get('posKode')?.touched"
     ></ion-input>
     <ion-text color="danger" *ngIf="isFieldInvalid('posKode')">
-      {{ getErrorMessage('posKode') }}
+      {{ getErrorMessage("posKode") }}
     </ion-text>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Woonagtig</ion-label>
-    <ion-select 
+    <ion-select
       formControlName="woonagtig"
       [class.ion-invalid]="isFieldInvalid('woonagtig')"
       [class.ion-touched]="form.get('woonagtig')?.touched"
@@ -88,127 +76,9 @@
       <ion-select-option value="ander">Ander</ion-select-option>
     </ion-select>
     <ion-text color="danger" *ngIf="isFieldInvalid('woonagtig')">
-      {{ getErrorMessage('woonagtig') }}
+      {{ getErrorMessage("woonagtig") }}
     </ion-text>
   </ion-item>
 
-  <!-- GPS Coordinates -->
-  <ion-item-group formGroupName="gpsKoordinate">
-    <ion-item-divider>
-      <ion-label>GPS Koördinate</ion-label>
-    </ion-item-divider>
-
-    <ion-item>
-      <ion-label position="stacked">Breedtegraad</ion-label>
-      <ion-input 
-        type="number" 
-        formControlName="lat"
-        step="0.000001"
-        [class.ion-invalid]="isNestedFieldInvalid('gpsKoordinate.lat')"
-        [class.ion-touched]="form.get('gpsKoordinate.lat')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('gpsKoordinate.lat')">
-        {{ getNestedErrorMessage('gpsKoordinate.lat') }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Lengtegraad</ion-label>
-      <ion-input 
-        type="number" 
-        formControlName="lng"
-        step="0.000001"
-        [class.ion-invalid]="isNestedFieldInvalid('gpsKoordinate.lng')"
-        [class.ion-touched]="form.get('gpsKoordinate.lng')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('gpsKoordinate.lng')">
-        {{ getNestedErrorMessage('gpsKoordinate.lng') }}
-      </ion-text>
-    </ion-item>
-  </ion-item-group>
-
-  <!-- Nearest Services -->
-  <ion-item-group formGroupName="naaste">
-    <ion-item-divider>
-      <ion-label>Naaste Dienste</ion-label>
-    </ion-item-divider>
-
-    <ion-item>
-      <ion-label position="stacked">Hospitaal Naam</ion-label>
-      <ion-input 
-        type="text" 
-        formControlName="hospitaal"
-        [class.ion-invalid]="isNestedFieldInvalid('naaste.hospitaal')"
-        [class.ion-touched]="form.get('naaste.hospitaal')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('naaste.hospitaal')">
-        {{ getNestedErrorMessage('naaste.hospitaal') }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Hospitaal Afstand (km)</ion-label>
-      <ion-input 
-        type="number" 
-        formControlName="hospitaalAfstand"
-        [class.ion-invalid]="isNestedFieldInvalid('naaste.hospitaalAfstand')"
-        [class.ion-touched]="form.get('naaste.hospitaalAfstand')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('naaste.hospitaalAfstand')">
-        {{ getNestedErrorMessage('naaste.hospitaalAfstand') }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Polisie Stasie</ion-label>
-      <ion-input 
-        type="text" 
-        formControlName="polisie"
-        [class.ion-invalid]="isNestedFieldInvalid('naaste.polisie')"
-        [class.ion-touched]="form.get('naaste.polisie')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('naaste.polisie')">
-        {{ getNestedErrorMessage('naaste.polisie') }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Polisie Afstand (km)</ion-label>
-      <ion-input 
-        type="number" 
-        formControlName="polisieAfstand"
-        [class.ion-invalid]="isNestedFieldInvalid('naaste.polisieAfstand')"
-        [class.ion-touched]="form.get('naaste.polisieAfstand')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('naaste.polisieAfstand')">
-        {{ getNestedErrorMessage('naaste.polisieAfstand') }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Winkel Naam</ion-label>
-      <ion-input 
-        type="text" 
-        formControlName="winkel"
-        [class.ion-invalid]="isNestedFieldInvalid('naaste.winkel')"
-        [class.ion-touched]="form.get('naaste.winkel')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('naaste.winkel')">
-        {{ getNestedErrorMessage('naaste.winkel') }}
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Winkel Afstand (km)</ion-label>
-      <ion-input 
-        type="number" 
-        formControlName="winkelAfstand"
-        [class.ion-invalid]="isNestedFieldInvalid('naaste.winkelAfstand')"
-        [class.ion-touched]="form.get('naaste.winkelAfstand')?.touched"
-      ></ion-input>
-      <ion-text color="danger" *ngIf="isNestedFieldInvalid('naaste.winkelAfstand')">
-        {{ getNestedErrorMessage('naaste.winkelAfstand') }}
-      </ion-text>
-    </ion-item>
-  </ion-item-group>
-</form> 
+  <!-- Naaste Dienste removed per requirements -->
+</form>

@@ -1,4 +1,10 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
+import {
+  Component,
+  forwardRef,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -50,7 +56,9 @@ import { BasicInfo } from '../../../interfaces/form-sections.interface';
     },
   ],
 })
-export class BasicInfoComponent implements OnInit, ControlValueAccessor {
+export class BasicInfoComponent
+  implements OnInit, AfterViewInit, ControlValueAccessor
+{
   form: FormGroup;
   isDisabled = false;
   maxDate: string;
@@ -63,6 +71,7 @@ export class BasicInfoComponent implements OnInit, ControlValueAccessor {
       noemNaam: ['', [Validators.required, Validators.minLength(2)]],
       tweedeNaam: [''],
       huistaal: ['', Validators.required],
+      huistaalAnder: [''],
       geslag: ['', Validators.required],
       ouderdom: [
         '',
@@ -82,6 +91,16 @@ export class BasicInfoComponent implements OnInit, ControlValueAccessor {
     this.form.get('idNommer')?.valueChanges.subscribe((idNumber) => {
       if (idNumber && idNumber.length === 13) {
         this.extractDateFromIdNumber(idNumber);
+      }
+    });
+
+    // When Huistaal changes, clear "huistaalAnder" unless "ander" and autofocus when shown
+    this.form.get('huistaal')?.valueChanges.subscribe((val) => {
+      if (val !== 'ander') {
+        this.form.patchValue({ huistaalAnder: '' }, { emitEvent: false });
+      } else {
+        // Delay to next tick so the input exists, then focus
+        setTimeout(() => this.focusHuistaalAnder(), 0);
       }
     });
 
@@ -109,6 +128,20 @@ export class BasicInfoComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit() {
     this.generateNewId();
+  }
+
+  @ViewChild('huistaalAnderInput', { static: false }) huistaalAnderInput?: any;
+
+  ngAfterViewInit(): void {
+    if (this.form.get('huistaal')?.value === 'ander') {
+      this.focusHuistaalAnder();
+    }
+  }
+
+  private focusHuistaalAnder() {
+    try {
+      this.huistaalAnderInput?.setFocus?.();
+    } catch {}
   }
 
   // Custom email validator

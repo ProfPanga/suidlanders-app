@@ -71,11 +71,10 @@ export class SkillsInfoComponent implements ControlValueAccessor {
       bestuurslisensie: this.fb.group({
         kode: [''],
         pdp: [false],
-        vervalDatum: [''],
       }),
       noodhulp: this.fb.group({
+        hetNoodhulp: [false],
         vlak: [''],
-        vervalDatum: [''],
       }),
       radio: this.fb.group({
         amateurRadioLisensie: [false],

@@ -1,0 +1,87 @@
+<div [formGroup]="form">
+  <ion-button fill="outline" (click)="addDependent()">
+    <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+    Voeg Afhanklike By
+  </ion-button>
+
+  <div formArrayName="dependents">
+    <div
+      class="card"
+      *ngFor="let d of dependents.controls; let i = index"
+      [formGroupName]="i"
+    >
+      <div class="row">
+        <ion-item>
+          <ion-label position="stacked">Volle Naam</ion-label>
+          <ion-input formControlName="fullName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Verhouding</ion-label>
+          <ion-select formControlName="verhouding">
+            <ion-select-option value="Seun">Seun</ion-select-option>
+            <ion-select-option value="Dogter">Dogter</ion-select-option>
+            <ion-select-option value="Maat">Maat</ion-select-option>
+            <ion-select-option value="Ander">Ander</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <div class="row">
+        <ion-item>
+          <ion-label position="stacked">ID Nommer</ion-label>
+          <ion-input formControlName="idNommer"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Geboortedatum</ion-label>
+          <ion-input formControlName="geboorteDatum"></ion-input>
+        </ion-item>
+      </div>
+
+      <div class="row">
+        <ion-item>
+          <ion-label position="stacked">Ouderdom</ion-label>
+          <ion-input type="number" formControlName="ouderdom"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Geslag</ion-label>
+          <ion-input formControlName="geslag" placeholder="M/V"></ion-input>
+        </ion-item>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Allergieë</ion-label>
+        <ion-textarea
+          formControlName="allergies"
+          [autoGrow]="true"
+        ></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Chroniese Siektes</ion-label>
+        <ion-textarea
+          formControlName="chronies"
+          [autoGrow]="true"
+        ></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Medikasie</ion-label>
+        <ion-textarea
+          formControlName="medikasie"
+          [autoGrow]="true"
+        ></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Notas</ion-label>
+        <ion-textarea formControlName="notas" [autoGrow]="true"></ion-textarea>
+      </ion-item>
+
+      <div class="actions">
+        <ion-button color="danger" fill="clear" (click)="removeDependent(i)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="outline" (click)="promoteDependent(i)"
+          >Bevorder na Lid</ion-button
+        >
+      </div>
+    </div>
+  </div>
+</div>

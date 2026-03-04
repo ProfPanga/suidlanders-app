@@ -3,15 +3,12 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { DatabaseService } from '../../services/database.service';
 import { SyncService } from '../../services/sync.service';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-db-test',
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Database Test</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <app-header title="Database Test"></app-header>
 
     <ion-content class="ion-padding">
       <ion-card>
@@ -34,18 +31,27 @@ import { SyncService } from '../../services/sync.service';
             <ion-item>
               <ion-label>Last Sync:</ion-label>
               <ion-note slot="end">
-                {{ syncStatus?.lastSyncTime ? (syncStatus.lastSyncTime | date:'medium') : 'Never' }}
+                {{
+                  syncStatus?.lastSyncTime
+                    ? (syncStatus.lastSyncTime | date : 'medium')
+                    : 'Never'
+                }}
               </ion-note>
             </ion-item>
             <ion-item>
               <ion-label>Pending Changes:</ion-label>
-              <ion-badge slot="end" [color]="syncStatus?.pendingChanges ? 'warning' : 'success'">
+              <ion-badge
+                slot="end"
+                [color]="syncStatus?.pendingChanges ? 'warning' : 'success'"
+              >
                 {{ syncStatus?.pendingChanges || 0 }}
               </ion-badge>
             </ion-item>
             <ion-item *ngIf="syncStatus?.error">
               <ion-label color="danger">Error:</ion-label>
-              <ion-text color="danger" slot="end">{{ syncStatus.error }}</ion-text>
+              <ion-text color="danger" slot="end">{{
+                syncStatus.error
+              }}</ion-text>
             </ion-item>
           </ion-list>
         </ion-card-content>
@@ -56,14 +62,18 @@ import { SyncService } from '../../services/sync.service';
         <ion-spinner name="dots" *ngIf="testing"></ion-spinner>
       </ion-button>
 
-      <ion-button expand="block" (click)="syncNow()" [disabled]="syncing || testing">
+      <ion-button
+        expand="block"
+        (click)="syncNow()"
+        [disabled]="syncing || testing"
+      >
         Sync Now
         <ion-spinner name="dots" *ngIf="syncing"></ion-spinner>
       </ion-button>
     </ion-content>
   `,
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonicModule, HeaderComponent],
 })
 export class DbTestComponent implements OnInit {
   dbStatus: { success: boolean; message: string } | null = null;
@@ -78,7 +88,7 @@ export class DbTestComponent implements OnInit {
 
   ngOnInit() {
     // Subscribe to sync status changes
-    this.syncService.getSyncStatus().subscribe(status => {
+    this.syncService.getSyncStatus().subscribe((status) => {
       this.syncStatus = status;
       this.syncing = status.isSyncing;
     });
@@ -91,7 +101,7 @@ export class DbTestComponent implements OnInit {
     } catch (error: any) {
       this.dbStatus = {
         success: false,
-        message: error.message
+        message: error.message,
       };
     } finally {
       this.testing = false;
@@ -100,14 +110,14 @@ export class DbTestComponent implements OnInit {
 
   syncNow() {
     this.syncService.sync().subscribe(
-      result => {
+      (result) => {
         if (!result.success) {
           console.error('Sync failed:', result.message);
         }
       },
-      error => {
+      (error) => {
         console.error('Sync error:', error);
       }
     );
   }
-} 
+}

@@ -1,0 +1,88 @@
+# Sprint Status Tracking File
+# Generated: 2026-02-28
+# Project: suidlanders-app
+# Tracking System: file-system
+# Story Location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-02-28
+project: suidlanders-app
+project_key: suidlanders-app
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Demo Sprint - Offline Registration & Basic Triage (March 6th Deadline)
+  epic-1: in-progress
+  1-1-simple-triage-logic-implementation: review
+  1-2-reception-staff-dashboard: review
+  1-3-qr-code-provisioning-flow: backlog
+  1-4-role-based-ui-demonstration: backlog
+  1-5-demo-scenario-documentation: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Post-Demo Foundation - Family & Data Management
+  epic-2: backlog
+  2-1-dependent-management-add-family-members: backlog
+  2-2-non-family-member-registration-isolation: backlog
+  2-3-distributed-family-registration-linking: backlog
+  2-4-sync-retry-logic-queue-management: backlog
+  2-5-manual-usb-sync-fallback: backlog
+  2-6-offline-data-persistence-encryption: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Staff Operations - Role-Based Access & Privacy
+  epic-3: backlog
+  3-1-full-role-based-access-control-rbac-system: backlog
+  3-2-medical-staff-dashboard-with-privacy-enforcement: backlog
+  3-3-security-staff-dashboard-with-firearms-tracking: backlog
+  3-4-logistics-staff-dashboard-for-resource-management: backlog
+  3-5-communication-staff-dashboard-for-family-reunification: backlog
+  3-6-admin-operations-dashboard: backlog
+  3-7-audit-logging-for-data-access-privacy-compliance: backlog
+  3-8-data-consent-member-rights: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: System Administration & Reliability
+  epic-4: backlog
+  4-1-system-health-monitoring-dashboard: backlog
+  4-2-database-backup-restore-system: backlog
+  4-3-manual-triage-override: backlog
+  4-4-user-role-management-interface: backlog
+  4-5-identity-verification-duplicate-detection: backlog
+  4-6-inter-camp-administration-sync-coordination: backlog
+  4-7-multi-language-support-afrikaans-english-toggle: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Inter-Camp Sync & Advanced Features
+  epic-5: backlog
+  5-1-inter-camp-data-synchronization-family-reunification: backlog
+  epic-5-retrospective: optional

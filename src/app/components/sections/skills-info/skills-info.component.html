@@ -100,27 +100,6 @@
         <ion-label>Het PDP (Professionele Bestuur Permit)</ion-label>
         <ion-toggle formControlName="pdp"></ion-toggle>
       </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Verval Datum</ion-label>
-        <ion-input
-          type="date"
-          formControlName="vervalDatum"
-          [min]="today"
-          [class.ion-invalid]="
-            isFieldInvalid('vervalDatum', 'bestuurslisensie')
-          "
-          [class.ion-touched]="
-            form.get('bestuurslisensie.vervalDatum')?.touched
-          "
-        ></ion-input>
-        <ion-text
-          color="danger"
-          *ngIf="isFieldInvalid('vervalDatum', 'bestuurslisensie')"
-        >
-          {{ getErrorMessage("vervalDatum", "bestuurslisensie") }}
-        </ion-text>
-      </ion-item>
     </div>
   </ion-item-group>
 
@@ -132,26 +111,24 @@
 
     <div formGroupName="noodhulp">
       <ion-item>
-        <ion-label position="stacked">Vlak</ion-label>
-        <ion-select formControlName="vlak">
-          <ion-select-option value="level1">Vlak 1</ion-select-option>
-          <ion-select-option value="level2">Vlak 2</ion-select-option>
-          <ion-select-option value="level3">Vlak 3</ion-select-option>
-          <ion-select-option value="intermediate"
-            >Intermediêr</ion-select-option
-          >
-          <ion-select-option value="advanced">Gevorderd</ion-select-option>
-        </ion-select>
+        <ion-label>Noodhulp Vaardighede</ion-label>
+        <ion-toggle formControlName="hetNoodhulp"></ion-toggle>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">Verval Datum</ion-label>
-        <ion-input
-          type="date"
-          formControlName="vervalDatum"
-          [min]="today"
-        ></ion-input>
-      </ion-item>
+      <ng-container *ngIf="form.get('noodhulp.hetNoodhulp')?.value === true">
+        <ion-item>
+          <ion-label position="stacked">Vlak</ion-label>
+          <ion-select formControlName="vlak">
+            <ion-select-option value="level1">Vlak 1</ion-select-option>
+            <ion-select-option value="level2">Vlak 2</ion-select-option>
+            <ion-select-option value="level3">Vlak 3</ion-select-option>
+            <ion-select-option value="intermediate"
+              >Intermediêr</ion-select-option
+            >
+            <ion-select-option value="advanced">Gevorderd</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ng-container>
     </div>
   </ion-item-group>
 

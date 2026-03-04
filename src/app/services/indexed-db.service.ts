@@ -7,6 +7,9 @@ interface Member {
   updated_at: number;
   status: string;
   version: number;
+  household_id?: string;
+  relationship_to_head?: string;
+  camp_assignment?: 'red' | 'green' | null;
 }
 
 interface BasicInfo {
@@ -64,6 +67,9 @@ interface MedicalInfo {
   huis_dokter?: string;
   huis_dokter_nommer?: string;
   mediese_notas?: string;
+  // Note: These are stored as camelCase from the form
+  opChronieseMedikasie?: boolean;
+  hetMedikasieBy?: boolean;
 }
 
 interface VehicleInfo {
@@ -143,6 +149,23 @@ interface Document {
   uploaded_at: number;
 }
 
+interface DependentRow {
+  id: string;
+  parent_member_id: string;
+  full_name: string;
+  id_nommer?: string;
+  geboorte_datum?: string;
+  ouderdom?: number;
+  geslag?: string;
+  verhouding: string;
+  allergies?: string;
+  chronies?: string;
+  medikasie?: string;
+  notas?: string;
+  created_at: number;
+  updated_at: number;
+}
+
 export class SuidlandersDB extends Dexie {
   members!: Table<Member, string>;
   basic_info!: Table<BasicInfo, string>;
@@ -155,6 +178,7 @@ export class SuidlandersDB extends Dexie {
   camp_info!: Table<CampInfo, string>;
   other_info!: Table<OtherInfo, string>;
   documents!: Table<Document, string>;
+  dependents!: Table<DependentRow, string>;
 
   constructor() {
     super('suidlanders_db');
@@ -171,6 +195,15 @@ export class SuidlandersDB extends Dexie {
       camp_info: 'member_id',
       other_info: 'member_id',
       documents: 'id, member_id, type',
+    });
+
+    this.version(2).stores({
+      dependents: 'id, parent_member_id',
+    });
+
+    // Version 3: Add camp_assignment field to members table
+    this.version(3).stores({
+      members: 'id, status, created_at, updated_at, camp_assignment',
     });
   }
 
@@ -219,7 +252,36 @@ export class SuidlandersDB extends Dexie {
             });
           }
 
-          // ... similar for other sections
+          if (memberData.medicalInfo) {
+            await this.medical_info.put({
+              member_id: memberId,
+              ...memberData.medicalInfo,
+            });
+          }
+
+          // Dependents
+          if (Array.isArray(memberData.dependents)) {
+            const now = Date.now();
+            const rows: DependentRow[] = memberData.dependents.map(
+              (d: any) => ({
+                id: d.id || this.generateId() + ':dep',
+                parent_member_id: memberId,
+                full_name: d.fullName || '',
+                id_nommer: d.idNommer || undefined,
+                geboorte_datum: d.geboorteDatum || undefined,
+                ouderdom: d.ouderdom ?? undefined,
+                geslag: d.geslag || undefined,
+                verhouding: d.verhouding || 'Ander',
+                allergies: d.allergies || undefined,
+                chronies: d.chronies || undefined,
+                medikasie: d.medikasie || undefined,
+                notas: d.notas || undefined,
+                created_at: now,
+                updated_at: now,
+              })
+            );
+            if (rows.length) await this.dependents.bulkPut(rows);
+          }
         }
       );
 
@@ -249,6 +311,7 @@ export class SuidlandersDB extends Dexie {
         campInfo,
         otherInfo,
         documents,
+        dependents,
       ] = await Promise.all([
         this.basic_info.get(memberId),
         this.member_info.get(memberId),
@@ -260,10 +323,12 @@ export class SuidlandersDB extends Dexie {
         this.camp_info.get(memberId),
         this.other_info.get(memberId),
         this.documents.where('member_id').equals(memberId).toArray(),
+        this.dependents.where('parent_member_id').equals(memberId).toArray(),
       ]);
 
       return {
         entryId: memberId,
+        campAssignment: member.camp_assignment,
         basicInfo,
         memberInfo,
         addressInfo,
@@ -274,6 +339,19 @@ export class SuidlandersDB extends Dexie {
         campInfo,
         otherInfo,
         documents,
+        dependents: dependents.map((r) => ({
+          id: r.id,
+          fullName: r.full_name,
+          idNommer: r.id_nommer,
+          geboorteDatum: r.geboorte_datum,
+          ouderdom: r.ouderdom,
+          geslag: r.geslag,
+          verhouding: r.verhouding,
+          allergies: r.allergies,
+          chronies: r.chronies,
+          medikasie: r.medikasie,
+          notas: r.notas,
+        })),
       };
     } catch (error) {
       console.error('Error getting member:', error);
@@ -326,7 +404,40 @@ export class SuidlandersDB extends Dexie {
             });
           }
 
-          // ... similar for other sections
+          if (memberData.medicalInfo) {
+            await this.medical_info.put({
+              member_id: memberId,
+              ...memberData.medicalInfo,
+            });
+          }
+
+          // Dependents: replace for now
+          if (Array.isArray(memberData.dependents)) {
+            await this.dependents
+              .where('parent_member_id')
+              .equals(memberId)
+              .delete();
+            const now = Date.now();
+            const rows: DependentRow[] = memberData.dependents.map(
+              (d: any) => ({
+                id: d.id || this.generateId() + ':dep',
+                parent_member_id: memberId,
+                full_name: d.fullName || '',
+                id_nommer: d.idNommer || undefined,
+                geboorte_datum: d.geboorteDatum || undefined,
+                ouderdom: d.ouderdom ?? undefined,
+                geslag: d.geslag || undefined,
+                verhouding: d.verhouding || 'Ander',
+                allergies: d.allergies || undefined,
+                chronies: d.chronies || undefined,
+                medikasie: d.medikasie || undefined,
+                notas: d.notas || undefined,
+                created_at: now,
+                updated_at: now,
+              })
+            );
+            if (rows.length) await this.dependents.bulkPut(rows);
+          }
         }
       );
     } catch (error) {

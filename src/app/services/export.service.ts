@@ -5,7 +5,7 @@ import { DatabaseService } from './database.service';
 import { CompleteFormData } from '../interfaces/form-sections.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExportService {
   constructor(
@@ -27,13 +27,16 @@ export class ExportService {
     }
   }
 
-  private async exportToFile(htmlContent: string, fileName: string): Promise<string> {
+  private async exportToFile(
+    htmlContent: string,
+    fileName: string
+  ): Promise<string> {
     try {
       const result = await Filesystem.writeFile({
         path: fileName,
         data: htmlContent,
         directory: Directory.Documents,
-        encoding: Encoding.UTF8
+        encoding: Encoding.UTF8,
       });
       return result.uri;
     } catch (error) {
@@ -267,10 +270,7 @@ export class ExportService {
           <div class="field-label">Voorstad:</div>
           ${data.voorstad || ''}
         </div>
-        <div class="field">
-          <div class="field-label">Stad:</div>
-          ${data.stad || ''}
-        </div>
+        
         <div class="field">
           <div class="field-label">Provinsie:</div>
           ${data.provinsie || ''}
@@ -290,17 +290,23 @@ export class ExportService {
         <h2>Voertuig Inligting</h2>
         <div class="field">
           <div class="field-label">Primêre Voertuig:</div>
-          ${primary.fabrikaat || ''} ${primary.model || ''} (${primary.jaar || ''})<br>
+          ${primary.fabrikaat || ''} ${primary.model || ''} (${
+      primary.jaar || ''
+    })<br>
           Reg: ${primary.registrasieNommer || ''}<br>
           Brandstof: ${primary.brandstofTipe || ''}<br>
           KM Stand: ${primary.kilometerStand || ''}
         </div>
-        ${data.sleepwa ? `
+        ${
+          data.sleepwa
+            ? `
           <div class="field">
             <div class="field-label">Sleepwa:</div>
             Kapasiteit: ${data.sleepwaKapasiteit || ''}kg
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
     `;
   }
@@ -318,12 +324,18 @@ export class ExportService {
           Kode ${data.bestuurslisensie?.kode || ''} 
           ${data.bestuurslisensie?.pdp ? '(PDP)' : ''}
         </div>
-        ${data.noodhulp?.vlak ? `
+        ${
+          data.noodhulp?.vlak
+            ? `
           <div class="field">
             <div class="field-label">Noodhulp:</div>
-            ${data.noodhulp.vlak} (Verval: ${data.noodhulp.vervalDatum || 'N/A'})
+            ${data.noodhulp.vlak} (Verval: ${
+                data.noodhulp.vervalDatum || 'N/A'
+              })
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
     `;
   }
@@ -352,4 +364,4 @@ export class ExportService {
       </div>
     `;
   }
-} 
+}

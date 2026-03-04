@@ -63,18 +63,14 @@ export class VehicleInfoComponent implements ControlValueAccessor {
     this.form = this.fb.group({
       primereVoertuig: this.fb.group({
         model: [''],
-        jaar: ['', [Validators.min(1900), Validators.max(this.currentYear)]],
         registrasieNommer: [''],
         brandstofTipe: [''],
-        kilometerStand: ['', [Validators.min(0)]],
         bandeToestand: [''],
       }),
       sekondereVoertuig: this.fb.group({
         model: [''],
-        jaar: ['', [Validators.min(1900), Validators.max(this.currentYear)]],
         registrasieNommer: [''],
         brandstofTipe: [''],
-        kilometerStand: ['', Validators.min(0)],
         bandeToestand: [''],
       }),
       sleepwa: [false],

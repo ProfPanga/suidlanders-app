@@ -1,6 +1,14 @@
 # Suidlanders Emergency Plan App
 
-An Ionic/Angular application for managing Suidlanders emergency plan information.
+An Ionic/Angular application for managing Suidlanders emergency plan information with integrated NestJS backend for camp server operations.
+
+> **📚 Backend Documentation:** See [BACKEND.md](./BACKEND.md) for complete backend API documentation, deployment guide, and triage logic details.
+
+## Project Structure
+
+This is a **monorepo** containing:
+- **Frontend**: Ionic/Angular mobile app (`src/`)
+- **Backend**: NestJS camp server API (`backend/`)
 
 ## Description
 
@@ -147,8 +155,20 @@ npm install
 
 3. Start the development server:
 
-```bash
+````bash
 ionic serve
+## Icon generation (logo)
+
+1. Create the folder `resources/` at the project root if it does not exist.
+2. Save your square logo PNG as `resources/icon.png` (ideally 1024×1024 with transparency).
+3. Generate platform assets:
+
+```bash
+npm run assets:generate
+````
+
+This will update Android launcher icons and web favicon/manifest icons. Re-run after changing the logo.
+
 ```
 
 ## Camp Sync (LAN)
@@ -340,3 +360,4 @@ For any inquiries, contact the Suidlanders management.
 - [ ] Core services implementation
 
 _Last updated: [DATE]_
+```

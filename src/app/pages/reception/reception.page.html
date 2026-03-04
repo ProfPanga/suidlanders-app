@@ -1,0 +1,57 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Ontvangs Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshMembers()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionInput)="filterMembers()"
+      placeholder="Soek lede..."
+      animated="true"
+      [debounce]="300"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Empty State -->
+  <div *ngIf="members.length === 0" class="empty-state">
+    <ion-icon name="people-outline" size="large"></ion-icon>
+    <p>Geen lede nog gesinkroniseer nie</p>
+    <ion-button (click)="refreshMembers()">Herlaai</ion-button>
+  </div>
+
+  <!-- Member List -->
+  <ion-list *ngIf="filteredMembers.length > 0">
+    <ion-item
+      *ngFor="let member of filteredMembers"
+      [button]="true"
+      (click)="viewMemberDetails(member.id)"
+    >
+      <ion-label>
+        <h2>{{ member.fullName }}</h2>
+        <p>Gesingrootte: {{ member.familySize }}</p>
+      </ion-label>
+      <ion-badge slot="end" [color]="getCampBadgeColor(member.campAssignment)">
+        {{ getCampLabel(member.campAssignment) }}
+      </ion-badge>
+      <ion-note slot="end" *ngIf="member.campAssignment === 'red'">
+        <small>[MEDIESE - Sien Mediese Personeel]</small>
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+  <!-- No Search Results -->
+  <div
+    *ngIf="members.length > 0 && filteredMembers.length === 0"
+    class="no-results"
+  >
+    <ion-icon name="search-outline" size="large"></ion-icon>
+    <p>Geen lede gevind vir "{{ searchTerm }}"</p>
+  </div>
+</ion-content>
