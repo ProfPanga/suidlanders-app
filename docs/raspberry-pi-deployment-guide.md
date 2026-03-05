@@ -32,7 +32,7 @@ arp -a | grep raspberrypi
 # Or use your router's admin panel to see connected devices
 ```
 
-**Example output:** `192.168.1.100` (your IP will be different)
+**Example output:** `192.168.10.131` (your IP will be different)
 
 ### Step 1.2: SSH into Your Pi
 
@@ -43,12 +43,13 @@ arp -a | grep raspberrypi
 # Username: pi
 # Password: raspberry (or whatever you set during setup)
 
-ssh pi@192.168.1.100
+ssh pi@192.168.10.131
 ```
 
 **First time SSH?** Type `yes` when asked about fingerprint.
 
 **Security Tip:** Change default password after first login:
+
 ```bash
 passwd
 ```
@@ -110,8 +111,9 @@ mkdir -p logs
 ```
 
 **Directory structure:**
+
 ```
-/home/pi/suidlanders-app/
+/home/suidlanders/suidlanders-app/
 ├── backend/          ← Backend API files (already in repo)
 ├── src/              ← Frontend source code
 ├── docs/             ← Documentation
@@ -120,6 +122,7 @@ mkdir -p logs
 ```
 
 **Why clone instead of manual transfer?**
+
 - ✅ Backend is already in the repo
 - ✅ Easy updates with `git pull`
 - ✅ Everything stays in sync
@@ -152,6 +155,7 @@ npm run seed
 ```
 
 **Expected output:**
+
 ```
 🔴 Pieter van der Merwe → RED Camp (Family: 5)
 🟢 Johan Botha → GREEN Camp (Family: 3)
@@ -170,6 +174,7 @@ npm start
 ```
 
 **Expected output:**
+
 ```
 🚀 Suidlanders Backend API Started
 📡 Listening on: http://localhost:3000
@@ -181,7 +186,7 @@ npm start
 **In a NEW terminal/SSH session** (keep backend running):
 
 ```bash
-ssh pi@192.168.1.100
+ssh suidlanders@192.168.10.131
 
 # Test API endpoint
 curl http://localhost:3000/api/members
@@ -219,6 +224,7 @@ npm run build
 **This will create:** `www/` directory with production build
 
 **Verify build succeeded:**
+
 ```bash
 ls www/
 # Should see: index.html, assets/, polyfills.*.js, main.*.js, etc.
@@ -247,14 +253,17 @@ python3 -m http.server 8080
 ```
 
 **Expected output:**
+
 ```
 Serving HTTP on 0.0.0.0 port 8080 (http://0.0.0.0:8080/) ...
 ```
 
 **On your development computer's browser:**
-- Open: `http://192.168.1.100:8080/reception` (use your Pi's IP)
+
+- Open: `http://192.168.10.131:8080/reception` (use your Pi's IP)
 
 **Expected:**
+
 - Dashboard loads
 - Shows "Kon nie lede laai nie" error (backend not running yet)
 
@@ -282,13 +291,13 @@ After=network.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/suidlanders-app/backend
+User=suidlanders
+WorkingDirectory=/home/suidlanders/suidlanders-app/backend
 ExecStart=/usr/bin/npm start
 Restart=always
 RestartSec=10
-StandardOutput=append:/home/pi/suidlanders-app/logs/backend.log
-StandardError=append:/home/pi/suidlanders-app/logs/backend.log
+StandardOutput=append:/home/suidlanders/suidlanders-app/logs/backend.log
+StandardError=append:/home/suidlanders/suidlanders-app/logs/backend.log
 
 [Install]
 WantedBy=multi-user.target
@@ -312,13 +321,13 @@ After=network.target suidlanders-backend.service
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/suidlanders-app/www
-ExecStart=/usr/bin/python3 -m http.server 8080
+User=suidlanders
+WorkingDirectory=/home/suidlanders/suidlanders-app/www
+ExecStart=/usr/bin/serve -s /home/suidlanders/suidlanders-app/www -l 8080
 Restart=always
 RestartSec=10
-StandardOutput=append:/home/pi/suidlanders-app/logs/dashboard.log
-StandardError=append:/home/pi/suidlanders-app/logs/dashboard.log
+StandardOutput=append:/home/suidlanders/suidlanders-app/logs/dashboard.log
+StandardError=append:/home/suidlanders/suidlanders-app/logs/dashboard.log
 
 [Install]
 WantedBy=multi-user.target
@@ -355,10 +364,10 @@ sudo systemctl status suidlanders-dashboard
 
 ```bash
 # Check if chromium is installed
-chromium-browser --version
+chromium --version
 
 # If not installed:
-sudo apt install -y chromium-browser
+sudo apt install -y chromium
 ```
 
 ### Step 6.2: Create Auto-Start Desktop Entry
@@ -377,7 +386,7 @@ nano ~/.config/autostart/suidlanders-dashboard.desktop
 [Desktop Entry]
 Type=Application
 Name=Suidlanders Dashboard
-Exec=chromium-browser --kiosk --disable-infobars --noerrdialogs http://localhost:8080/reception
+Exec=chromium --kiosk --disable-infobars --noerrdialogs --password-store=basic --disable-session-crashed-bubble http://localhost:8080/reception
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
@@ -386,9 +395,34 @@ X-GNOME-Autostart-enabled=true
 **Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
 
 **What this does:**
+
 - Launches Chromium on desktop startup
 - Opens in kiosk mode (fullscreen, no toolbar)
 - Loads dashboard automatically
+- `--password-store=basic` - Prevents "Unlock Keyring" popup on startup
+- `--disable-session-crashed-bubble` - Prevents "Chromium didn't shut down correctly" message
+
+### Step 6.3: Exiting Kiosk Mode (If Needed)
+
+**When dashboard is running in fullscreen kiosk mode:**
+
+- **Alt+F4** - Exit Chromium (works on Raspberry Pi)
+- **Ctrl+W** - Close current window/tab
+
+**Note:** F11 (toggle fullscreen) does NOT work on Raspberry Pi OS.
+
+**From SSH terminal (if keyboard unavailable):**
+
+```bash
+# Kill Chromium remotely
+pkill chromium-browser
+```
+
+**To restart dashboard after exiting:**
+
+```bash
+chromium --kiosk --disable-infobars --noerrdialogs --password-store=basic --disable-session-crashed-bubble http://localhost:8080/reception &
+```
 
 ---
 
@@ -407,6 +441,7 @@ curl http://localhost:3000/api/members | jq .
 **Expected:** JSON array with 6 members
 
 **If it fails:**
+
 ```bash
 # Check logs
 tail -f ~/suidlanders-app/logs/backend.log
@@ -427,9 +462,11 @@ curl http://localhost:8080
 ### Test 7.3: Full Dashboard Test in Browser
 
 **On your development computer:**
-- Open: `http://192.168.1.100:8080/reception`
+
+- Open: `http://192.168.10.131:8080/reception`
 
 **Expected:**
+
 - Dashboard loads
 - Shows 6 members
 - Pieter van der Merwe has RED badge + [MEDIESE] indicator
@@ -445,13 +482,15 @@ sudo reboot
 ```
 
 **After reboot (if monitor connected to Pi):**
+
 - Chromium should launch automatically
 - Dashboard should display in fullscreen
 - Members should load
 
 **If no monitor connected:**
+
 - Wait 2 minutes after reboot
-- Open `http://192.168.1.100:8080/reception` from your computer
+- Open `http://192.168.10.131:8080/reception` from your computer
 - Should work immediately
 
 ---
@@ -556,6 +595,7 @@ nano ~/update-suidlanders.sh
 ```
 
 **Paste:**
+
 ```bash
 #!/bin/bash
 cd ~/suidlanders-app
@@ -567,6 +607,7 @@ echo "✅ Update complete!"
 ```
 
 **Make executable and run:**
+
 ```bash
 chmod +x ~/update-suidlanders.sh
 ~/update-suidlanders.sh
@@ -624,6 +665,21 @@ cat ~/.config/autostart/suidlanders-dashboard.desktop
 chromium-browser --kiosk http://localhost:8080/reception
 ```
 
+### Problem: "Unlock Keyring" popup on startup
+
+**Symptom:** Modal appears asking for password when Chromium auto-starts
+
+**Fix:** Add `--password-store=basic` flag to autostart file
+
+```bash
+nano ~/.config/autostart/suidlanders-dashboard.desktop
+
+# Update Exec line to:
+Exec=chromium --kiosk --disable-infobars --noerrdialogs --password-store=basic --disable-session-crashed-bubble http://localhost:8080/reception
+```
+
+**Test after reboot** - no keyring prompt should appear
+
 ### Problem: Can't SSH into Pi
 
 ```bash
@@ -669,7 +725,7 @@ sudo systemctl restart suidlanders-backend suidlanders-dashboard
 
 # Force-kill and restart Chromium
 pkill chromium-browser
-chromium-browser --kiosk http://localhost:8080/reception &
+chromium-browser --kiosk --disable-infobars --noerrdialogs --password-store=basic --disable-session-crashed-bubble http://localhost:8080/reception &
 ```
 
 ---
@@ -677,12 +733,15 @@ chromium-browser --kiosk http://localhost:8080/reception &
 ## Additional Resources
 
 **Raspberry Pi Documentation:**
+
 - https://www.raspberrypi.com/documentation/
 
 **systemd Service Management:**
+
 - https://www.raspberrypi.com/documentation/computers/using_linux.html#systemd
 
 **SSH Guide:**
+
 - https://www.raspberrypi.com/documentation/computers/remote-access.html#ssh
 
 ---
@@ -690,6 +749,7 @@ chromium-browser --kiosk http://localhost:8080/reception &
 ## Summary of What You've Deployed
 
 **Project Structure:**
+
 ```
 ~/suidlanders-app/
 ├── backend/          Backend API (NestJS + SQLite)
@@ -698,6 +758,7 @@ chromium-browser --kiosk http://localhost:8080/reception &
 ```
 
 **Backend API (Port 3000):**
+
 - NestJS + SQLite
 - Serves: GET /api/members
 - Auto-starts on boot
@@ -705,6 +766,7 @@ chromium-browser --kiosk http://localhost:8080/reception &
 - Location: `~/suidlanders-app/backend/`
 
 **Frontend Dashboard (Port 8080):**
+
 - Ionic/Angular web build
 - Static files served by Python HTTP server
 - Auto-starts on boot
@@ -712,11 +774,13 @@ chromium-browser --kiosk http://localhost:8080/reception &
 - Location: `~/suidlanders-app/www/`
 
 **Chromium Kiosk Mode:**
+
 - Auto-launches on desktop startup
 - Fullscreen dashboard at: http://localhost:8080/reception
 - No toolbars, no distractions
 
 **Deployment Method:**
+
 - Git-based: Clone repo → Pull updates → Rebuild
 - All code in one directory
 - Easy to update with `git pull`
