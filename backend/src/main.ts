@@ -17,8 +17,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend (Reception Dashboard)
+  // Allow all origins for offline camp scenario - devices connect from various IPs on local network
   app.enableCors({
-    origin: ['http://localhost:8100', 'http://localhost:8080'], // Ionic dev server + Pi
+    origin: true, // Allows all origins (safe for offline local network)
     credentials: true,
   });
 
