@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000/api' // Backend API on Raspberry Pi
+  apiUrl: `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:3000/api` // Dynamic API URL based on hostname
 };
