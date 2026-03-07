@@ -1,4 +1,28 @@
 /**
+ * WiFi Configuration for Auto-Connection
+ *
+ * WiFi credentials embedded in QR code to enable automatic
+ * connection to camp network without manual WiFi setup.
+ */
+export interface WiFiConfig {
+  /**
+   * Network SSID (e.g., "SuidlandersKamp")
+   */
+  ssid: string;
+
+  /**
+   * WiFi password
+   */
+  password: string;
+
+  /**
+   * Security type: WPA2, WPA3, WEP, NONE
+   * Default: WPA2 (most common)
+   */
+  security?: 'WPA2' | 'WPA3' | 'WEP' | 'NONE';
+}
+
+/**
  * QR Code Provisioning Payload Structure
  *
  * This interface defines the structure of the JSON payload embedded in
@@ -7,9 +31,13 @@
  *
  * @example
  * {
+ *   "wifi": {
+ *     "ssid": "SuidlandersKamp",
+ *     "password": "Kamp2026!",
+ *     "security": "WPA2"
+ *   },
  *   "serverUrls": [
- *     "http://192.168.1.100:3000",  // Ethernet IP
- *     "http://192.168.43.1:3000",   // AP Mode IP
+ *     "http://192.168.4.1:3000",    // WiFi AP IP
  *     "http://camp.local:3000"      // mDNS hostname
  *   ],
  *   "syncCode": "ABC123XYZ",         // Short-lived code (expires in 15 minutes)
@@ -17,6 +45,13 @@
  * }
  */
 export interface QRPayload {
+  /**
+   * WiFi configuration for automatic network connection.
+   * When present, the app will automatically connect to this
+   * WiFi network before attempting server sync.
+   */
+  wifi: WiFiConfig;
+
   /**
    * Array of server URLs to try sequentially.
    * Multiple URLs are provided because the Raspberry Pi may have

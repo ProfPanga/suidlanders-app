@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { CapacitorHttp } from '@capacitor/core';
+import { WifiConnect } from '@falconeta/capacitor-wifi-connect';
 import { QRPayload, ProvisioningResult } from '../models/qr-payload.model';
 import { AuthService } from './auth.service';
 import { SyncService } from './sync.service';
@@ -23,6 +24,7 @@ export class QRProvisioningService {
 
   /**
    * Main orchestration method for QR provisioning
+   * 0. Connects to camp WiFi network automatically
    * 1. Tests server URLs sequentially
    * 2. Exchanges sync code for token
    * 3. Saves credentials to AuthService
@@ -45,7 +47,7 @@ export class QRProvisioningService {
       try {
         loading = await Promise.race([
           this.loadingController.create({
-            message: 'Verbind met kamp bediener...',
+            message: 'Verbind met WiFi netwerk...',
           }),
           new Promise<null>((resolve) => setTimeout(() => resolve(null), 1000))
         ]);
@@ -58,6 +60,37 @@ export class QRProvisioningService {
       } catch (loadingError) {
         console.warn('Loading indicator failed, continuing without it:', loadingError);
         alert('Loading indicator failed, continuing...'); // DEBUG
+      }
+
+      // Step 0: Connect to camp WiFi network
+      console.log('📶 Connecting to WiFi:', payload.wifi.ssid);
+      alert(`Connecting to WiFi: ${payload.wifi.ssid}`); // DEBUG
+      const wifiConnected = await this.connectToWiFi(payload.wifi);
+
+      if (!wifiConnected) {
+        if (loading) await loading.dismiss();
+        await this.showError(
+          'Kon nie aan WiFi netwerk verbind nie. Maak seker WiFi is aangeskakel.'
+        );
+        return {
+          success: false,
+          error: 'WiFi connection failed',
+        };
+      }
+
+      alert('WiFi connected successfully!'); // DEBUG
+
+      // Update loading message for server connection
+      if (loading) {
+        await loading.dismiss();
+        try {
+          loading = await this.loadingController.create({
+            message: 'Verbind met kamp bediener...',
+          });
+          await loading.present();
+        } catch {
+          loading = null;
+        }
       }
 
       // Step 1: Test server URLs to find working one
@@ -271,6 +304,39 @@ export class QRProvisioningService {
       console.error('Sync code exchange failed:', error);
       alert(`Exchange ERROR: ${error.message || JSON.stringify(error)}`); // DEBUG
       return null;
+    }
+  }
+
+  /**
+   * Connect to camp WiFi network using credentials from QR code
+   *
+   * @param wifi WiFi configuration from QR payload
+   * @returns True if connection successful, false otherwise
+   */
+  private async connectToWiFi(wifi: { ssid: string; password: string; security?: string }): Promise<boolean> {
+    try {
+      alert(`Attempting WiFi connection to: ${wifi.ssid}`); // DEBUG
+
+      // Use the WifiConnect plugin to connect to the network
+      const result = await WifiConnect.connect({
+        ssid: wifi.ssid,
+        password: wifi.password,
+      });
+
+      alert(`WiFi connect result: ${JSON.stringify(result)}`); // DEBUG
+
+      // Check if connection was successful
+      if (result && result.ssid === wifi.ssid) {
+        console.log(`✅ Successfully connected to WiFi: ${wifi.ssid}`);
+        return true;
+      }
+
+      console.warn(`WiFi connection result unclear:`, result);
+      return false;
+    } catch (error: any) {
+      console.error(`WiFi connection failed:`, error);
+      alert(`WiFi connect ERROR: ${error.message || JSON.stringify(error)}`); // DEBUG
+      return false;
     }
   }
 

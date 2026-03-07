@@ -3,9 +3,19 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 
 /**
+ * WiFi Configuration for Auto-Connection
+ */
+export interface WiFiConfig {
+  ssid: string;
+  password: string;
+  security?: 'WPA2' | 'WPA3' | 'WEP' | 'NONE';
+}
+
+/**
  * QR Payload for camp provisioning
  */
 export interface QRPayload {
+  wifi: WiFiConfig;
   serverUrls: string[];
   syncCode: string;
   campId: string;
@@ -37,10 +47,10 @@ export class CampAuthService {
 
   /**
    * Generate QR payload for camp provisioning
-   * Creates a short-lived sync code and returns server URLs
+   * Creates a short-lived sync code and returns WiFi config + server URLs
    *
    * @param campId Camp identifier
-   * @returns QR payload with server URLs, sync code, and camp ID
+   * @returns QR payload with WiFi credentials, server URLs, sync code, and camp ID
    */
   async generateQRPayload(campId: string): Promise<QRPayload> {
     // Generate random sync code (8 characters, alphanumeric)
@@ -52,10 +62,18 @@ export class CampAuthService {
       createdAt: new Date(),
     });
 
+    // Get WiFi configuration from environment (or use defaults)
+    const wifi: WiFiConfig = {
+      ssid: process.env.CAMP_WIFI_SSID || 'SuidlandersKamp',
+      password: process.env.CAMP_WIFI_PASSWORD || 'Kamp2026!',
+      security: (process.env.CAMP_WIFI_SECURITY as WiFiConfig['security']) || 'WPA2',
+    };
+
     // Get all server URLs (multiple interfaces for Pi)
     const serverUrls = this.getServerURLs();
 
     return {
+      wifi,
       serverUrls,
       syncCode,
       campId,
