@@ -209,9 +209,10 @@ export class QRProvisioningService {
    * @returns True if server responds successfully
    */
   private async pingServer(url: string): Promise<boolean> {
+    const startTime = Date.now(); // Declare outside try-catch for access in both blocks
+
     try {
       alert(`Pinging: ${url}/api/members/health`); // DEBUG
-      const startTime = Date.now();
 
       // Use Capacitor's native HTTP to bypass WebView network security restrictions
       const response = await CapacitorHttp.get({
