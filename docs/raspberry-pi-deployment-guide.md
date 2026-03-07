@@ -66,9 +66,344 @@ sudo apt upgrade -y
 
 ---
 
-## Part 2: Install Required Software
+## Part 2: Configure WiFi Access Point (For QR Provisioning)
 
-### Step 2.1: Install Node.js (Required for Backend)
+**Purpose:** Enable Story 1.3 QR Code Provisioning - devices scan QR code to automatically join camp WiFi and sync data.
+
+### Step 2.1: Install Required WiFi AP Software
+
+**On Pi SSH session:**
+
+```bash
+# Install hostapd (WiFi Access Point daemon)
+sudo apt install -y hostapd
+
+# Install dnsmasq (DHCP and DNS server)
+sudo apt install -y dnsmasq
+
+# Install Avahi (mDNS for camp.local hostname)
+sudo apt install -y avahi-daemon
+
+# Stop services while we configure them
+sudo systemctl stop hostapd
+sudo systemctl stop dnsmasq
+```
+
+### Step 2.2: Configure Static IP for WiFi Interface
+
+**Edit dhcpcd configuration:**
+
+```bash
+sudo nano /etc/dhcpcd.conf
+```
+
+**Add to the end of the file:**
+
+```ini
+# Static IP for WiFi AP
+interface wlan0
+    static ip_address=192.168.4.1/24
+    nohook wpa_supplicant
+```
+
+**Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
+
+**What this does:**
+- Sets Pi's WiFi interface (wlan0) to static IP 192.168.4.1
+- Disables wpa_supplicant (Pi won't connect to other WiFi networks)
+- Devices connecting to Pi will get IPs like 192.168.4.2, 192.168.4.3, etc.
+
+### Step 2.3: Configure DHCP Server (dnsmasq)
+
+**Backup original config:**
+
+```bash
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.backup
+```
+
+**Create new configuration:**
+
+```bash
+sudo nano /etc/dnsmasq.conf
+```
+
+**Paste this content:**
+
+```ini
+# Interface to listen on
+interface=wlan0
+
+# DHCP range: assign IPs from 192.168.4.2 to 192.168.4.20
+# Lease time: 12 hours
+dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,12h
+
+# Gateway (Pi's IP address)
+dhcp-option=3,192.168.4.1
+
+# DNS server (Pi's IP address)
+dhcp-option=6,192.168.4.1
+
+# Domain name
+domain=suidlanders.local
+
+# Cache size
+cache-size=1000
+```
+
+**Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
+
+### Step 2.4: Configure WiFi Access Point (hostapd)
+
+**Create hostapd configuration:**
+
+```bash
+sudo nano /etc/hostapd/hostapd.conf
+```
+
+**Paste this content:**
+
+```ini
+# WiFi interface
+interface=wlan0
+
+# Driver (nl80211 is standard for most WiFi adapters)
+driver=nl80211
+
+# Network name (SSID)
+ssid=SuidlandersKamp
+
+# WiFi channel (6 is common, 1-11 for 2.4GHz)
+channel=6
+
+# WiFi mode (g = 2.4GHz)
+hw_mode=g
+
+# Country code (ZA = South Africa)
+country_code=ZA
+
+# Enable 802.11n (faster speeds)
+ieee80211n=1
+
+# WPA2 security
+wpa=2
+wpa_passphrase=Kamp2026!
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+
+# Access point mode
+wmm_enabled=1
+auth_algs=1
+ignore_broadcast_ssid=0
+```
+
+**Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
+
+**Important Security Note:**
+- Default password: `Kamp2026!`
+- Change this for production deployment
+- Minimum 8 characters required for WPA2
+
+**Tell hostapd where to find config:**
+
+```bash
+sudo nano /etc/default/hostapd
+```
+
+**Find the line:** `#DAEMON_CONF=""`
+
+**Replace with:** `DAEMON_CONF="/etc/hostapd/hostapd.conf"`
+
+**Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
+
+### Step 2.5: Configure mDNS Hostname (camp.local)
+
+**Edit Avahi configuration:**
+
+```bash
+sudo nano /etc/avahi/avahi-daemon.conf
+```
+
+**Find and update these lines:**
+
+```ini
+[server]
+host-name=camp
+domain-name=local
+use-ipv4=yes
+use-ipv6=no
+
+[publish]
+publish-addresses=yes
+publish-hinfo=yes
+publish-workstation=no
+publish-domain=yes
+```
+
+**Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
+
+**What this does:**
+- Pi will be reachable at `camp.local:3000` (in addition to IP address)
+- Devices connecting via WiFi can use either `http://192.168.4.1:3000` or `http://camp.local:3000`
+
+### Step 2.6: Enable IP Forwarding (Optional - Internet Sharing)
+
+**Note:** Only needed if you want to share internet from Pi's ethernet to WiFi clients
+
+```bash
+# Uncomment net.ipv4.ip_forward
+sudo nano /etc/sysctl.conf
+# Find: #net.ipv4.ip_forward=1
+# Change to: net.ipv4.ip_forward=1
+```
+
+**For isolated camp network:** Skip this step - no internet sharing needed
+
+### Step 2.7: Enable and Start Services
+
+```bash
+# Unmask and enable hostapd
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+
+# Enable dnsmasq
+sudo systemctl enable dnsmasq
+
+# Enable Avahi (usually enabled by default)
+sudo systemctl enable avahi-daemon
+
+# Reboot to apply all changes
+sudo reboot
+```
+
+**Wait 1-2 minutes for Pi to reboot**
+
+### Step 2.8: Test WiFi Access Point
+
+**On your phone or laptop:**
+
+1. Open WiFi settings
+2. Look for network: **SuidlandersKamp**
+3. Connect using password: **Kamp2026!**
+4. Check you receive an IP like `192.168.4.x`
+
+**Verify on Pi (after reconnecting via ethernet SSH):**
+
+```bash
+# Check hostapd is running
+sudo systemctl status hostapd
+
+# Check connected clients
+iw dev wlan0 station dump
+
+# Check DHCP leases
+cat /var/lib/misc/dnsmasq.leases
+```
+
+**Expected output:**
+- hostapd: `Active: active (running)` in green
+- Station dump: Shows connected device MAC addresses
+- Leases: Shows assigned IP addresses
+
+**Test mDNS hostname:**
+
+```bash
+# From device connected to camp WiFi, ping:
+ping camp.local
+```
+
+**Expected:** Replies from 192.168.4.1
+
+### Step 2.9: Configure Backend Environment Variables
+
+**Create/edit .env file in backend directory:**
+
+```bash
+cd ~/suidlanders-app/backend
+nano .env
+```
+
+**Add WiFi configuration:**
+
+```ini
+# WiFi Access Point Configuration (for QR code generation)
+CAMP_WIFI_SSID=SuidlandersKamp
+CAMP_WIFI_PASSWORD=Kamp2026!
+CAMP_WIFI_SECURITY=WPA2
+
+# Server port
+PORT=3000
+```
+
+**Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
+
+**What this does:**
+- Backend uses these values when generating QR codes
+- QR payload includes WiFi credentials for automatic connection
+- Devices scan QR → auto-connect to WiFi → find server → sync data
+
+### Step 2.10: Troubleshooting WiFi AP
+
+**Problem: WiFi network doesn't appear**
+
+```bash
+# Check hostapd status
+sudo systemctl status hostapd
+
+# Check hostapd logs
+sudo journalctl -u hostapd -n 50
+
+# Common fix: restart services
+sudo systemctl restart hostapd
+sudo systemctl restart dnsmasq
+```
+
+**Problem: Can connect but no IP address**
+
+```bash
+# Check dnsmasq status
+sudo systemctl status dnsmasq
+
+# Check dnsmasq logs
+sudo journalctl -u dnsmasq -n 50
+
+# Restart dnsmasq
+sudo systemctl restart dnsmasq
+```
+
+**Problem: camp.local doesn't resolve**
+
+```bash
+# Check Avahi status
+sudo systemctl status avahi-daemon
+
+# Test from Pi itself
+avahi-browse -a -t
+
+# Restart Avahi
+sudo systemctl restart avahi-daemon
+```
+
+**Problem: Wrong WiFi password in QR code**
+
+```bash
+# Update .env file
+nano ~/suidlanders-app/backend/.env
+
+# Update hostapd config to match
+sudo nano /etc/hostapd/hostapd.conf
+
+# Restart hostapd
+sudo systemctl restart hostapd
+
+# Restart backend to reload .env
+sudo systemctl restart suidlanders-backend
+```
+
+---
+
+## Part 3: Install Required Software
+
+### Step 3.1: Install Node.js (Required for Backend)
 
 **Check if Node.js is already installed:**
 
@@ -88,7 +423,7 @@ node --version  # Should show v20.x.x
 npm --version   # Should show 10.x.x
 ```
 
-### Step 2.2: Install Git (For Cloning Repository)
+### Step 3.2: Install Git (For Cloning Repository)
 
 ```bash
 # Check if git is installed
@@ -98,7 +433,7 @@ git --version
 sudo apt install -y git
 ```
 
-### Step 2.3: Clone Project Repository
+### Step 3.3: Clone Project Repository
 
 ```bash
 # Clone the repository from GitHub
@@ -130,9 +465,9 @@ mkdir -p logs
 
 ---
 
-## Part 3: Deploy Backend API
+## Part 4: Deploy Backend API
 
-### Step 3.1: Install Backend Dependencies
+### Step 4.1: Install Backend Dependencies
 
 **On Pi SSH session:**
 
@@ -147,7 +482,7 @@ npm install
 ls node_modules/  # Should see many folders
 ```
 
-### Step 3.2: Create Demo Data
+### Step 4.2: Create Demo Data
 
 ```bash
 # Still in ~/suidlanders-app/backend
@@ -166,7 +501,7 @@ npm run seed
 ✅ Seed data created successfully!
 ```
 
-### Step 3.3: Test Backend Manually
+### Step 4.3: Test Backend Manually
 
 ```bash
 # Start backend (foreground test)
@@ -198,9 +533,9 @@ curl http://localhost:3000/api/members
 
 ---
 
-## Part 4: Deploy Frontend Dashboard
+## Part 5: Deploy Frontend Dashboard
 
-### Step 4.1: Install Frontend Dependencies on Pi
+### Step 5.1: Install Frontend Dependencies on Pi
 
 **On Pi SSH session:**
 
@@ -214,7 +549,7 @@ npm install
 
 **Note:** Building on Pi is slower but ensures compatibility and eliminates file transfer steps.
 
-### Step 4.2: Build Production Frontend on Pi
+### Step 5.2: Build Production Frontend on Pi
 
 ```bash
 # Still in ~/suidlanders-app
@@ -230,7 +565,7 @@ ls www/
 # Should see: index.html, assets/, polyfills.*.js, main.*.js, etc.
 ```
 
-### Step 4.3: Install Web Server (Python3)
+### Step 5.3: Install Web Server (Python3)
 
 ```bash
 # Check Python3 (usually pre-installed on Pi OS)
@@ -242,7 +577,7 @@ sudo apt install -y python3
 
 **Why Python?** We'll use Python's built-in HTTP server (simplest option for demo)
 
-### Step 4.4: Test Frontend Manually
+### Step 5.4: Test Frontend Manually
 
 ```bash
 # Navigate to www directory
@@ -271,9 +606,9 @@ Serving HTTP on 0.0.0.0 port 8080 (http://0.0.0.0:8080/) ...
 
 ---
 
-## Part 5: Create Auto-Start Scripts
+## Part 6: Create Auto-Start Scripts
 
-### Step 5.1: Create Backend Service
+### Step 6.1: Create Backend Service
 
 **On Pi:**
 
@@ -305,7 +640,7 @@ WantedBy=multi-user.target
 
 **Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
 
-### Step 5.2: Create Frontend Service
+### Step 6.2: Create Frontend Service
 
 ```bash
 # Create systemd service file
@@ -335,7 +670,7 @@ WantedBy=multi-user.target
 
 **Save and exit:** `Ctrl+X`, then `Y`, then `Enter`
 
-### Step 5.3: Enable and Start Services
+### Step 6.3: Enable and Start Services
 
 ```bash
 # Reload systemd to recognize new services
@@ -358,9 +693,9 @@ sudo systemctl status suidlanders-dashboard
 
 ---
 
-## Part 6: Configure Chromium Auto-Launch (Kiosk Mode)
+## Part 7: Configure Chromium Auto-Launch (Kiosk Mode)
 
-### Step 6.1: Install Chromium Browser
+### Step 7.1: Install Chromium Browser
 
 ```bash
 # Check if chromium is installed
@@ -370,7 +705,7 @@ chromium --version
 sudo apt install -y chromium
 ```
 
-### Step 6.2: Create Auto-Start Desktop Entry
+### Step 7.2: Create Auto-Start Desktop Entry
 
 ```bash
 # Create autostart directory
@@ -402,7 +737,7 @@ X-GNOME-Autostart-enabled=true
 - `--password-store=basic` - Prevents "Unlock Keyring" popup on startup
 - `--disable-session-crashed-bubble` - Prevents "Chromium didn't shut down correctly" message
 
-### Step 6.3: Exiting Kiosk Mode (If Needed)
+### Step 7.3: Exiting Kiosk Mode (If Needed)
 
 **When dashboard is running in fullscreen kiosk mode:**
 
@@ -426,9 +761,9 @@ chromium --kiosk --disable-infobars --noerrdialogs --password-store=basic --disa
 
 ---
 
-## Part 7: Testing Your Deployment
+## Part 8: Testing Your Deployment
 
-### Test 7.1: Backend API Test
+### Test 8.1: Backend API Test
 
 ```bash
 # Check backend is running
@@ -447,7 +782,7 @@ curl http://localhost:3000/api/members | jq .
 tail -f ~/suidlanders-app/logs/backend.log
 ```
 
-### Test 7.2: Dashboard Web Server Test
+### Test 8.2: Dashboard Web Server Test
 
 ```bash
 # Check dashboard is running
@@ -459,7 +794,7 @@ curl http://localhost:8080
 
 **Expected:** HTML content (dashboard index.html)
 
-### Test 7.3: Full Dashboard Test in Browser
+### Test 8.3: Full Dashboard Test in Browser
 
 **On your development computer:**
 
@@ -474,7 +809,7 @@ curl http://localhost:8080
 - Search works
 - Refresh button works
 
-### Test 7.4: Auto-Start Test
+### Test 8.4: Auto-Start Test
 
 ```bash
 # Reboot Pi to test auto-start
@@ -495,7 +830,7 @@ sudo reboot
 
 ---
 
-## Part 8: Useful Commands for Managing Services
+## Part 9: Useful Commands for Managing Services
 
 ### Check Service Status
 
@@ -545,7 +880,7 @@ sudo systemctl stop suidlanders-dashboard
 
 ---
 
-## Part 9: Updating Your Code After Changes
+## Part 10: Updating Your Code After Changes
 
 **Workflow:** Push changes to GitHub from your computer, then pull on Pi
 
@@ -615,7 +950,7 @@ chmod +x ~/update-suidlanders.sh
 
 ---
 
-## Part 10: Troubleshooting
+## Part 11: Troubleshooting
 
 ### Problem: Backend won't start
 
@@ -694,7 +1029,7 @@ hostname -I
 
 ---
 
-## Part 11: Demo Day Checklist
+## Part 12: Demo Day Checklist
 
 **Day Before Demo:**
 
