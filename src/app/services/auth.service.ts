@@ -60,7 +60,7 @@ export class AuthService {
     code: string,
     campId: string
   ): Observable<any> {
-    return this.http.post(`${baseUrl}/auth/camp/exchange`, { code, campId });
+    return this.http.post(`${baseUrl}/api/auth/camp/exchange`, { code, campId });
   }
 
   setSyncToken(token: string | null): void {

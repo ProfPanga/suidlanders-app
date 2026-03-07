@@ -56,7 +56,7 @@ export class ApiService {
    * @returns Observable with QR payload (serverUrls, syncCode, campId)
    */
   generateCampQR(campId?: string): Observable<any> {
-    return this.post('/auth/camp/generate-qr', { campId: campId || 'default-camp' });
+    return this.post('/api/auth/camp/generate-qr', { campId: campId || 'default-camp' });
   }
 
   // Generic HTTP methods with error handling

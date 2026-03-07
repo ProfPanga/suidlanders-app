@@ -251,18 +251,25 @@ export class QRProvisioningService {
     campId: string
   ): Promise<string | null> {
     try {
+      alert(`Exchanging code at: ${baseUrl}\nCode: ${syncCode}\nCamp: ${campId}`); // DEBUG
+
       const response = await firstValueFrom(
         this.authService.exchangeCampCodeAt(baseUrl, syncCode, campId)
       );
 
+      alert(`Exchange response: ${JSON.stringify(response)}`); // DEBUG
+
       if (response && response.syncToken) {
+        alert(`Got sync token: ${response.syncToken.substring(0, 20)}...`); // DEBUG
         return response.syncToken;
       }
 
       console.error('No sync token in response:', response);
+      alert(`No sync token in response! Response: ${JSON.stringify(response)}`); // DEBUG
       return null;
     } catch (error: any) {
       console.error('Sync code exchange failed:', error);
+      alert(`Exchange ERROR: ${error.message || JSON.stringify(error)}`); // DEBUG
       return null;
     }
   }
