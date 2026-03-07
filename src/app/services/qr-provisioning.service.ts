@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { CapacitorHttp } from '@capacitor/core';
-import { WifiConnect } from '@falconeta/capacitor-wifi-connect';
+import { CapacitorWifiConnect } from '@falconeta/capacitor-wifi-connect';
 import { QRPayload, ProvisioningResult } from '../models/qr-payload.model';
 import { AuthService } from './auth.service';
 import { SyncService } from './sync.service';
@@ -317,21 +317,22 @@ export class QRProvisioningService {
     try {
       alert(`Attempting WiFi connection to: ${wifi.ssid}`); // DEBUG
 
-      // Use the WifiConnect plugin to connect to the network
-      const result = await WifiConnect.connect({
+      // Use the CapacitorWifiConnect plugin to connect to the network
+      const result = await CapacitorWifiConnect.secureConnect({
         ssid: wifi.ssid,
         password: wifi.password,
+        saveNetwork: true,
       });
 
       alert(`WiFi connect result: ${JSON.stringify(result)}`); // DEBUG
 
-      // Check if connection was successful
-      if (result && result.ssid === wifi.ssid) {
+      // Check if connection was successful (ConnectState enum: 0 = connected)
+      if (result && result.value === 0) {
         console.log(`✅ Successfully connected to WiFi: ${wifi.ssid}`);
         return true;
       }
 
-      console.warn(`WiFi connection result unclear:`, result);
+      console.warn(`WiFi connection failed with state:`, result);
       return false;
     } catch (error: any) {
       console.error(`WiFi connection failed:`, error);

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { QRProvisioningService } from './qr-provisioning.service';
+import { QRPayload } from '../models/qr-payload.model';
 import { AuthService } from './auth.service';
 import { SyncService } from './sync.service';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -97,11 +98,11 @@ describe('QRProvisioningService', () => {
   });
 
   describe('scanAndProvision', () => {
-    const mockPayload = {
+    const mockPayload: QRPayload = {
       wifi: {
         ssid: 'SuidlandersKamp',
         password: 'Kamp2026!',
-        security: 'WPA2',
+        security: 'WPA2' as const,
       },
       serverUrls: ['http://test.com'],
       syncCode: 'TEST123',
@@ -116,6 +117,7 @@ describe('QRProvisioningService', () => {
     });
 
     it('should successfully provision and sync', async () => {
+      spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(true));
       spyOn(service, 'testServerURLs').and.returnValue(Promise.resolve('http://test.com'));
       spyOn<any>(service, 'exchangeSyncCode').and.returnValue(Promise.resolve('test-token'));
       syncService.sync.and.returnValue(of({ success: true, message: 'Success', syncedRecords: 5 }));
@@ -131,6 +133,7 @@ describe('QRProvisioningService', () => {
     });
 
     it('should fail if all server URLs unreachable', async () => {
+      spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(true));
       spyOn(service, 'testServerURLs').and.returnValue(Promise.resolve(null));
 
       const result = await service.scanAndProvision(mockPayload);
@@ -141,6 +144,7 @@ describe('QRProvisioningService', () => {
     });
 
     it('should fail if sync code exchange fails', async () => {
+      spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(true));
       spyOn(service, 'testServerURLs').and.returnValue(Promise.resolve('http://test.com'));
       spyOn<any>(service, 'exchangeSyncCode').and.returnValue(Promise.resolve(null));
 
@@ -151,6 +155,7 @@ describe('QRProvisioningService', () => {
     });
 
     it('should fail if sync fails', async () => {
+      spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(true));
       spyOn(service, 'testServerURLs').and.returnValue(Promise.resolve('http://test.com'));
       spyOn<any>(service, 'exchangeSyncCode').and.returnValue(Promise.resolve('test-token'));
       syncService.sync.and.returnValue(of({ success: false, message: 'Sync failed' }));
@@ -217,9 +222,9 @@ describe('QRProvisioningService', () => {
     });
 
     it('should handle WiFi config with different security types', () => {
-      const wpa3Config = { ssid: 'Network1', password: 'pass', security: 'WPA3' };
-      const wepConfig = { ssid: 'Network2', password: 'pass', security: 'WEP' };
-      const openConfig = { ssid: 'Network3', password: '', security: 'NONE' };
+      const wpa3Config = { ssid: 'Network1', password: 'pass', security: 'WPA3' as const };
+      const wepConfig = { ssid: 'Network2', password: 'pass', security: 'WEP' as const };
+      const openConfig = { ssid: 'Network3', password: '', security: 'NONE' as const };
 
       expect(wpa3Config.security).toBe('WPA3');
       expect(wepConfig.security).toBe('WEP');
