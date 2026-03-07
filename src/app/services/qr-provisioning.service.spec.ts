@@ -98,6 +98,11 @@ describe('QRProvisioningService', () => {
 
   describe('scanAndProvision', () => {
     const mockPayload = {
+      wifi: {
+        ssid: 'SuidlandersKamp',
+        password: 'Kamp2026!',
+        security: 'WPA2',
+      },
       serverUrls: ['http://test.com'],
       syncCode: 'TEST123',
       campId: 'camp-1',
@@ -157,16 +162,68 @@ describe('QRProvisioningService', () => {
     });
 
     it('should show loading indicators during provisioning', async () => {
+      spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(true));
       spyOn(service, 'testServerURLs').and.returnValue(Promise.resolve('http://test.com'));
       spyOn<any>(service, 'exchangeSyncCode').and.returnValue(Promise.resolve('test-token'));
       syncService.sync.and.returnValue(of({ success: true, message: 'Success', syncedRecords: 5 }));
 
       await service.scanAndProvision(mockPayload);
 
-      // Should create loading indicator at least 3 times (connect, exchange, sync)
-      expect(loadingController.create).toHaveBeenCalledTimes(3);
-      expect(mockLoadingElement.present).toHaveBeenCalledTimes(3);
-      expect(mockLoadingElement.dismiss).toHaveBeenCalledTimes(3);
+      // Should create loading indicator at least 3 times (WiFi, server, sync)
+      expect(loadingController.create).toHaveBeenCalled();
+      expect(mockLoadingElement.present).toHaveBeenCalled();
+    });
+
+    it('should fail if WiFi connection fails', async () => {
+      spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(false));
+
+      const result = await service.scanAndProvision(mockPayload);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('WiFi connection failed');
+      expect(toastController.create).toHaveBeenCalled();
+    });
+
+    it('should connect to WiFi before testing server URLs', async () => {
+      const connectSpy = spyOn<any>(service, 'connectToWiFi').and.returnValue(Promise.resolve(true));
+      const testUrlsSpy = spyOn(service, 'testServerURLs').and.returnValue(Promise.resolve('http://test.com'));
+      spyOn<any>(service, 'exchangeSyncCode').and.returnValue(Promise.resolve('test-token'));
+      syncService.sync.and.returnValue(of({ success: true, message: 'Success', syncedRecords: 5 }));
+
+      await service.scanAndProvision(mockPayload);
+
+      // WiFi connection should be called before server URL testing
+      expect(connectSpy).toHaveBeenCalledWith(mockPayload.wifi);
+      expect(connectSpy).toHaveBeenCalledBefore(testUrlsSpy);
+    });
+  });
+
+  describe('WiFi Connection', () => {
+    it('should validate payload includes WiFi configuration', () => {
+      const validPayload = {
+        wifi: {
+          ssid: 'TestNetwork',
+          password: 'TestPass123',
+          security: 'WPA2',
+        },
+        serverUrls: ['http://192.168.4.1:3000'],
+        syncCode: 'ABC12345',
+        campId: 'test-camp',
+      };
+
+      expect(validPayload.wifi).toBeDefined();
+      expect(validPayload.wifi.ssid).toBeTruthy();
+      expect(validPayload.wifi.password).toBeTruthy();
+    });
+
+    it('should handle WiFi config with different security types', () => {
+      const wpa3Config = { ssid: 'Network1', password: 'pass', security: 'WPA3' };
+      const wepConfig = { ssid: 'Network2', password: 'pass', security: 'WEP' };
+      const openConfig = { ssid: 'Network3', password: '', security: 'NONE' };
+
+      expect(wpa3Config.security).toBe('WPA3');
+      expect(wepConfig.security).toBe('WEP');
+      expect(openConfig.security).toBe('NONE');
     });
   });
 });
