@@ -51,11 +51,11 @@ export class QRService {
     return true;
   }
 
-  async generateQRCode(data: any): Promise<void> {
+  async generateQRCode(data: any): Promise<string> {
     try {
       // Convert data to JSON string
       const jsonData = JSON.stringify(data);
-      
+
       // Generate QR code as data URL
       const qrDataUrl = await QRCode.toDataURL(jsonData, {
         errorCorrectionLevel: 'H',
@@ -67,16 +67,40 @@ export class QRService {
         }
       });
 
-      // Create a download link
-      const link = document.createElement('a');
-      link.href = qrDataUrl;
-      link.download = `suidlanders-qr-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      return qrDataUrl;
     } catch (error) {
       console.error('Error generating QR code:', error);
       throw new Error('Failed to generate QR code');
+    }
+  }
+
+  /**
+   * Generate camp provisioning QR code (for reception dashboard)
+   * Returns data URL for display
+   *
+   * @param payload QR payload with serverUrls, syncCode, campId
+   * @returns Data URL of generated QR code
+   */
+  async generateCampProvisioningQR(payload: any): Promise<string> {
+    try {
+      // Convert payload to JSON string (minified for compact QR)
+      const jsonData = JSON.stringify(payload);
+
+      // Generate QR code as data URL with larger size for scanning
+      const qrDataUrl = await QRCode.toDataURL(jsonData, {
+        errorCorrectionLevel: 'M', // Medium error correction (balance between size and reliability)
+        margin: 4,
+        width: 400, // Larger for display on monitor
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      });
+
+      return qrDataUrl;
+    } catch (error) {
+      console.error('Error generating camp provisioning QR code:', error);
+      throw new Error('Failed to generate camp provisioning QR code');
     }
   }
 

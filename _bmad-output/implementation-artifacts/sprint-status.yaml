@@ -44,7 +44,7 @@ development_status:
   epic-1: in-progress
   1-1-simple-triage-logic-implementation: review
   1-2-reception-staff-dashboard: review
-  1-3-qr-code-provisioning-flow: backlog
+  1-3-qr-code-provisioning-flow: review
   1-4-role-based-ui-demonstration: backlog
   1-5-demo-scenario-documentation: backlog
   epic-1-retrospective: optional

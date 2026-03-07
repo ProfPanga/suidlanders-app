@@ -106,3 +106,20 @@
     background: var(--ion-background-color);
   }
 }
+
+/* ML Kit Barcode Scanner Transparency */
+/* When scanner is active, make background transparent to show camera feed */
+body.scanner-active {
+  --background: transparent;
+  --ion-background-color: transparent;
+  background: transparent !important;
+
+  ion-app {
+    background: transparent !important;
+  }
+
+  ion-content {
+    --background: transparent;
+    background: transparent !important;
+  }
+}

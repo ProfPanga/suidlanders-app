@@ -48,6 +48,17 @@ export class ApiService {
     return this.get(this.ENDPOINTS.members, { params });
   }
 
+  /**
+   * Generate camp provisioning QR code
+   * POST /api/auth/camp/generate-qr
+   *
+   * @param campId Camp identifier (optional, defaults to "default-camp")
+   * @returns Observable with QR payload (serverUrls, syncCode, campId)
+   */
+  generateCampQR(campId?: string): Observable<any> {
+    return this.post('/auth/camp/generate-qr', { campId: campId || 'default-camp' });
+  }
+
   // Generic HTTP methods with error handling
   private get(path: string, options: any = {}): Observable<any> {
     const base = this.auth.getCampBaseUrl() || this.API_URL;
@@ -87,10 +98,15 @@ export class ApiService {
 
   // Add common headers
   private addHeaders(options: any = {}): any {
-    const headers = new HttpHeaders({
+    let headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      // Add any other common headers (e.g., authentication)
     });
+
+    // Add sync token if available (for camp provisioning)
+    const syncToken = this.auth.getSyncToken();
+    if (syncToken) {
+      headers = headers.set('Authorization', `Bearer ${syncToken}`);
+    }
 
     return {
       ...options,

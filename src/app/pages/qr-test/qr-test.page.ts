@@ -28,10 +28,9 @@ import { HeaderComponent } from '../../components/header/header.component';
                 <ion-card-title>QR Code Scanner</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <app-qr-scanner
-                  (scanComplete)="onScanComplete($event)"
-                  (scanError)="onScanError($event)">
-                </app-qr-scanner>
+                <!-- QR Scanner component has been updated for Story 1.3 provisioning -->
+                <!-- Use Home page "Skandeer QR Kode" button for QR provisioning -->
+                <p>QR Scanner test page deprecated. Use Home page for QR provisioning.</p>
               </ion-card-content>
             </ion-card>
           </ion-col>

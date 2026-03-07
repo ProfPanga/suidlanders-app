@@ -2,6 +2,10 @@
   <ion-toolbar>
     <ion-title>Ontvangs Dashboard</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="generateQRCode()">
+        <ion-icon name="qr-code-outline"></ion-icon>
+        Genereer QR Kode
+      </ion-button>
       <ion-button (click)="refreshMembers()">
         <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
@@ -19,8 +23,32 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- QR Code Display (when generated) -->
+  <div *ngIf="campQRCode" class="qr-code-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Kamp QR Kode</ion-card-title>
+        <ion-card-subtitle>
+          Lede kan hierdie QR kode skandeer om te sinkroniseer
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="qr-image-container">
+          <img [src]="campQRCode" alt="Camp Provisioning QR Code" />
+        </div>
+        <p class="qr-info">
+          <strong>Sinkronisasie Kode:</strong> {{ qrPayload?.syncCode }}<br />
+          <small>Verval in 15 minute</small>
+        </p>
+        <ion-button expand="block" color="danger" (click)="closeQRCode()">
+          Maak QR Kode Toe
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
   <!-- Empty State -->
-  <div *ngIf="members.length === 0" class="empty-state">
+  <div *ngIf="members.length === 0 && !campQRCode" class="empty-state">
     <ion-icon name="people-outline" size="large"></ion-icon>
     <p>Geen lede nog gesinkroniseer nie</p>
     <ion-button (click)="refreshMembers()">Herlaai</ion-button>

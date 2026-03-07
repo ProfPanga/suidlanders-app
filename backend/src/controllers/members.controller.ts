@@ -13,6 +13,23 @@ export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   /**
+   * GET /api/members/health
+   *
+   * Health check endpoint
+   * IMPORTANT: Must be defined BEFORE :id route to avoid "health" being matched as an ID
+   */
+  @Get('health')
+  async health() {
+    const count = await this.membersService.getMemberCount();
+    return {
+      status: 'ok',
+      service: 'suidlanders-backend',
+      members: count,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
    * GET /api/members
    *
    * Returns all members with camp assignments
@@ -53,21 +70,5 @@ export class MembersController {
   @Post()
   async createMember(@Body() createMemberDto: CreateMemberDTO): Promise<ReceptionMemberDTO> {
     return this.membersService.createMember(createMemberDto);
-  }
-
-  /**
-   * GET /api/health
-   *
-   * Health check endpoint
-   */
-  @Get('/health')
-  async health() {
-    const count = await this.membersService.getMemberCount();
-    return {
-      status: 'ok',
-      service: 'suidlanders-backend',
-      members: count,
-      timestamp: new Date().toISOString(),
-    };
   }
 }

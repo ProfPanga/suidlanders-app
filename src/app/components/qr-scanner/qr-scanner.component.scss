@@ -1,0 +1,8 @@
+/**
+ * QR Scanner Component Styles
+ * ML Kit provides native camera overlay, minimal styling needed
+ */
+
+.scanner-placeholder {
+  display: none; // ML Kit scanner is full-screen native overlay
+}

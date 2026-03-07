@@ -21,11 +21,14 @@ import {
   qrCode,
   settings,
   logIn,
+  sync,
 } from 'ionicons/icons';
 import { HeaderComponent } from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { SyncService } from '../../services/sync.service';
 import { DatabaseService } from '../../services/database.service';
+import { QRProvisioningService } from '../../services/qr-provisioning.service';
+import { QRScannerComponent } from '../../components/qr-scanner/qr-scanner.component';
 
 @Component({
   selector: 'app-home',
@@ -106,20 +109,28 @@ import { DatabaseService } from '../../services/database.service';
             </ion-card>
           </ion-col>
 
-          <ion-col size="12" size-md="6" *ngIf="showDebugTools">
+          <ion-col size="12" size-md="6">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>QR Kode Skandeerder</ion-card-title>
+                <ion-card-title>Skandeer QR Kode</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <p>Skandeer QR kode om data na kamp te sinkroniseer.</p>
+                <p>Skandeer kamp QR kode om outomaties te verbind en data te sinkroniseer.</p>
                 <ion-button
                   expand="block"
                   color="tertiary"
-                  (click)="navigateToQRScanner()"
+                  (click)="scanQRToSync()"
                 >
                   <ion-icon name="qr-code" slot="start"></ion-icon>
-                  Verbind na Kamp
+                  Skandeer QR Kode
+                </ion-button>
+                <ion-button
+                  expand="block"
+                  fill="outline"
+                  (click)="manualSync()"
+                >
+                  <ion-icon name="sync" slot="start"></ion-icon>
+                  Sinkronisasie
                 </ion-button>
               </ion-card-content>
             </ion-card>
@@ -225,9 +236,10 @@ export class HomePage implements OnInit {
     private readonly router: Router,
     private readonly authService: AuthService,
     private readonly syncService: SyncService,
-    private readonly databaseService: DatabaseService
+    private readonly databaseService: DatabaseService,
+    private readonly qrProvisioningService: QRProvisioningService
   ) {
-    addIcons({ personAdd, documentText, qrCode, settings, logIn });
+    addIcons({ personAdd, documentText, qrCode, settings, logIn, sync });
   }
 
   ngOnInit() {
@@ -378,5 +390,122 @@ export class HomePage implements OnInit {
   private showToast(message: string) {
     this.toastMessage = message;
     this.isToastOpen = true;
+  }
+
+  /**
+   * Scan QR code to provision camp connection and sync
+   * Directly uses ML Kit BarcodeScanner for mobile QR scanning
+   */
+  async scanQRToSync() {
+    console.log('🔍 scanQRToSync called');
+    alert('scanQRToSync called!'); // Visual confirmation
+
+    try {
+      // Import ML Kit scanner
+      console.log('📦 Importing ML Kit...');
+      const { BarcodeScanner, BarcodeFormat } = await import('@capacitor-mlkit/barcode-scanning');
+      console.log('✅ ML Kit imported');
+      alert('ML Kit imported!');
+
+      // Request camera permission
+      console.log('🎥 Requesting camera permission...');
+      const permissionResult = await BarcodeScanner.requestPermissions();
+      console.log('📋 Permission result:', permissionResult);
+
+      if (permissionResult.camera !== 'granted') {
+        console.log('❌ Camera permission denied');
+        this.showToast('Kamera toegang geweier. Gee asseblief toestemming.');
+        return;
+      }
+
+      console.log('📸 Starting QR scan...');
+
+      // Start scanning (removed scanner-active CSS - might be blocking camera)
+      const result = await BarcodeScanner.scan({
+        formats: [BarcodeFormat.QrCode],
+      });
+      console.log('📊 Scan result:', result);
+      alert(`Scan complete! Barcodes found: ${result.barcodes?.length || 0}`); // DEBUG
+
+      // Check if scan was cancelled
+      if (!result.barcodes || result.barcodes.length === 0) {
+        console.log('QR scan cancelled or no QR detected');
+        alert('No QR code detected! Try again with better lighting.'); // DEBUG
+        return;
+      }
+
+      // Parse the first QR code found
+      const rawValue = result.barcodes[0].rawValue;
+      console.log('📄 Raw QR value:', rawValue);
+      alert(`Raw QR data: ${rawValue?.substring(0, 50)}...`); // DEBUG first 50 chars
+
+      if (!rawValue) {
+        this.showToast('QR kode is leeg');
+        alert('QR code is empty!'); // DEBUG
+        return;
+      }
+
+      // Parse and validate QR payload
+      const payload = JSON.parse(rawValue.trim());
+
+      // Validate QR payload structure
+      if (!payload.serverUrls || !payload.syncCode || !payload.campId) {
+        this.showToast('Ongeldige QR kode. Vra kamp personeel vir nuwe QR.');
+        return;
+      }
+
+      console.log('QR payload received:', payload);
+      alert(`QR Scanned! URLs: ${payload.serverUrls?.join(', ') || 'none'}`); // DEBUG
+
+      // Trigger provisioning flow
+      console.log('Calling provisioning service...');
+      alert('About to call scanAndProvision...'); // DEBUG
+      try {
+        const provisioningResult = await this.qrProvisioningService.scanAndProvision(payload);
+        console.log('Provisioning result:', provisioningResult);
+        alert(`Provisioning result: ${provisioningResult.success ? 'SUCCESS' : 'FAILED'}`); // DEBUG
+
+        if (provisioningResult.success) {
+          this.refreshDataCount(); // Refresh UI after sync
+        } else {
+          alert(`Error: ${provisioningResult.error}`); // DEBUG
+        }
+      } catch (provError: any) {
+        alert(`Provisioning threw error: ${provError.message || provError}`); // DEBUG
+        console.error('Provisioning threw error:', provError);
+        this.showToast('Provisioning misluk');
+      }
+    } catch (error: any) {
+      console.error('Failed to scan QR:', error);
+
+      if (error.message && error.message.includes('JSON')) {
+        this.showToast('Ongeldige QR kode formaat');
+      } else {
+        this.showToast('Kon nie QR skandeerder begin nie');
+      }
+    }
+  }
+
+  /**
+   * Manual sync without QR code
+   * Uses existing sync service with configured base URL
+   */
+  async manualSync() {
+    this.syncService.sync().subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.showToast(
+            `Sinkronisasie voltooi: ${result.syncedRecords} rekords`
+          );
+          this.refreshDataCount();
+        } else {
+          this.showToast('Sinkronisasie gefaal: ' + result.message);
+        }
+      },
+      error: (err) => {
+        console.error('Manual sync failed:', err);
+        this.showToast('Sinkronisasie gefaal');
+      },
+    });
   }
 }

@@ -37,7 +37,7 @@ async function bootstrap() {
   console.log(`  GET  http://localhost:${PORT}/api/members`);
   console.log(`  GET  http://localhost:${PORT}/api/members/:id`);
   console.log(`  POST http://localhost:${PORT}/api/members`);
-  console.log(`  GET  http://localhost:${PORT}/api/health`);
+  console.log(`  GET  http://localhost:${PORT}/api/members/health`);
   console.log('========================================');
   console.log('');
   console.log('✅ Story 1.1: Triage logic active');

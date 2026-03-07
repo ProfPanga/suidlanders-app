@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Member } from './entities/member.entity';
 import { MembersController } from './controllers/members.controller';
+import { CampAuthController } from './controllers/camp-auth.controller';
 import { MembersService } from './services/members.service';
 import { TriageService } from './services/triage.service';
+import { CampAuthService } from './services/camp-auth.service';
 
 /**
  * App Module - Root module for Suidlanders Backend API
@@ -26,7 +28,7 @@ import { TriageService } from './services/triage.service';
     // Register Member entity for injection
     TypeOrmModule.forFeature([Member]),
   ],
-  controllers: [MembersController],
-  providers: [MembersService, TriageService],
+  controllers: [MembersController, CampAuthController],
+  providers: [MembersService, TriageService, CampAuthService],
 })
 export class AppModule {}

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <!-- Allow HTTP to camp servers -->
-        <domain includeSubdomains="true">camp.local</domain>
-        <domain includeSubdomains="true">192.168.0.0</domain>
-        <domain includeSubdomains="true">192.168.1.0</domain>
-        <domain includeSubdomains="true">192.168.4.0</domain>
-        <domain includeSubdomains="true">10.0.2.2</domain>
-        <!-- For emulator localhost -->
-        <domain includeSubdomains="true">localhost</domain>
-    </domain-config>
+    <!-- Allow all cleartext HTTP traffic for offline camp LAN scenario -->
+    <!-- This is safe because: -->
+    <!-- 1. App operates on isolated camp WiFi networks (no internet) -->
+    <!-- 2. Physical network security (camp perimeter) -->
+    <!-- 3. Data encrypted at rest in local database -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
 </network-security-config>

@@ -16,12 +16,19 @@ import {
   IonLabel,
   IonBadge,
   IonNote,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
   LoadingController,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { refreshOutline, peopleOutline, searchOutline } from 'ionicons/icons';
+import { refreshOutline, peopleOutline, searchOutline, qrCodeOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api.service';
+import { QRService } from '../../services/qr.service';
+import { AuthService } from '../../services/auth.service';
 import { firstValueFrom } from 'rxjs';
 
 /**
@@ -57,6 +64,11 @@ interface ReceptionMemberView {
     IonLabel,
     IonBadge,
     IonNote,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
     CommonModule,
     FormsModule,
   ],
@@ -65,20 +77,28 @@ export class ReceptionPage implements OnInit, OnDestroy {
   searchTerm: string = '';
   members: ReceptionMemberView[] = [];
   filteredMembers: ReceptionMemberView[] = [];
+  campQRCode: string | null = null; // Data URL of generated QR code
+  qrPayload: any = null; // QR payload with syncCode, serverUrls, campId
   private refreshInterval: any;
   private persistentErrorToast: HTMLIonToastElement | null = null;
 
   constructor(
     private apiService: ApiService,
+    private qrService: QRService,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     // Register icons for use in template
-    addIcons({ refreshOutline, peopleOutline, searchOutline });
+    addIcons({ refreshOutline, peopleOutline, searchOutline, qrCodeOutline });
   }
 
   async ngOnInit() {
+    // Reception dashboard should always use default API URL (localhost in dev)
+    // Clear any saved camp base URL from previous QR scans
+    this.authService.setCampBaseUrl(null);
+
     await this.loadMembers();
   }
 
@@ -289,5 +309,60 @@ export class ReceptionPage implements OnInit, OnDestroy {
       await this.persistentErrorToast.dismiss();
       this.persistentErrorToast = null;
     }
+  }
+
+  /**
+   * Generate camp provisioning QR code
+   * Calls backend to generate QR payload, then displays QR code
+   */
+  async generateQRCode(): Promise<void> {
+    const loading = await this.loadingController.create({
+      message: 'Genereer QR kode...',
+    });
+    await loading.present();
+
+    try {
+      // Call backend to generate QR payload
+      const response = await firstValueFrom(this.apiService.generateCampQR());
+
+      if (response.success && response.payload) {
+        this.qrPayload = response.payload;
+
+        // Generate QR code image from payload
+        this.campQRCode = await this.qrService.generateCampProvisioningQR(
+          response.payload
+        );
+
+        await loading.dismiss();
+        await this.showSuccessToast('QR kode gegenereer');
+      } else {
+        throw new Error('Failed to generate QR payload');
+      }
+    } catch (error) {
+      console.error('QR generation failed:', error);
+      await loading.dismiss();
+      await this.showErrorToast('Kon nie QR kode genereer nie');
+    }
+  }
+
+  /**
+   * Close QR code display
+   */
+  closeQRCode(): void {
+    this.campQRCode = null;
+    this.qrPayload = null;
+  }
+
+  /**
+   * Show error toast message
+   */
+  private async showErrorToast(message: string): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color: 'danger',
+      position: 'bottom',
+    });
+    await toast.present();
   }
 }
