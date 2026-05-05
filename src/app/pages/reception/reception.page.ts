@@ -29,6 +29,7 @@ import { refreshOutline, peopleOutline, searchOutline, qrCodeOutline } from 'ion
 import { ApiService } from '../../services/api.service';
 import { QRService } from '../../services/qr.service';
 import { AuthService } from '../../services/auth.service';
+import { RoleService } from '../../services/role.service';
 import { firstValueFrom } from 'rxjs';
 
 /**
@@ -88,13 +89,17 @@ export class ReceptionPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private toastController: ToastController,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private roleService: RoleService
   ) {
     // Register icons for use in template
     addIcons({ refreshOutline, peopleOutline, searchOutline, qrCodeOutline });
   }
 
   async ngOnInit() {
+    // Check role and redirect if not reception staff
+    this.navigateBasedOnRole();
+
     // Reception dashboard should always use default API URL (localhost in dev)
     // Clear any saved camp base URL from previous QR scans
     this.authService.setCampBaseUrl(null);
@@ -130,6 +135,16 @@ export class ReceptionPage implements OnInit, OnDestroy {
     }
     // Clean up persistent error toast on component destruction
     this.dismissPersistentErrorToast();
+  }
+
+  /**
+   * Navigate to appropriate page based on current role
+   * Members should not access reception dashboard
+   */
+  private navigateBasedOnRole() {
+    if (this.roleService.isMember()) {
+      this.router.navigate(['/home']);
+    }
   }
 
   /**

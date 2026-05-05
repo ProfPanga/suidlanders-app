@@ -42,6 +42,11 @@ export const routes: Routes = [
       import('./pages/qr-test/qr-test.page').then((m) => m.QRTestPage),
   },
   {
+    path: 'qr-debug',
+    loadComponent: () =>
+      import('./pages/qr-debug/qr-debug.page').then((m) => m.QrDebugPage),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
@@ -49,5 +54,9 @@ export const routes: Routes = [
   {
     path: 'reception',
     loadComponent: () => import('./pages/reception/reception.page').then( m => m.ReceptionPage)
+  },
+  {
+    path: 'settings',
+    loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage)
   },
 ];

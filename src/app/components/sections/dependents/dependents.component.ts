@@ -127,9 +127,7 @@ export class DependentsComponent implements ControlValueAccessor {
       await this.databaseService.promoteDependent(dep);
       // Remove from local list after successful promotion
       this.removeDependent(index);
-      alert('Afhanklike bevorder na Lid.');
     } catch (e) {
-      alert('Kon nie afhanklike bevorder nie.');
     }
   }
 

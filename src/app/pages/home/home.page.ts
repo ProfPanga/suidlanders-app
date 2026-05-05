@@ -29,6 +29,7 @@ import { SyncService } from '../../services/sync.service';
 import { DatabaseService } from '../../services/database.service';
 import { QRProvisioningService } from '../../services/qr-provisioning.service';
 import { QRScannerComponent } from '../../components/qr-scanner/qr-scanner.component';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   selector: 'app-home',
@@ -237,7 +238,8 @@ export class HomePage implements OnInit {
     private readonly authService: AuthService,
     private readonly syncService: SyncService,
     private readonly databaseService: DatabaseService,
-    private readonly qrProvisioningService: QRProvisioningService
+    private readonly qrProvisioningService: QRProvisioningService,
+    public readonly roleService: RoleService // public for template access
   ) {
     addIcons({ personAdd, documentText, qrCode, settings, logIn, sync });
   }
@@ -246,6 +248,17 @@ export class HomePage implements OnInit {
     this.isStaff = this.authService.isAuthenticated();
     this.refreshDataCount();
     this.loadMemberProfileFlag();
+    this.navigateBasedOnRole();
+  }
+
+  /**
+   * Navigate to appropriate page based on current role
+   * Reception staff should go to reception dashboard, not home
+   */
+  private navigateBasedOnRole() {
+    if (this.roleService.isReceptionStaff()) {
+      this.router.navigate(['/reception']);
+    }
   }
 
   // Ensure Home reflects latest state when navigated back to
@@ -398,14 +411,12 @@ export class HomePage implements OnInit {
    */
   async scanQRToSync() {
     console.log('🔍 scanQRToSync called');
-    alert('scanQRToSync called!'); // Visual confirmation
 
     try {
       // Import ML Kit scanner
       console.log('📦 Importing ML Kit...');
       const { BarcodeScanner, BarcodeFormat } = await import('@capacitor-mlkit/barcode-scanning');
       console.log('✅ ML Kit imported');
-      alert('ML Kit imported!');
 
       // Request camera permission
       console.log('🎥 Requesting camera permission...');
@@ -425,23 +436,19 @@ export class HomePage implements OnInit {
         formats: [BarcodeFormat.QrCode],
       });
       console.log('📊 Scan result:', result);
-      alert(`Scan complete! Barcodes found: ${result.barcodes?.length || 0}`); // DEBUG
 
       // Check if scan was cancelled
       if (!result.barcodes || result.barcodes.length === 0) {
         console.log('QR scan cancelled or no QR detected');
-        alert('No QR code detected! Try again with better lighting.'); // DEBUG
         return;
       }
 
       // Parse the first QR code found
       const rawValue = result.barcodes[0].rawValue;
       console.log('📄 Raw QR value:', rawValue);
-      alert(`Raw QR data: ${rawValue?.substring(0, 50)}...`); // DEBUG first 50 chars
 
       if (!rawValue) {
         this.showToast('QR kode is leeg');
-        alert('QR code is empty!'); // DEBUG
         return;
       }
 
@@ -455,23 +462,18 @@ export class HomePage implements OnInit {
       }
 
       console.log('QR payload received:', payload);
-      alert(`QR Scanned! URLs: ${payload.serverUrls?.join(', ') || 'none'}`); // DEBUG
 
       // Trigger provisioning flow
       console.log('Calling provisioning service...');
-      alert('About to call scanAndProvision...'); // DEBUG
       try {
         const provisioningResult = await this.qrProvisioningService.scanAndProvision(payload);
         console.log('Provisioning result:', provisioningResult);
-        alert(`Provisioning result: ${provisioningResult.success ? 'SUCCESS' : 'FAILED'}`); // DEBUG
 
         if (provisioningResult.success) {
           this.refreshDataCount(); // Refresh UI after sync
         } else {
-          alert(`Error: ${provisioningResult.error}`); // DEBUG
         }
       } catch (provError: any) {
-        alert(`Provisioning threw error: ${provError.message || provError}`); // DEBUG
         console.error('Provisioning threw error:', provError);
         this.showToast('Provisioning misluk');
       }

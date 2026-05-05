@@ -231,7 +231,6 @@ export class DocumentsInfoComponent implements ControlValueAccessor, OnInit {
 
   validateFile(file: File): boolean {
     if (file.size > this.maxFileSize) {
-      alert('Lêer is te groot. Maksimum grootte is 10MB.');
       return false;
     }
 
@@ -240,7 +239,6 @@ export class DocumentsInfoComponent implements ControlValueAccessor, OnInit {
       .split(',')
       .map((type) => type.replace('.', ''));
     if (!fileType || !validTypes.includes(fileType)) {
-      alert('Ongeldige lêertipe. Aanvaarde tipes: PDF, JPG, JPEG, PNG');
       return false;
     }
 
@@ -321,7 +319,6 @@ export class DocumentsInfoComponent implements ControlValueAccessor, OnInit {
         path: filePath,
       };
     } catch (e) {
-      alert('Kon nie lêer stoor nie. Probeer asseblief weer.');
       return null;
     }
   }
@@ -369,9 +366,7 @@ export class DocumentsInfoComponent implements ControlValueAccessor, OnInit {
           // continue with next
         }
       }
-      alert("Dokumente gekopieer na 'Documents/Suidlanders' vir toetsing.");
     } catch (e) {
-      alert('Kon nie dokumente uitvoer vir toetsing nie.');
     }
   }
 
@@ -440,11 +435,7 @@ export class DocumentsInfoComponent implements ControlValueAccessor, OnInit {
         } catch {}
       }
 
-      alert(
-        `Gestoorde kopie geskep (kyk in Dokumente of Downloads/Suidlanders).`
-      );
     } catch (e) {
-      alert('Kon nie dokumente uitvoer nie.');
     }
   }
 
@@ -501,7 +492,6 @@ export class DocumentsInfoComponent implements ControlValueAccessor, OnInit {
         files: filesForShare,
       });
     } catch (e) {
-      alert('Kon nie dokumente deel nie.');
     }
   }
 }

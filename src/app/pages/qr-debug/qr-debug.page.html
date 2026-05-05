@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>QR Provisioning Debug</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Test Configuration</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Base URL</ion-label>
+        <ion-input [(ngModel)]="testUrl" placeholder="http://camp.local:3000"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Sync Code</ion-label>
+        <ion-input [(ngModel)]="syncCode" placeholder="Enter sync code"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Camp ID</ion-label>
+        <ion-input [(ngModel)]="campId" value="default-camp"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Actions</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" (click)="generateFreshCode()">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Generate Fresh Code
+      </ion-button>
+
+      <ion-button expand="block" (click)="testHealthEndpoint()">
+        <ion-icon name="pulse" slot="start"></ion-icon>
+        Test Health Endpoint
+      </ion-button>
+
+      <ion-button expand="block" (click)="testExchangeEndpoint()" color="primary">
+        <ion-icon name="swap-horizontal" slot="start"></ion-icon>
+        Test Exchange Endpoint
+      </ion-button>
+
+      <ion-button expand="block" (click)="clearResults()" color="medium" fill="outline">
+        <ion-icon name="trash" slot="start"></ion-icon>
+        Clear Results
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="results.length > 0">
+    <ion-card-header>
+      <ion-card-title>Results</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="results-log">
+        <div *ngFor="let result of results" class="log-entry">
+          {{ result }}
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

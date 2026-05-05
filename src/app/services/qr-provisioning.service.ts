@@ -36,13 +36,11 @@ export class QRProvisioningService {
    */
   async scanAndProvision(payload: QRPayload): Promise<ProvisioningResult> {
     console.log('🚀 scanAndProvision called with payload:', payload);
-    alert('Starting provisioning...'); // DEBUG
 
     let loading: HTMLIonLoadingElement | null = null;
 
     try {
       // Show loading indicator (optional - don't block if it fails)
-      alert('About to create loading indicator...'); // DEBUG
       console.log('⏳ Creating loading indicator...');
       try {
         loading = await Promise.race([
@@ -53,18 +51,13 @@ export class QRProvisioningService {
         ]);
         if (loading) {
           await loading.present();
-          alert('Loading indicator shown!'); // DEBUG
-        } else {
-          alert('Loading indicator timed out, continuing...'); // DEBUG
         }
       } catch (loadingError) {
         console.warn('Loading indicator failed, continuing without it:', loadingError);
-        alert('Loading indicator failed, continuing...'); // DEBUG
       }
 
       // Step 0: Connect to camp WiFi network
       console.log('📶 Connecting to WiFi:', payload.wifi.ssid);
-      alert(`Connecting to WiFi: ${payload.wifi.ssid}`); // DEBUG
       const wifiConnected = await this.connectToWiFi(payload.wifi);
 
       if (!wifiConnected) {
@@ -78,7 +71,7 @@ export class QRProvisioningService {
         };
       }
 
-      alert('WiFi connected successfully!'); // DEBUG
+      console.log('✅ WiFi connected successfully');
 
       // Update loading message for server connection
       if (loading) {
@@ -95,13 +88,11 @@ export class QRProvisioningService {
 
       // Step 1: Test server URLs to find working one
       console.log('🔍 Testing server URLs:', payload.serverUrls);
-      alert(`Testing URLs: ${payload.serverUrls.join(', ')}`); // DEBUG
       const workingUrl = await this.testServerURLs(payload.serverUrls);
       console.log('📡 Working URL:', workingUrl);
 
       if (!workingUrl) {
         console.log('❌ No working URL found');
-        alert('No server URLs reachable!'); // DEBUG
         if (loading) await loading.dismiss();
         await this.showError(
           'Kon nie kamp bediener bereik nie. Maak seker jy is gekoppel aan kamp WiFi.'
@@ -113,7 +104,6 @@ export class QRProvisioningService {
       }
 
       console.log('✅ Found working URL:', workingUrl);
-      alert(`Connected to: ${workingUrl}`); // DEBUG
 
       // Update loading message (skip if loading controller not available)
       if (loading) {
@@ -190,7 +180,6 @@ export class QRProvisioningService {
         };
       }
     } catch (error: any) {
-      alert(`ERROR CAUGHT: ${error.message || error}`); // DEBUG
       console.error('Provisioning failed:', error);
       if (loading) {
         try {
@@ -245,7 +234,6 @@ export class QRProvisioningService {
     const startTime = Date.now(); // Declare outside try-catch for access in both blocks
 
     try {
-      alert(`Pinging: ${url}/api/members/health`); // DEBUG
 
       // Use Capacitor's native HTTP to bypass WebView network security restrictions
       const response = await CapacitorHttp.get({
@@ -258,13 +246,11 @@ export class QRProvisioningService {
       });
 
       const duration = Date.now() - startTime;
-      alert(`Ping response: ${response.status} in ${duration}ms - ${response.status === 200 ? 'OK' : 'FAILED'}`); // DEBUG
       console.log('Ping response data:', response.data);
       return response.status === 200;
     } catch (error: any) {
       const duration = Date.now() - startTime;
       console.error(`Request to ${url} failed after ${duration}ms:`, error);
-      alert(`Ping ERROR after ${duration}ms: ${JSON.stringify(error)}`); // DEBUG - show full error
       return false;
     }
   }
@@ -284,25 +270,29 @@ export class QRProvisioningService {
     campId: string
   ): Promise<string | null> {
     try {
-      alert(`Exchanging code at: ${baseUrl}\nCode: ${syncCode}\nCamp: ${campId}`); // DEBUG
 
-      const response = await firstValueFrom(
-        this.authService.exchangeCampCodeAt(baseUrl, syncCode, campId)
-      );
+      // Use CapacitorHttp instead of Angular HttpClient to bypass CORS issues
+      const response = await CapacitorHttp.post({
+        url: `${baseUrl}/api/auth/camp/exchange`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: {
+          syncCode: syncCode,
+          campId: campId,
+        },
+      });
 
-      alert(`Exchange response: ${JSON.stringify(response)}`); // DEBUG
 
-      if (response && response.syncToken) {
-        alert(`Got sync token: ${response.syncToken.substring(0, 20)}...`); // DEBUG
-        return response.syncToken;
+      // Backend returns 201 Created for successful exchange
+      if ((response.status === 200 || response.status === 201) && response.data && response.data.syncToken) {
+        return response.data.syncToken;
       }
 
       console.error('No sync token in response:', response);
-      alert(`No sync token in response! Response: ${JSON.stringify(response)}`); // DEBUG
       return null;
     } catch (error: any) {
       console.error('Sync code exchange failed:', error);
-      alert(`Exchange ERROR: ${error.message || JSON.stringify(error)}`); // DEBUG
       return null;
     }
   }
@@ -315,7 +305,6 @@ export class QRProvisioningService {
    */
   private async connectToWiFi(wifi: { ssid: string; password: string; security?: string }): Promise<boolean> {
     try {
-      alert(`Attempting WiFi connection to: ${wifi.ssid}`); // DEBUG
 
       // Use the CapacitorWifiConnect plugin to connect to the network
       const result = await CapacitorWifiConnect.secureConnect({
@@ -324,7 +313,6 @@ export class QRProvisioningService {
         saveNetwork: true,
       });
 
-      alert(`WiFi connect result: ${JSON.stringify(result)}`); // DEBUG
 
       // Check if connection was successful (ConnectState enum: 0 = connected)
       if (result && result.value === 0) {
@@ -336,7 +324,6 @@ export class QRProvisioningService {
       return false;
     } catch (error: any) {
       console.error(`WiFi connection failed:`, error);
-      alert(`WiFi connect ERROR: ${error.message || JSON.stringify(error)}`); // DEBUG
       return false;
     }
   }

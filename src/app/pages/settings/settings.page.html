@@ -1,0 +1,38 @@
+<app-header title="Instellings"></app-header>
+
+<ion-content class="ion-padding">
+  <!-- Role Switcher (Demo Mode Only) -->
+  <ion-card *ngIf="isDemoMode">
+    <ion-card-header>
+      <ion-card-title>🎬 Demo Rol Wissel</ion-card-title>
+      <ion-card-subtitle>Slegs vir demonstrasie doeleindes</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-segment [(ngModel)]="currentRole" (ionChange)="onRoleChange($event)">
+        <ion-segment-button value="member">
+          <ion-label>Lid</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="reception">
+          <ion-label>Ontvangs Personeel</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-note class="ion-margin-top">
+        <p><strong>Huidige rol:</strong> {{ getRoleLabel(currentRole) }}</p>
+        <p class="ion-text-wrap">
+          Wissel tussen Lid en Personeel sienings om verskillende gebruikers-ervarings te demonstreer.
+        </p>
+      </ion-note>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Placeholder for future settings -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>App Instellings</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Meer instellings kom binnekort...</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

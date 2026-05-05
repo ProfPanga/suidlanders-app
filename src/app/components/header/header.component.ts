@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonButtons } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { settings } from 'ionicons/icons';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 
 @Component({
@@ -9,6 +12,9 @@ import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
       <ion-toolbar>
         <ion-title>{{ title }}</ion-title>
         <ion-buttons slot="end">
+          <ion-button (click)="navigateToSettings()">
+            <ion-icon name="settings"></ion-icon>
+          </ion-button>
           <app-theme-toggle></app-theme-toggle>
         </ion-buttons>
       </ion-toolbar>
@@ -20,9 +26,19 @@ import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonButton,
+    IonIcon,
     ThemeToggleComponent
   ]
 })
 export class HeaderComponent {
   @Input() title: string = '';
+
+  constructor(private router: Router) {
+    addIcons({ settings });
+  }
+
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
+  }
 } 
