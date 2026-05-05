@@ -431,9 +431,14 @@ DB Read → Decrypt (CryptoJS) → Display to User
 ```
 1. Camp Server generates QR:
    {
+     "wifi": {
+       "ssid": "SuidlandersKamp",
+       "password": "Kamp2026!",
+       "security": "WPA2"
+     },
      "serverUrls": [
+       "http://192.168.4.1:3000",    // WiFi AP
        "http://192.168.1.100:3000",  // Ethernet
-       "http://192.168.43.1:3000",   // AP Mode
        "http://camp.local:3000"      // mDNS
      ],
      "syncCode": "ABC123",
@@ -442,13 +447,37 @@ DB Read → Decrypt (CryptoJS) → Display to User
 
 2. Device scans QR
 
-3. Device tries each URL sequentially until one succeeds
+3. App automatically connects to camp WiFi (Android only - iOS requires manual)
 
-4. Exchange sync code for token at successful URL
+4. Device tries each URL sequentially until one succeeds (10s timeout per URL)
 
-5. Use that URL as base for all sync requests
+5. Exchange sync code for token using CapacitorHttp.post() [CRITICAL: bypasses CORS]
 
-6. Clear URL + token after sync
+6. Use that URL as base for all sync requests
+
+7. Clear sync token after sync (keep base URL for future syncs)
+```
+
+**Critical Implementation Detail - CapacitorHttp:**
+
+⚠️ **MUST use CapacitorHttp for all camp server communication:**
+- Angular HttpClient is subject to WebView CORS policies
+- Capacitor apps run in a WebView (not native browser)
+- CapacitorHttp uses native HTTP stack, bypassing WebView restrictions
+- Without this, exchange endpoint fails with "Http failure response: 0 Unknown Error"
+
+```typescript
+// ✅ CORRECT - Bypasses CORS
+import { CapacitorHttp } from '@capacitor/core';
+
+const response = await CapacitorHttp.post({
+  url: `${baseUrl}/api/auth/camp/exchange`,
+  headers: { 'Content-Type': 'application/json' },
+  data: { syncCode, campId }
+});
+
+// ❌ WRONG - Subject to CORS restrictions
+this.http.post(`${baseUrl}/api/auth/camp/exchange`, { syncCode, campId });
 ```
 
 **Network Modes:**

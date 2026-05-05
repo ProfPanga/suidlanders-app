@@ -4,171 +4,131 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Suidlanders Emergency Plan App - A cross-platform Ionic/Angular application for managing emergency plan information with 100% offline capability. Built for Suidlanders members to register and sync data in offline camp environments using a local Raspberry Pi server.
+Suidlanders Emergency Plan App — a monorepo containing:
+- **Frontend**: Ionic/Angular mobile app (`src/`)
+- **Backend**: NestJS camp server API (`backend/`)
 
-**Tech Stack**: Angular 19, Ionic 8, Capacitor 7, TypeScript
+Built for 100% offline operation in emergency camp scenarios. Members register via the app; data syncs to a local Raspberry Pi server over LAN.
+
+**Tech Stack**: Angular 19, Ionic 8, Capacitor 7, TypeScript (frontend) · NestJS 10, SQLite, TypeORM (backend)
 
 ## Common Commands
 
-### Development
+### Frontend
 ```bash
-# Start development server
-npm start
-# or
-ionic serve
-
-# Build for production
-npm run build
-
-# Run tests
-npm test
-
-# Lint code
+npm start                   # Dev server at localhost:4200
+npm run build               # Production build (also fixes www/browser → www)
+npm test                    # Run all unit tests (Karma/Jasmine)
+ng test --include="**/database.service.spec.ts"  # Run a single test file
 npm run lint
+npm run buildAndroid        # Full Android APK build (see Android Build section)
+```
 
-# Build Android APK
-npm run buildAndroid
-# Note: This builds the Angular app, moves browser output to www root, syncs with Capacitor, and builds Android debug APK
+### Backend
+```bash
+cd backend
+npm install                 # First time only
+npm run seed                # Create demo data (6 members: 2 Red, 4 Green camp)
+npm start                   # Start server at localhost:3000
 ```
 
 ### Asset Generation
 ```bash
-# Generate Android assets from resources/icon.png
-npm run assets:generate
-
-# Generate all platform assets (Android + iOS)
-npm run assets:generate:all
+npm run assets:generate       # Android assets from resources/icon.png (1024×1024)
+npm run assets:generate:all   # Android + iOS
 ```
 
 ## Architecture Overview
 
 ### Offline-First Design
-- **100% offline operation** - No internet required; designed for emergency camp scenarios
-- **LAN sync via QR** - Staff generates QR with server URLs + sync token; devices scan and sync over local network
-- **USB fallback** - Encrypted export/import bundles when networking unavailable
-- **Dual database system** - Automatic platform detection:
-  - **Mobile**: SQLite via @capacitor-community/sqlite
-  - **Web/Desktop**: IndexedDB via Dexie
-  - Automatic fallback if platform detection fails
+- **100% offline operation** — designed for emergency camp scenarios with no internet
+- **LAN sync via QR** — staff generates QR with WiFi credentials + server URLs + sync token; devices scan and auto-connect
+- **USB fallback** — encrypted export/import bundles when networking unavailable
+- **Dual database**:
+  - Mobile → SQLite via `@capacitor-community/sqlite`
+  - Web/Desktop → IndexedDB via Dexie
+  - Detection is automatic based on `Platform.is('desktop' | 'mobileweb')`
 
-### Service Layer Architecture
+### User Modes
+- **Guest mode** — members register without login; `home` and `member-form` routes are publicly accessible
+- **Staff mode** — login required for `data-viewer` and other protected routes; uses JWT via `AuthGuard`
 
-**Core Services** (src/app/services/):
-- `database.service.ts` - Database abstraction layer, handles SQLite ↔ IndexedDB switching
-- `sync.service.ts` - Manages data synchronization with camp server (LAN-based)
-- `sync-queue.service.ts` - Queue-based offline sync with conflict resolution
-- `indexed-db.service.ts` - Dexie wrapper for web storage
-- `api.service.ts` - HTTP client for camp server communication
-- `export.service.ts` - HTML export and data formatting
-- `qr.service.ts` - QR code generation/scanning for provisioning and member cards
-- `auth.service.ts` - JWT + short-lived sync token handling
-- `theme.service.ts` - Dark/light mode management
+### Service Layer (`src/app/services/`)
+- `database.service.ts` — abstraction layer switching SQLite ↔ IndexedDB; **always use this, never access storage directly from components**
+- `sync.service.ts` — LAN data sync with camp server (auto-sync every 5 min)
+- `sync-queue.service.ts` — queue-based offline sync with timestamp conflict resolution
+- `indexed-db.service.ts` — Dexie wrapper
+- `api.service.ts` — HTTP client for camp server
+- `qr-provisioning.service.ts` — orchestrates QR scan → WiFi connect → token exchange → sync flow
+- `qr.service.ts` — QR code generation/scanning
+- `auth.service.ts` — JWT + short-lived sync tokens
+- `role.service.ts` — guest/staff role management
+- `export.service.ts` — HTML export and data formatting
+- `theme.service.ts` — dark/light mode
 
-**Important**: Always use DatabaseService abstraction - never access SQLite/IndexedDB directly from components.
+### Member Form Structure
+10 sections, all in `src/app/components/sections/`, each implementing `ControlValueAccessor` for reactive form integration:
+1. Basic Info, 2. Member Info, 3. Address Info, 4. Medical Info, 5. Vehicle Info
+6. Skills Info, 7. Equipment Info, 8. Inventory, 9. Camp Info, 10. Documents Info
 
-### Form Structure
+### Database Schema (11 tables)
+`members`, `addresses`, `medical_info`, `vehicles`, `dependents`, `skills`, `equipment`, `inventory`, `camps`, `documents`, `sync_queue`
 
-Member registration divided into **10 sections** (all in src/app/components/sections/):
-1. Basic Info - Personal details, contact info
-2. Member Info - Suidlander-specific data, emergency contacts, qualifications
-3. Address Info - Residential location, GPS coordinates
-4. Medical Info - Blood type, chronic conditions, medication
-5. Vehicle Info - Primary/secondary vehicles, trailers
-6. Skills Info - Occupation, qualifications, licenses
-7. Equipment Info - Communication, power, water, defense, camping gear
-8. Inventory (Other Info) - Water, food, supplies
-9. Camp Info - Camp location, arrival date
-10. Documents Info - ID, licenses, certificates (PDF/JPG/PNG upload)
+Sensitive fields are encrypted with CryptoJS. Sync queues changes through `sync_queue` and uses timestamp-based conflict resolution.
 
-**Pattern**: Each section is a standalone Angular component implementing ControlValueAccessor for reactive form integration.
+### Backend (`backend/`)
+NestJS app using SQLite (`data/camp.db`) + TypeORM. Key modules:
+- `MembersController/Service` — member CRUD + triage logic
+- `CampAuthController/Service` — generates short-lived sync codes, exchanges them for tokens
+- `TriageService` — assigns members to Red/Green camp based on criteria
 
-### Database Schema
+## Camp Sync Flow
 
-11 tables with encrypted sensitive data:
-- members (primary table)
-- addresses, medical_info, vehicles, dependents
-- skills, equipment, inventory
-- camps, documents, sync_queue
+1. Staff calls `POST /api/auth/camp/init` → backend returns QR payload with WiFi credentials + `serverUrls[]` + sync code
+2. App scans QR → `QRProvisioningService.scanAndProvision()` orchestrates:
+   - Connects to camp WiFi via `@falconeta/capacitor-wifi-connect` (Android only; iOS needs manual WiFi)
+   - Tests `serverUrls` sequentially (10s timeout each) until one responds
+   - Exchanges code for sync token via `CapacitorHttp.post()` ← **must use CapacitorHttp, not HttpClient**
+   - Triggers `SyncService` sync
+   - Clears token after sync (base URL kept for future syncs)
 
-**Sync Strategy**:
-- Changes queued in sync_queue table
-- Auto-sync every 5 minutes (when LAN server reachable)
-- Manual sync trigger available
-- Timestamp-based conflict resolution
+**Why CapacitorHttp?** Angular `HttpClient` is subject to WebView CORS policies. `CapacitorHttp` uses the native HTTP stack, bypassing WebView restrictions that cause `"Http failure response: 0 Unknown Error"` on LAN requests.
 
 ## Testing & Debugging
 
-Built-in test routes:
-- `/db-test` - Database connection and CRUD testing
-- `/data-viewer` - Inspect stored member data
-- `/qr-test` - QR code generation/scanning verification
+Built-in test routes (no auth required):
+- `/db-test` — database connection and CRUD testing
+- `/qr-test` — QR code generation/scanning
+- `/qr-debug` — full provisioning debug (health check, generate codes, test exchange)
+- `/data-viewer` — inspect stored members (requires staff login)
 
-**Important**: Always update these test components when modifying related services (database, QR, sync).
+**Local QR provisioning test** (no physical device needed):
+1. `cd backend && npm start`
+2. `npm start` (frontend at localhost:4200)
+3. Navigate to `/qr-debug`
+
+Always update these test components when modifying related services.
+
+## Android Build Process
+
+Angular outputs to `www/browser/` but Capacitor expects `www/`. The `buildAndroid` script handles this:
+```bash
+ionic build                               # → www/browser/
+mv www/browser/* www/ && rmdir www/browser
+npx cap sync android
+cd android && ./gradlew clean assembleDebug
+```
 
 ## Development Guidelines
 
 ### Language Consistency
-- **UI**: All user-facing text must be in Afrikaans
-- **Code**: Comments and variable names in English
-- **Validation messages**: Afrikaans
+- **UI and validation messages**: Afrikaans
+- **Code, comments, variable names**: English
 
 ### Code Changes
-- Focus only on the specific feature/bug being addressed
-- **Do not** modify unrelated code without explicit permission
-- Follow existing patterns (see form section components as templates)
+- Focus only on the specific feature/bug — do not touch unrelated code
 - Suggest improvements before implementing them
-
-### Mobile Considerations
-- Test on Android device/emulator after changes
-- Use Ionic components for native feel
-- Verify camera and file system permissions work
-- Test offline functionality thoroughly
+- Follow the pattern of existing form section components
 
 ### Educational Approach
-The project owner is a **junior developer**. Always:
-- Explain reasoning behind architectural decisions
-- Break down complex concepts into simple parts
-- Reference why certain patterns are used
-- Encourage questions and provide detailed answers
-
-## Camp Sync Flow
-
-1. Staff accesses camp server backend: `/api/auth/camp/init`
-2. Backend generates QR with `serverUrls` array (mDNS/IP/AP addresses) + short-lived sync code
-3. App scans QR, tries each URL until one connects
-4. Device exchanges code for temporary sync token
-5. Syncs member data over LAN
-6. Token + base URL cleared after sync
-
-Alternative: USB encrypted bundle export/import when network unavailable.
-
-## Current Development Phase
-
-**Phase 2** - Medical Intake Form + Dependents
-- Update medical intake form structure
-- Add dependent information capability
-- App sharing without internet
-
-See `.cursor/rules/project-guidelines.mdc` for complete phase checklist and master task list.
-
-## Platform-Specific Notes
-
-### Android Build Process
-The `buildAndroid` script handles the quirk where Angular outputs to `www/browser/` instead of `www/`:
-```bash
-ionic build                          # Builds to www/browser
-mv www/browser/* www/                # Moves to www root
-npx cap sync android                 # Syncs with Capacitor
-cd android && ./gradlew clean assembleDebug  # Builds APK
-```
-
-### Asset Generation
-Logo stored in `resources/icon.png` (1024×1024 recommended). Run `npm run assets:generate` after updating logo to regenerate launcher icons, splash screens, and web assets.
-
-## Security Notes
-
-- Local data encrypted using CryptoJS (key in DatabaseService - needs secure storage in production)
-- USB bundles encrypted and integrity-checked
-- JWT auth for staff; short-lived sync-only tokens for device sync
-- File upload validation: PDF/JPG/PNG, 10MB max (configurable)
-- No internet dependency reduces attack surface
+The project owner is a **junior developer**. Always explain the reasoning behind architectural decisions and break complex concepts into simple steps.

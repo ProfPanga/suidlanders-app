@@ -111,11 +111,20 @@ This application is designed to manage and store emergency plan information for 
 - Scan QR codes for quick information retrieval
 - Save QR codes as PNG images
 
-### 5. Offline Camp Sync (New)
+### 5. Offline Camp Sync
 
 - 100% offline architecture with a local camp-server (NestJS) running on a Raspberry Pi
-- Devices sync over LAN using a QR-provisioned server URL list (mDNS/IP/AP) and a short-lived sync token
+- Staff generates a QR code containing WiFi credentials + server URLs + a short-lived sync token
+- Android devices **automatically connect to the camp WiFi** when scanning the QR
+- Devices try each URL sequentially until one responds, exchange the code for a sync token, then sync
 - USB-based encrypted export/import as fallback when networking is unavailable
+
+### 6. Role-Based UI (Demo Mode)
+
+- App supports two roles: **Member** (registration view) and **Reception Staff** (dashboard view)
+- Toggle roles via the Settings page (gear icon in the header)
+- Role-based routing: staff is redirected to the reception dashboard; members stay on the registration form
+- Demo mode only — full RBAC is planned for a future release
 
 ## Technical Specifications
 
@@ -155,9 +164,11 @@ npm install
 
 3. Start the development server:
 
-````bash
+```bash
 ionic serve
-## Icon generation (logo)
+```
+
+## Icon Generation (logo)
 
 1. Create the folder `resources/` at the project root if it does not exist.
 2. Save your square logo PNG as `resources/icon.png` (ideally 1024×1024 with transparency).
@@ -173,11 +184,13 @@ This will update Android launcher icons and web favicon/manifest icons. Re-run a
 
 ## Camp Sync (LAN)
 
-- Staff generates a camp QR from the backend: `/api/auth/camp/init`
-- The app scans the QR, tries the provided `serverUrls`, exchanges the code for a temporary sync token, and syncs
-- The chosen camp base URL and token are stored temporarily and cleared after successful sync
+1. Staff calls `POST /api/auth/camp/init` → backend returns QR with WiFi credentials + `serverUrls[]` + sync code
+2. App scans QR → automatically connects to camp WiFi (Android; iOS requires manual connect)
+3. Tests each URL sequentially until one responds (10s timeout each)
+4. Exchanges code for sync token via `CapacitorHttp` (bypasses WebView CORS on LAN)
+5. Syncs member data; token is cleared after sync (base URL kept for future syncs)
 
-See `TESTING.md` for a step-by-step simulation of QR exchange and sync in the browser.
+Navigate to `/qr-debug` in the browser dev server for an end-to-end test without a physical device.
 
 ## Contributing
 
@@ -350,14 +363,13 @@ For any inquiries, contact the Suidlanders management.
 
 ## Progress Tracking
 
-### Current Phase: 0
-
-- [x] Basic form implementation
-- [x] Ionic/Angular setup
-- [x] QR code functionality
+- [x] Basic member registration form (10 sections)
+- [x] Offline database (SQLite on Android, IndexedDB on web)
+- [x] QR code generation and scanning
 - [x] HTML export
-- [ ] Database setup
-- [ ] Core services implementation
-
-_Last updated: [DATE]_
-```
+- [x] Camp server (NestJS + SQLite + triage logic)
+- [x] LAN sync with QR provisioning (WiFi auto-connect + token exchange)
+- [x] Reception staff dashboard
+- [x] Demo role switcher (Settings page)
+- [ ] Full production RBAC (Epic 3)
+- [ ] iOS WiFi auto-connect (requires manual on iOS)
