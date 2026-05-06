@@ -1,2 +1,58 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+// =============================================================================
+// Ionic Color System — Mapped from Brand Palette
+// =============================================================================
+// Values must be literal hex/rgb — Ionic's Shadow DOM CSS cannot reliably
+// resolve chained var() references. When you change a colour in brand.scss,
+// update the matching line here too.
+// Brand palette reference: src/theme/brand.scss
+// =============================================================================
+
+:root {
+  // Primary → #07628f  (brand-primary)
+  --ion-color-primary:             #07628f;
+  --ion-color-primary-rgb:         7, 98, 143;
+  --ion-color-primary-contrast:    #ffffff;
+  --ion-color-primary-contrast-rgb:255, 255, 255;
+  --ion-color-primary-shade:       #004d73;
+  --ion-color-primary-tint:        #207299;
+
+  // Secondary → #0095d8  (brand-secondary)
+  --ion-color-secondary:           #0095d8;
+  --ion-color-secondary-rgb:       0, 149, 216;
+  --ion-color-secondary-contrast:  #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade:     #007ab8;
+  --ion-color-secondary-tint:      #1aa0db;
+
+  // Tertiary → #088bea  (brand-info)
+  --ion-color-tertiary:            #088bea;
+  --ion-color-tertiary-rgb:        8, 139, 234;
+  --ion-color-tertiary-contrast:   #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade:      #0772c0;
+  --ion-color-tertiary-tint:       #21a3ef;
+
+  // Success → #06b217  (brand-success)
+  --ion-color-success:             #06b217;
+  --ion-color-success-rgb:         6, 178, 23;
+  --ion-color-success-contrast:    #ffffff;
+  --ion-color-success-contrast-rgb:255, 255, 255;
+  --ion-color-success-shade:       #059312;
+  --ion-color-success-tint:        #1fba30;
+
+  // Warning → #ff9500  (brand-warning)
+  --ion-color-warning:             #ff9500;
+  --ion-color-warning-rgb:         255, 149, 0;
+  --ion-color-warning-contrast:    #000000;
+  --ion-color-warning-contrast-rgb:0, 0, 0;
+  --ion-color-warning-shade:       #e68500;
+  --ion-color-warning-tint:        #ff9f1a;
+
+  // Danger → #e11313  (brand-error)
+  --ion-color-danger:              #e11313;
+  --ion-color-danger-rgb:          225, 19, 19;
+  --ion-color-danger-contrast:     #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade:        #c10f0f;
+  --ion-color-danger-tint:         #e42b2b;
+}

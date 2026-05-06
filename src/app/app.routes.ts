@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { environment } from '../environments/environment';
 
 export const routes: Routes = [
   {
@@ -16,10 +17,39 @@ export const routes: Routes = [
   {
     path: 'member-form',
     loadComponent: () =>
-      import('./components/sections/member-form/member-form.component').then(
-        (m) => m.MemberFormComponent
+      import('./pages/member-form/member-form-overview.page').then(
+        (m) => m.MemberFormOverviewPage
       ),
-    // No AuthGuard - members can register without login
+  },
+  {
+    path: 'member-form/required-fields',
+    loadComponent: () =>
+      import('./pages/member-form/required-fields.page').then(
+        (m) => m.RequiredFieldsPage
+      ),
+  },
+  {
+    path: 'member-form/medicalStaff',
+    loadComponent: () =>
+      import('./pages/member-form/staff-placeholder.page').then(
+        (m) => m.StaffPlaceholderPage
+      ),
+    data: { staffKey: 'medicalStaff' },
+  },
+  {
+    path: 'member-form/securityStaff',
+    loadComponent: () =>
+      import('./pages/member-form/staff-placeholder.page').then(
+        (m) => m.StaffPlaceholderPage
+      ),
+    data: { staffKey: 'securityStaff' },
+  },
+  {
+    path: 'member-form/:section',
+    loadComponent: () =>
+      import('./pages/member-form/member-form-section.page').then(
+        (m) => m.MemberFormSectionPage
+      ),
   },
   {
     path: 'db-test',
@@ -48,7 +78,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: environment.demoMode ? 'settings' : 'home',
     pathMatch: 'full',
   },
   {

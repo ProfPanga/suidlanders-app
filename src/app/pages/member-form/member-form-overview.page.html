@@ -1,0 +1,39 @@
+<app-header title="Suidlander Inligtingsvorm" [showBack]="true"></app-header>
+
+<ion-content class="ion-padding">
+  <div class="sections-grid">
+    @for (section of sections; track section.key) {
+      <button class="section-card" (click)="navigateToSection(section.key)">
+        <div class="section-circle" [class.has-data]="hasData(section.key)">
+          <ion-icon [name]="section.icon"></ion-icon>
+        </div>
+        <span class="section-label">{{ section.label }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="staff-section">
+    <h3 class="staff-section__title">Personeel Toegang</h3>
+    <div class="sections-grid staff-grid">
+      @for (view of staffViews; track view.key) {
+        <button class="section-card staff-card" (click)="navigateToSection(view.key)">
+          <div class="section-circle">
+            <ion-icon [name]="view.icon"></ion-icon>
+          </div>
+          <span class="section-label">{{ view.label }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <ion-button expand="block" color="primary" (click)="exportData()">
+      <ion-icon name="document-outline" slot="start"></ion-icon>
+      Eksporteer as HTML
+    </ion-button>
+    <ion-button expand="block" color="primary" class="ion-margin-top" (click)="generateQR()">
+      <ion-icon name="qr-code" slot="start"></ion-icon>
+      Genereer QR Kode
+    </ion-button>
+  </div>
+</ion-content>

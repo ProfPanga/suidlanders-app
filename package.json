@@ -5,7 +5,7 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node -e \"console.log('\\n  Dev mode — open: http://localhost:4200/settings\\n')\" && ng serve",
     "build": "ng build && if [ -d www/browser ]; then mv www/browser/* www/ && rmdir www/browser; fi",
     "assets:generate": "npx --yes @capacitor/assets generate --android",
     "assets:generate:all": "npx --yes @capacitor/assets generate --android --ios",

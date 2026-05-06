@@ -53,6 +53,15 @@ npm run assets:generate:all   # Android + iOS
 - **Guest mode** — members register without login; `home` and `member-form` routes are publicly accessible
 - **Staff mode** — login required for `data-viewer` and other protected routes; uses JWT via `AuthGuard`
 
+### Demo / Dev Roles (`demoMode: true`)
+Both `environment.ts` and `environment.prod.ts` have `demoMode: true`. The app starts at `/settings` where you pick a journey:
+- **Lid** → `/home` → `/member-form`
+- **Ontvangs Personeel** → `/reception`
+- **Mediese Personeel** → `/member-form/medicalStaff`
+- **Sekuriteit** → `/member-form/securityStaff`
+
+Roles are managed by `RoleService` (`src/app/services/role.service.ts`) with `UserRole` enum: `MEMBER | RECEPTION_STAFF | MEDICAL_STAFF | SECURITY_STAFF`. Role is persisted to `localStorage`.
+
 ### Service Layer (`src/app/services/`)
 - `database.service.ts` — abstraction layer switching SQLite ↔ IndexedDB; **always use this, never access storage directly from components**
 - `sync.service.ts` — LAN data sync with camp server (auto-sync every 5 min)
@@ -67,9 +76,24 @@ npm run assets:generate:all   # Android + iOS
 - `theme.service.ts` — dark/light mode
 
 ### Member Form Structure
-10 sections, all in `src/app/components/sections/`, each implementing `ControlValueAccessor` for reactive form integration:
-1. Basic Info, 2. Member Info, 3. Address Info, 4. Medical Info, 5. Vehicle Info
-6. Skills Info, 7. Equipment Info, 8. Inventory, 9. Camp Info, 10. Documents Info
+10 member-facing sections in `src/app/components/sections/`, each implementing `ControlValueAccessor` for reactive form integration. Address fields are merged into Basic Info (no separate Address section).
+
+| Key | Label | Notes |
+|---|---|---|
+| `basicInfo` | Basiese Inligting | Includes address fields; Van + Volle Naam + ID Nommer required |
+| `required-fields` | Verpligte Velde | Info page — no form component |
+| `memberInfo` | Lid Inligting | |
+| `medicalInfo` | Mediese Inligting | Member-facing fields only (vaccines, chronic, allergies, etc.) |
+| `vehicleInfo` | Voertuig Inligting | |
+| `skillsInfo` | Vaardighede | |
+| `equipmentInfo` | Toerusting | |
+| `campInfo` | Kamp Inligting | |
+| `documentsInfo` | Dokumente | |
+| `dependents` | Afhanklikes | |
+
+**Staff-only routes** (no form component — triage fields only):
+- `/member-form/medicalStaff` — clinical triage fields (gait, vitals, symptoms, etc.)
+- `/member-form/securityStaff` — placeholder, content TBD
 
 ### Database Schema (11 tables)
 `members`, `addresses`, `medical_info`, `vehicles`, `dependents`, `skills`, `equipment`, `inventory`, `camps`, `documents`, `sync_queue`
@@ -118,6 +142,21 @@ mv www/browser/* www/ && rmdir www/browser
 npx cap sync android
 cd android && ./gradlew clean assembleDebug
 ```
+
+## Theme & Brand System
+
+Colours live in two files — edit `brand.scss` first, then mirror the change in `variables.scss`:
+
+| File | Purpose |
+|---|---|
+| `src/theme/brand.scss` | Single source of truth — all `--color-brand-*` and `--color-neutral-*` CSS variables |
+| `src/theme/variables.scss` | Maps brand values to Ionic's system (`--ion-color-primary` etc.) using **literal hex values** |
+
+**Important:** `variables.scss` must use literal hex/rgb values, not `var(--color-brand-*)` chains. Ionic's Shadow DOM CSS cannot reliably resolve chained custom properties. When you change a colour in `brand.scss`, update the matching line in `variables.scss` too.
+
+Both files are imported in `src/global.scss`. Only `global.scss` appears in `angular.json` styles — do not add `variables.scss` as a separate entry.
+
+Light mode `ion-item` background is set globally in `global.scss` to `var(--color-neutral-grey-80)` so form fields have a consistent grey appearance matching dark mode.
 
 ## Development Guidelines
 

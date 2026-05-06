@@ -8,6 +8,9 @@ import { DatabaseService } from '../../services/database.service';
   template: `
     <ion-header>
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/home"></ion-back-button>
+        </ion-buttons>
         <ion-title>Database Viewer</ion-title>
       </ion-toolbar>
     </ion-header>

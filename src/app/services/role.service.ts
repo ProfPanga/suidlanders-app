@@ -7,7 +7,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
  */
 export enum UserRole {
   MEMBER = 'member',
-  RECEPTION_STAFF = 'reception'
+  RECEPTION_STAFF = 'reception',
+  MEDICAL_STAFF = 'medical',
+  SECURITY_STAFF = 'security',
 }
 
 /**

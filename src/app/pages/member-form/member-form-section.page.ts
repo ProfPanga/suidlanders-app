@@ -1,0 +1,125 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { IonContent, IonButton, IonToast } from '@ionic/angular/standalone';
+import { HeaderComponent } from '../../components/header/header.component';
+import { BasicInfoComponent } from '../../components/sections/basic-info/basic-info.component';
+import { MemberInfoComponent } from '../../components/sections/member-info/member-info.component';
+import { AddressInfoComponent } from '../../components/sections/address-info/address-info.component';
+import { MedicalInfoComponent } from '../../components/sections/medical-info/medical-info.component';
+import { VehicleInfoComponent } from '../../components/sections/vehicle-info/vehicle-info.component';
+import { SkillsInfoComponent } from '../../components/sections/skills-info/skills-info.component';
+import { EquipmentInfoComponent } from '../../components/sections/equipment-info/equipment-info.component';
+import { CampInfoComponent } from '../../components/sections/camp-info/camp-info.component';
+import { OtherInfoComponent } from '../../components/sections/other-info/other-info.component';
+import { DocumentsInfoComponent } from '../../components/sections/documents-info/documents-info.component';
+import { DependentsComponent } from '../../components/sections/dependents/dependents.component';
+import { DatabaseService } from '../../services/database.service';
+import { MemberFormStateService } from '../../services/member-form-state.service';
+import { SyncService } from '../../services/sync.service';
+
+const SECTION_LABELS: Record<string, string> = {
+  basicInfo:     'Basiese Inligting',
+  memberInfo:    'Lid Inligting',
+  addressInfo:   'Adres Inligting',
+  medicalInfo:   'Mediese Inligting',
+  vehicleInfo:   'Voertuig Inligting',
+  skillsInfo:    'Vaardighede & Ervaring',
+  equipmentInfo: 'Toerusting & Hulpbronne',
+  campInfo:      'Kamp Inligting',
+  otherInfo:     'Ander Inligting',
+  documentsInfo: 'Dokumente',
+  dependents:    'Afhanklikes',
+};
+
+@Component({
+  selector: 'app-member-form-section',
+  templateUrl: './member-form-section.page.html',
+  styleUrls: ['./member-form-section.page.scss'],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    IonContent,
+    IonButton,
+    IonToast,
+    HeaderComponent,
+    BasicInfoComponent,
+    MemberInfoComponent,
+    AddressInfoComponent,
+    MedicalInfoComponent,
+    VehicleInfoComponent,
+    SkillsInfoComponent,
+    EquipmentInfoComponent,
+    CampInfoComponent,
+    OtherInfoComponent,
+    DocumentsInfoComponent,
+    DependentsComponent,
+  ],
+})
+export class MemberFormSectionPage implements OnInit, OnDestroy {
+  sectionKey = '';
+  sectionLabel = '';
+  form: FormGroup;
+  isSaving = false;
+  showSuccessToast = false;
+  showErrorToast = false;
+
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly fb: FormBuilder,
+    private readonly databaseService: DatabaseService,
+    private readonly stateService: MemberFormStateService,
+    private readonly syncService: SyncService,
+  ) {
+    this.form = this.fb.group({ sectionData: [null] });
+  }
+
+  ngOnInit(): void {
+    this.loadSection();
+  }
+
+  ngOnDestroy(): void {
+    if (this.form.dirty) {
+      // Update cache immediately so the overview reflects the change on return
+      this.stateService.updateSection(this.sectionKey, this.form.get('sectionData')?.value);
+      // Persist to DB in the background (fire-and-forget is safe here)
+      this.persistToDb();
+    }
+  }
+
+  async save(): Promise<void> {
+    this.isSaving = true;
+    try {
+      this.stateService.updateSection(this.sectionKey, this.form.get('sectionData')?.value);
+      await this.persistToDb();
+      this.form.markAsPristine();
+      this.showSuccessToast = true;
+    } catch {
+      this.showErrorToast = true;
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  private async loadSection(): Promise<void> {
+    this.sectionKey = this.route.snapshot.paramMap.get('section') || '';
+    this.sectionLabel = SECTION_LABELS[this.sectionKey] || this.sectionKey;
+
+    // Use in-memory cache if available (set by overview page); else load from DB
+    const entry: Record<string, any> =
+      this.stateService.getEntry() ??
+      ((await this.databaseService.getCurrentMemberEntry()) || {});
+    this.stateService.setEntry(entry);
+
+    const defaultValue = this.sectionKey === 'dependents' ? [] : null;
+    this.form.patchValue({ sectionData: entry[this.sectionKey] ?? defaultValue });
+    this.form.markAsPristine();
+  }
+
+  private async persistToDb(): Promise<void> {
+    const full = (await this.databaseService.getCurrentMemberEntry()) || {};
+    full[this.sectionKey] = this.form.get('sectionData')?.value;
+    await this.databaseService.saveEntry(full);
+    this.syncService.sync().subscribe({ error: () => {} });
+  }
+}

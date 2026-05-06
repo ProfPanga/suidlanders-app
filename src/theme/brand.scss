@@ -1,0 +1,81 @@
+// =============================================================================
+// Brand Color Palette — Single Source of Truth
+// =============================================================================
+// Edit ONLY this file to change app colours.
+// variables.scss maps these to Ionic's system via var() references.
+// =============================================================================
+
+:root {
+  // --- Brand Colors ---
+  --color-brand-primary:           #07628f;
+  --color-brand-primary-rgb:       7, 98, 143;
+  --color-brand-primary-hover:     #004d73;
+
+  --color-brand-secondary:         #0095d8;
+  --color-brand-secondary-rgb:     0, 149, 216;
+  --color-brand-secondary-hover:   #007ab8;
+
+  --color-brand-success:           #06b217;
+  --color-brand-success-rgb:       6, 178, 23;
+  --color-brand-success-hover:     #059312;
+  --color-brand-success-bg:        #f3fbf3;
+
+  --color-brand-warning:           #ff9500;
+  --color-brand-warning-rgb:       255, 149, 0;
+  --color-brand-warning-hover:     #e68500;
+  --color-brand-warning-bg:        #fffaf2;
+
+  --color-brand-error:             #e11313;
+  --color-brand-error-rgb:         225, 19, 19;
+  --color-brand-error-hover:       #c10f0f;
+  --color-brand-error-bg:          #fdf3f3;
+
+  --color-brand-info:              #088bea;
+  --color-brand-info-rgb:          8, 139, 234;
+  --color-brand-info-hover:        #0772c0;
+  --color-brand-info-bg:           #f3f9fe;
+
+  --color-brand-logo:              #00527a;
+  --color-brand-logo-dark:         #4da6cc;
+
+  // --- Neutral Colors ---
+  --color-neutral-black:           #000000;
+  --color-neutral-grey-850:        #424142;
+  --color-neutral-grey-800:        #4a4a4a;
+  --color-neutral-grey-600:        #707070;
+  --color-neutral-grey-500:        #bdbdbd;
+  --color-neutral-grey-400:        #d2d2d2;
+  --color-neutral-grey-200:        #e0e0e0;
+  --color-neutral-grey-100:        #efefef;
+  --color-neutral-grey-80:         #f7f7f7;
+  --color-neutral-grey-50:         #f9f9f9;
+  --color-neutral-blue:            #eaecf2;
+  --color-neutral-blue-light:      #f8f9fd;
+}
+
+// Dark mode overrides — swap to lighter variants for better contrast on dark bg
+.dark {
+  --color-brand-primary:           #0095d8;
+  --color-brand-primary-rgb:       0, 149, 216;
+  --color-brand-primary-hover:     #00b0ff;
+
+  --color-brand-secondary:         #0095d8;
+  --color-brand-secondary-rgb:     0, 149, 216;
+  --color-brand-secondary-hover:   #00b0ff;
+
+  --color-brand-success:           #06b217;
+  --color-brand-success-rgb:       6, 178, 23;
+  --color-brand-success-hover:     #08d41d;
+
+  --color-brand-warning:           #ff9500;
+  --color-brand-warning-rgb:       255, 149, 0;
+  --color-brand-warning-hover:     #ffaa33;
+
+  --color-brand-error:             #e11313;
+  --color-brand-error-rgb:         225, 19, 19;
+  --color-brand-error-hover:       #ff4444;
+
+  --color-brand-info:              #088bea;
+  --color-brand-info-rgb:          8, 139, 234;
+  --color-brand-info-hover:        #33a3ef;
+}

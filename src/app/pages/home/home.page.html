@@ -1,0 +1,62 @@
+<app-header title="Suidlanders"></app-header>
+
+<ion-content class="ion-padding">
+  @if (isStaff && entryCount !== null) {
+    <div class="data-info">
+      <ion-icon name="people-outline"></ion-icon>
+      <span>{{ entryCount }} lede geregistreer</span>
+    </div>
+  }
+
+  <div class="home-grid">
+    <button class="home-card" (click)="navigateToMemberForm()">
+      <div class="home-circle" [class.active]="hasMemberProfile">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <span class="home-label">
+        @if (isStaff) { Begin Registrasie }
+        @else if (hasMemberProfile) { Opdateer Inligting }
+        @else { Lid Inligting }
+      </span>
+    </button>
+
+    <button class="home-card" (click)="scanQRToSync()">
+      <div class="home-circle">
+        <ion-icon name="qr-code"></ion-icon>
+      </div>
+      <span class="home-label">Skandeer QR</span>
+    </button>
+
+    <button class="home-card" (click)="manualSync()">
+      <div class="home-circle">
+        <ion-icon name="sync"></ion-icon>
+      </div>
+      <span class="home-label">Sinkroniseer</span>
+    </button>
+
+    @if (!roleService.isMember()) {
+      <button class="home-card" (click)="navigateToLogin()">
+        <div class="home-circle">
+          <ion-icon name="log-in"></ion-icon>
+        </div>
+        <span class="home-label">Personeel Aanmelding</span>
+      </button>
+    }
+
+    @if (isStaff) {
+      <button class="home-card coming-soon" disabled>
+        <div class="home-circle">
+          <ion-icon name="settings-outline"></ion-icon>
+        </div>
+        <span class="home-label">Lede Bestuur</span>
+      </button>
+    }
+  </div>
+</ion-content>
+
+<ion-toast
+  [isOpen]="isToastOpen"
+  [message]="toastMessage"
+  duration="3000"
+  (didDismiss)="isToastOpen = false"
+></ion-toast>

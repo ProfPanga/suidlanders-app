@@ -17,7 +17,7 @@ import { HeaderComponent } from '../../components/header/header.component';
 @Component({
   selector: 'app-qr-test',
   template: `
-    <app-header title="QR Code Scanner Test"></app-header>
+    <app-header title="QR Code Scanner Test" [showBack]="true"></app-header>
 
     <ion-content>
       <ion-grid>

@@ -38,10 +38,9 @@ async function bootstrap() {
   console.log(`  GET  http://localhost:${PORT}/api/members/:id`);
   console.log(`  POST http://localhost:${PORT}/api/members`);
   console.log(`  GET  http://localhost:${PORT}/api/members/health`);
+  console.log(`  POST http://localhost:${PORT}/api/auth/camp/generate-qr`);
+  console.log(`  POST http://localhost:${PORT}/api/auth/camp/exchange`);
   console.log('========================================');
-  console.log('');
-  console.log('✅ Story 1.1: Triage logic active');
-  console.log('✅ Story 1.2: Reception API ready');
   console.log('');
   console.log('💡 Tip: Use npm run seed to add demo data');
   console.log('');

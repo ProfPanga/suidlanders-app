@@ -9,6 +9,10 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+/* Brand palette — must be first so all other files can reference its vars */
+@import "theme/brand";
+@import "theme/variables";
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -53,6 +57,11 @@
   --ion-color-step-850: #262626;
   --ion-color-step-900: #191919;
   --ion-color-step-950: #0d0d0d;
+
+  ion-item {
+    --background: var(--color-neutral-grey-400);
+    --border-color: var(--color-neutral-grey-200);
+  }
 }
 
 .dark {

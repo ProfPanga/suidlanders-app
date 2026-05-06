@@ -1,0 +1,65 @@
+<app-header [title]="sectionLabel" [showBack]="true"></app-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+    @switch (sectionKey) {
+      @case ('basicInfo') {
+        <app-basic-info formControlName="sectionData"></app-basic-info>
+      }
+      @case ('memberInfo') {
+        <app-member-info formControlName="sectionData"></app-member-info>
+      }
+      @case ('addressInfo') {
+        <app-address-info formControlName="sectionData"></app-address-info>
+      }
+      @case ('medicalInfo') {
+        <app-medical-info formControlName="sectionData"></app-medical-info>
+      }
+      @case ('vehicleInfo') {
+        <app-vehicle-info formControlName="sectionData"></app-vehicle-info>
+      }
+      @case ('skillsInfo') {
+        <app-skills-info formControlName="sectionData"></app-skills-info>
+      }
+      @case ('equipmentInfo') {
+        <app-equipment-info formControlName="sectionData"></app-equipment-info>
+      }
+      @case ('campInfo') {
+        <app-camp-info formControlName="sectionData"></app-camp-info>
+      }
+      @case ('otherInfo') {
+        <app-other-info formControlName="sectionData"></app-other-info>
+      }
+      @case ('documentsInfo') {
+        <app-documents-info formControlName="sectionData"></app-documents-info>
+      }
+      @case ('dependents') {
+        <app-dependents formControlName="sectionData"></app-dependents>
+      }
+    }
+  </form>
+
+  <div class="save-button-container">
+    <ion-button expand="block" (click)="save()" [disabled]="isSaving">
+      {{ isSaving ? 'Stoor...' : 'Stoor' }}
+    </ion-button>
+  </div>
+
+  <ion-toast
+    [isOpen]="showSuccessToast"
+    message="Gestoor"
+    duration="2000"
+    position="top"
+    color="success"
+    (didDismiss)="showSuccessToast = false"
+  ></ion-toast>
+
+  <ion-toast
+    [isOpen]="showErrorToast"
+    message="Fout by stoor. Probeer weer."
+    duration="3000"
+    position="top"
+    color="danger"
+    (didDismiss)="showErrorToast = false"
+  ></ion-toast>
+</ion-content>

@@ -11,6 +11,12 @@ export interface BasicInfo {
   cellNommer: string;
   email: string;
   huwelikStatus: string;
+  // Address fields (merged from AddressInfo)
+  straatAdres?: string;
+  voorstad?: string;
+  provinsie?: string;
+  posKode?: string;
+  woonagtig?: string;
 }
 
 export interface MemberInfo {

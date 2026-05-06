@@ -16,70 +16,19 @@ This application is designed to manage and store emergency plan information for 
 
 ### Main Sections
 
-1. **Basic Information**
+1. **Basic Information** — personal details, contact info, ID number, and residential address (merged)
+2. **Member Information** — Suidlanders membership, emergency contacts, weapon licence
+3. **Medical Information** — blood type, chronic conditions, allergies, medication, medical fund, GP
+4. **Vehicle Information** — primary/secondary vehicles, trailer
+5. **Skills & Experience** — occupation, qualifications, driver's licence, radio licence
+6. **Equipment & Resources** — communications, power generation, water, defence, camping, emergency supplies
+7. **Camp Information** — assigned camp, arrival date
+8. **Documents** — ID, driver's licence, firearm licence, EHBO certificate
+9. **Dependents** — family members accompanying the member
 
-   - Personal details
-   - Contact information
-   - ID and documentation
-
-2. **Suidlander Information**
-
-   - Member details
-   - Emergency contacts
-   - EHBO qualifications
-   - Weapon license information
-
-3. **Address Information**
-
-   - Residential address
-   - GPS coordinates
-   - Nearby services (hospital, police, shops)
-
-4. **Medical Information**
-
-   - Blood type
-   - Chronic diseases
-   - Medication
-   - Medical fund details
-
-5. **Vehicle Information**
-
-   - Primary and secondary vehicles
-   - Trailer details
-
-6. **Skills & Experience**
-
-   - Occupation
-   - Qualifications
-   - Management license
-   - Radio license
-
-7. **Equipment & Resources**
-
-   - Communication equipment
-   - Power generation
-   - Water resource
-   - Defense
-   - Camping
-   - Emergency supplies
-
-8. **Inventory**
-
-   - Water and food supplies
-   - Equipment
-   - Electronic devices
-
-9. **Camp Information**
-
-   - Camp location
-   - Arrival date
-
-10. **Documents**
-    - ID document
-    - Management license
-    - Firearm license
-    - EHBO certificate
-    - Other documents
+**Staff-only pages** (role-gated, not visible to members):
+- **Medical Staff** (`/member-form/medicalStaff`) — clinical triage fields: vitals, symptoms, mobility, GI, diabetic assessment
+- **Security** (`/member-form/securityStaff`) — content TBD
 
 ## Features
 
@@ -121,10 +70,10 @@ This application is designed to manage and store emergency plan information for 
 
 ### 6. Role-Based UI (Demo Mode)
 
-- App supports two roles: **Member** (registration view) and **Reception Staff** (dashboard view)
-- Toggle roles via the Settings page (gear icon in the header)
-- Role-based routing: staff is redirected to the reception dashboard; members stay on the registration form
-- Demo mode only — full RBAC is planned for a future release
+- App supports four roles: **Member**, **Reception Staff**, **Medical Staff**, **Security**
+- Choose your journey from the Settings page (gear icon always visible in the header)
+- Role-based routing: each role navigates to its own starting page on selection
+- `demoMode: true` in both dev and prod environments — full RBAC is planned for a future release
 
 ## Technical Specifications
 
@@ -165,7 +114,7 @@ npm install
 3. Start the development server:
 
 ```bash
-ionic serve
+npm start   # prints the settings URL, then starts at localhost:4200/settings
 ```
 
 ## Icon Generation (logo)
@@ -363,13 +312,17 @@ For any inquiries, contact the Suidlanders management.
 
 ## Progress Tracking
 
-- [x] Basic member registration form (10 sections)
+- [x] Member registration form (9 sections, address merged into basic info)
 - [x] Offline database (SQLite on Android, IndexedDB on web)
 - [x] QR code generation and scanning
 - [x] HTML export
 - [x] Camp server (NestJS + SQLite + triage logic)
 - [x] LAN sync with QR provisioning (WiFi auto-connect + token exchange)
 - [x] Reception staff dashboard
-- [x] Demo role switcher (Settings page)
-- [ ] Full production RBAC (Epic 3)
+- [x] Journey selector on Settings page (4 roles: Member, Reception, Medical Staff, Security)
+- [x] Medical Staff triage page with clinical assessment fields
+- [x] Brand colour system (brand.scss → variables.scss, light/dark mode)
+- [ ] Security staff page content (TBD)
+- [ ] Wire staff pages to member database records
+- [ ] Full production RBAC
 - [ ] iOS WiFi auto-connect (requires manual on iOS)

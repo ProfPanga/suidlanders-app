@@ -26,7 +26,7 @@ import { HeaderComponent } from '../../components/header/header.component';
     HeaderComponent,
   ],
   template: `
-    <app-header title="Personeel Aanmelding"></app-header>
+    <app-header title="Personeel Aanmelding" [showBack]="true"></app-header>
     <ion-content class="ion-padding">
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <ion-item>

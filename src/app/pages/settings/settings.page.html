@@ -1,32 +1,63 @@
-<app-header title="Instellings"></app-header>
+<app-header title="Instellings" [showBack]="true"></app-header>
 
 <ion-content class="ion-padding">
-  <!-- Role Switcher (Demo Mode Only) -->
-  <ion-card *ngIf="isDemoMode">
-    <ion-card-header>
-      <ion-card-title>🎬 Demo Rol Wissel</ion-card-title>
-      <ion-card-subtitle>Slegs vir demonstrasie doeleindes</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-segment [(ngModel)]="currentRole" (ionChange)="onRoleChange($event)">
-        <ion-segment-button value="member">
-          <ion-label>Lid</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="reception">
-          <ion-label>Ontvangs Personeel</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+  @if (isDemoMode) {
+    <div class="journey-section">
+      <h2 class="journey-title">Kies Jou Reis</h2>
+      <p class="journey-subtitle">Wie is jy vandag?</p>
 
-      <ion-note class="ion-margin-top">
-        <p><strong>Huidige rol:</strong> {{ getRoleLabel(currentRole) }}</p>
-        <p class="ion-text-wrap">
-          Wissel tussen Lid en Personeel sienings om verskillende gebruikers-ervarings te demonstreer.
-        </p>
-      </ion-note>
-    </ion-card-content>
-  </ion-card>
+      <div class="journey-cards">
+        <button
+          class="journey-card"
+          [class.active]="currentRole === UserRole.MEMBER"
+          (click)="startJourney(UserRole.MEMBER)"
+        >
+          <ion-icon name="person-outline"></ion-icon>
+          <div class="journey-card__text">
+            <h3>Lid</h3>
+            <p>Registreer of wysig jou kamp inligting</p>
+          </div>
+        </button>
 
-  <!-- Placeholder for future settings -->
+        <button
+          class="journey-card"
+          [class.active]="currentRole === UserRole.RECEPTION_STAFF"
+          (click)="startJourney(UserRole.RECEPTION_STAFF)"
+        >
+          <ion-icon name="people-outline"></ion-icon>
+          <div class="journey-card__text">
+            <h3>Ontvangs Personeel</h3>
+            <p>Bestuur lede aanmelding by ontvangs</p>
+          </div>
+        </button>
+
+        <button
+          class="journey-card"
+          [class.active]="currentRole === UserRole.MEDICAL_STAFF"
+          (click)="startJourney(UserRole.MEDICAL_STAFF)"
+        >
+          <ion-icon name="medkit-outline"></ion-icon>
+          <div class="journey-card__text">
+            <h3>Mediese Personeel</h3>
+            <p>Toegang tot mediese inligting van lede</p>
+          </div>
+        </button>
+
+        <button
+          class="journey-card"
+          [class.active]="currentRole === UserRole.SECURITY_STAFF"
+          (click)="startJourney(UserRole.SECURITY_STAFF)"
+        >
+          <ion-icon name="shield-outline"></ion-icon>
+          <div class="journey-card__text">
+            <h3>Sekuriteit</h3>
+            <p>Toegang tot toerusting en vuurwapen inligting</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  }
+
   <ion-card>
     <ion-card-header>
       <ion-card-title>App Instellings</ion-card-title>

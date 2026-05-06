@@ -8,7 +8,7 @@ import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'app-db-test',
   template: `
-    <app-header title="Database Test"></app-header>
+    <app-header title="Database Test" [showBack]="true"></app-header>
 
     <ion-content class="ion-padding">
       <ion-card>
