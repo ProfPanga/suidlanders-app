@@ -100,3 +100,17 @@
   padding-top: 8px;
   padding-bottom: 16px;
 }
+
+:host-context(.dark) {
+  .section-circle ion-icon {
+    color: white;
+  }
+
+  .section-label {
+    color: white;
+  }
+
+  .staff-card .section-circle ion-icon {
+    color: var(--ion-color-step-600);
+  }
+}

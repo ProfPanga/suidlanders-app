@@ -14,8 +14,8 @@ import {
 import { HeaderComponent } from '../../components/header/header.component';
 
 const TITLES: Record<string, string> = {
-  medicalStaff:  'Medical Staff',
-  securityStaff: 'Security',
+  medicalStaff:  'Mediese Personeel',
+  securityStaff: 'Sekuriteit Personeel',
 };
 
 @Component({

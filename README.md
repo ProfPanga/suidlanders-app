@@ -16,19 +16,18 @@ This application is designed to manage and store emergency plan information for 
 
 ### Main Sections
 
-1. **Basic Information** — personal details, contact info, ID number, and residential address (merged)
-2. **Member Information** — Suidlanders membership, emergency contacts, weapon licence
-3. **Medical Information** — blood type, chronic conditions, allergies, medication, medical fund, GP
-4. **Vehicle Information** — primary/secondary vehicles, trailer
-5. **Skills & Experience** — occupation, qualifications, driver's licence, radio licence
-6. **Equipment & Resources** — communications, power generation, water, defence, camping, emergency supplies
-7. **Camp Information** — assigned camp, arrival date
-8. **Documents** — ID, driver's licence, firearm licence, EHBO certificate
-9. **Dependents** — family members accompanying the member
+1. **Basic Information** — personal details, contact info, ID number, residential address, membership details, emergency contacts, and dependents — all on one page
+2. **Medical Information** — blood type, chronic conditions, allergies, medication, medical fund, GP
+3. **Vehicle Information** — primary/secondary vehicles, trailer
+4. **Skills & Experience** — occupation, qualifications, driver's licence, radio licence
+5. **Equipment & Resources** — communications, power generation, water sources, camping, emergency supplies
+6. **Camp Information** — assigned camp, arrival date
+7. **Documents** — ID, driver's licence, firearm licence, EHBO certificate
+8. **Security Information** — firearm ownership, licence, ammunition, shooting experience, security training
 
 **Staff-only pages** (role-gated, not visible to members):
 - **Medical Staff** (`/member-form/medicalStaff`) — clinical triage fields: vitals, symptoms, mobility, GI, diabetic assessment
-- **Security** (`/member-form/securityStaff`) — content TBD
+- **Security Staff** (`/member-form/securityStaff`) — security personnel questionnaire (content TBD)
 
 ## Features
 
@@ -319,10 +318,12 @@ For any inquiries, contact the Suidlanders management.
 - [x] Camp server (NestJS + SQLite + triage logic)
 - [x] LAN sync with QR provisioning (WiFi auto-connect + token exchange)
 - [x] Reception staff dashboard
-- [x] Journey selector on Settings page (4 roles: Member, Reception, Medical Staff, Security)
+- [x] Journey selector on Settings page (4 roles: Member, Reception, Medical Staff, Security Staff)
 - [x] Medical Staff triage page with clinical assessment fields
+- [x] Security Information section (member-facing weapon/security fields)
 - [x] Brand colour system (brand.scss → variables.scss, light/dark mode)
-- [ ] Security staff page content (TBD)
+- [x] Dark mode white icons/labels on home and member form overview
+- [ ] Security Staff page content (TBD)
 - [ ] Wire staff pages to member database records
 - [ ] Full production RBAC
 - [ ] iOS WiFi auto-connect (requires manual on iOS)

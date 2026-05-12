@@ -58,7 +58,7 @@ Both `environment.ts` and `environment.prod.ts` have `demoMode: true`. The app s
 - **Lid** → `/home` → `/member-form`
 - **Ontvangs Personeel** → `/reception`
 - **Mediese Personeel** → `/member-form/medicalStaff`
-- **Sekuriteit** → `/member-form/securityStaff`
+- **Sekuriteit Personeel** → `/member-form/securityStaff`
 
 Roles are managed by `RoleService` (`src/app/services/role.service.ts`) with `UserRole` enum: `MEMBER | RECEPTION_STAFF | MEDICAL_STAFF | SECURITY_STAFF`. Role is persisted to `localStorage`.
 
@@ -76,24 +76,27 @@ Roles are managed by `RoleService` (`src/app/services/role.service.ts`) with `Us
 - `theme.service.ts` — dark/light mode
 
 ### Member Form Structure
-10 member-facing sections in `src/app/components/sections/`, each implementing `ControlValueAccessor` for reactive form integration. Address fields are merged into Basic Info (no separate Address section).
+9 section cards on the overview in `src/app/components/sections/`, each implementing `ControlValueAccessor` for reactive form integration. Address fields are merged into Basic Info (no separate Address section).
 
 | Key | Label | Notes |
 |---|---|---|
-| `basicInfo` | Basiese Inligting | Includes address fields; Van + Volle Naam + ID Nommer required |
+| `basicInfo` | Basiese Inligting | Includes address, member info (lid nommer, nood kontak), and dependents — all on one page |
 | `required-fields` | Verpligte Velde | Info page — no form component |
-| `memberInfo` | Lid Inligting | |
 | `medicalInfo` | Mediese Inligting | Member-facing fields only (vaccines, chronic, allergies, etc.) |
 | `vehicleInfo` | Voertuig Inligting | |
 | `skillsInfo` | Vaardighede | |
-| `equipmentInfo` | Toerusting | |
+| `equipmentInfo` | Toerusting | Communications, power, water, camping, emergency supplies — defence/weapon fields removed |
 | `campInfo` | Kamp Inligting | |
 | `documentsInfo` | Dokumente | |
-| `dependents` | Afhanklikes | |
+| `sekuriteitsInfo` | Sekuriteits Inligting | Member-facing weapon/security fields (vuurwapen, lisensie, skietervaring, opleiding) |
+
+**Embedded sections** (not standalone cards — rendered inside `basicInfo` page):
+- `memberInfo` — lid nommer, reddings verwysing, nood kontak details
+- `dependents` — family members; "Voeg Afhanklike By" button at bottom of basicInfo
 
 **Staff-only routes** (no form component — triage fields only):
 - `/member-form/medicalStaff` — clinical triage fields (gait, vitals, symptoms, etc.)
-- `/member-form/securityStaff` — placeholder, content TBD
+- `/member-form/securityStaff` — security personnel questionnaire (content TBD)
 
 ### Database Schema (11 tables)
 `members`, `addresses`, `medical_info`, `vehicles`, `dependents`, `skills`, `equipment`, `inventory`, `camps`, `documents`, `sync_queue`

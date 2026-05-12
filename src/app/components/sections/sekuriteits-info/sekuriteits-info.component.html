@@ -1,0 +1,97 @@
+<form [formGroup]="form">
+
+  <!-- Wapen Inligting -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Wapen Inligting</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label>Besit vuurwapen?</ion-label>
+      <ion-toggle slot="end" formControlName="vuurwapen"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Vuurwapen tipe</ion-label>
+      <ion-select formControlName="vuurwapenTipe" placeholder="Kies tipe">
+        <ion-select-option value="">Nie van toepassing</ion-select-option>
+        <ion-select-option value="Pistool">Pistool</ion-select-option>
+        <ion-select-option value="Rewolwer">Rewolwer</ion-select-option>
+        <ion-select-option value="Halfoutomatiese geweer">Halfoutomatiese geweer</ion-select-option>
+        <ion-select-option value="Haelgeweer">Haelgeweer</ion-select-option>
+        <ion-select-option value="Verskeie">Verskeie</ion-select-option>
+        <ion-select-option value="Ander">Ander</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Wapenlisensie besit?</ion-label>
+      <ion-toggle slot="end" formControlName="wapenlisensie"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Ammunisie beskikbaar?</ion-label>
+      <ion-toggle slot="end" formControlName="ammunisie"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Skietervaring</ion-label>
+      <ion-select formControlName="skietervaring" placeholder="Kies vlak">
+        <ion-select-option value="">Geen</ion-select-option>
+        <ion-select-option value="Basiese">Basiese</ion-select-option>
+        <ion-select-option value="Gevorderd">Gevorderd</ion-select-option>
+        <ion-select-option value="Professioneel">Professioneel</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-item-group>
+
+  <!-- Sekuriteits Vaardighede -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Sekuriteits Vaardighede</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label>Vuurwapen opleiding gehad?</ion-label>
+      <ion-toggle slot="end" formControlName="vuurwapenOpleiding"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Selfverdediging opleiding?</ion-label>
+      <ion-toggle slot="end" formControlName="selfverdediging"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Vorige sekuriteitswerk ondervinding?</ion-label>
+      <ion-toggle slot="end" formControlName="sekuriteitsOndervinding"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Beskrywing van ondervinding</ion-label>
+      <ion-textarea
+        formControlName="sekuriteitsOndervindingBeskrywing"
+        placeholder="Beskryf u sekuriteits ondervinding"
+        [autoGrow]="true"
+        rows="3"
+      ></ion-textarea>
+    </ion-item>
+  </ion-item-group>
+
+  <!-- Notas -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Notas</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label position="stacked">Sekuriteits notas</ion-label>
+      <ion-textarea
+        formControlName="sekuriteitsNotas"
+        placeholder="Enige addisionele sekuriteits inligting"
+        [autoGrow]="true"
+        rows="3"
+      ></ion-textarea>
+    </ion-item>
+  </ion-item-group>
+
+</form>

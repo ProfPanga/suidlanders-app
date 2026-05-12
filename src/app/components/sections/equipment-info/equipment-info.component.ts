@@ -81,11 +81,6 @@ export class EquipmentInfoComponent implements ControlValueAccessor {
         waterTenk: [false],
         waterFiltrasieStelsel: [false],
       }),
-      verdediging: this.fb.group({
-        vuurwapens: [false],
-        lisensies: [false],
-        opleiding: [false],
-      }),
       kampering: this.fb.group({
         tent: [false],
         slaapsak: [false],

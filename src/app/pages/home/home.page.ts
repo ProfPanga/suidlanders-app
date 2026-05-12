@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  AlertController,
   IonContent,
   IonIcon,
   IonToast,
+  Platform,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -26,12 +28,7 @@ import { RoleService } from '../../services/role.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [
-    IonContent,
-    IonIcon,
-    IonToast,
-    HeaderComponent,
-  ],
+  imports: [IonContent, IonIcon, IonToast, HeaderComponent],
 })
 export class HomePage implements OnInit {
   toastMessage = '';
@@ -46,9 +43,18 @@ export class HomePage implements OnInit {
     private readonly syncService: SyncService,
     private readonly databaseService: DatabaseService,
     private readonly qrProvisioningService: QRProvisioningService,
+    private readonly alertController: AlertController,
+    private readonly platform: Platform,
     public readonly roleService: RoleService
   ) {
-    addIcons({ personOutline, peopleOutline, qrCode, logIn, sync, settingsOutline });
+    addIcons({
+      personOutline,
+      peopleOutline,
+      qrCode,
+      logIn,
+      sync,
+      settingsOutline,
+    });
   }
 
   ngOnInit() {
@@ -98,8 +104,15 @@ export class HomePage implements OnInit {
   }
 
   async scanQRToSync() {
+    if (!this.platform.is('hybrid') || this.platform.is('ios')) {
+      const confirmed = await this.showWifiInstructionAlert();
+      if (!confirmed) return;
+    }
+
     try {
-      const { BarcodeScanner, BarcodeFormat } = await import('@capacitor-mlkit/barcode-scanning');
+      const { BarcodeScanner, BarcodeFormat } = await import(
+        '@capacitor-mlkit/barcode-scanning'
+      );
 
       const permissionResult = await BarcodeScanner.requestPermissions();
       if (permissionResult.camera !== 'granted') {
@@ -107,7 +120,9 @@ export class HomePage implements OnInit {
         return;
       }
 
-      const result = await BarcodeScanner.scan({ formats: [BarcodeFormat.QrCode] });
+      const result = await BarcodeScanner.scan({
+        formats: [BarcodeFormat.QrCode],
+      });
 
       if (!result.barcodes || result.barcodes.length === 0) return;
 
@@ -124,7 +139,8 @@ export class HomePage implements OnInit {
         return;
       }
 
-      const provisioningResult = await this.qrProvisioningService.scanAndProvision(payload);
+      const provisioningResult =
+        await this.qrProvisioningService.scanAndProvision(payload);
       if (provisioningResult.success) {
         this.refreshDataCount();
       }
@@ -137,11 +153,29 @@ export class HomePage implements OnInit {
     }
   }
 
+  private async showWifiInstructionAlert(): Promise<boolean> {
+    const alert = await this.alertController.create({
+      header: 'Koppel eerste aan WiFi',
+      cssClass: 'wifi-instruction-alert',
+      message:
+        'iPhone koppel nie outomaties aan WiFi nie.\n\n1. Maak jou Settings oop\n2. Soek op SuidlandersKamp WiFi\n3. Koppel aan SuidlandersKamp\n4. Selekteer "Ek is gekoppel"',
+      buttons: [
+        { text: 'Kanselleer', role: 'cancel' },
+        { text: 'Ek is gekoppel — Gaan voort', role: 'confirm' },
+      ],
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    return role === 'confirm';
+  }
+
   async manualSync() {
     this.syncService.sync().subscribe({
       next: (result) => {
         if (result.success) {
-          this.showToast(`Sinkronisasie voltooi: ${result.syncedRecords} rekords`);
+          this.showToast(
+            `Sinkronisasie voltooi: ${result.syncedRecords} rekords`
+          );
           this.refreshDataCount();
         } else {
           this.showToast('Sinkronisasie gefaal: ' + result.message);

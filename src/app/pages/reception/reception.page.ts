@@ -26,7 +26,7 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { refreshOutline, peopleOutline, searchOutline, qrCodeOutline } from 'ionicons/icons';
+import { refreshOutline, peopleOutline, searchOutline, qrCodeOutline, scanOutline, settings } from 'ionicons/icons';
 import { ApiService } from '../../services/api.service';
 import { QRService } from '../../services/qr.service';
 import { AuthService } from '../../services/auth.service';
@@ -80,8 +80,9 @@ export class ReceptionPage implements OnInit, OnDestroy {
   searchTerm: string = '';
   members: ReceptionMemberView[] = [];
   filteredMembers: ReceptionMemberView[] = [];
-  campQRCode: string | null = null; // Data URL of generated QR code
-  qrPayload: any = null; // QR payload with syncCode, serverUrls, campId
+  campQRCode: string | null = null;
+  qrPayload: any = null;
+  scannedMember: ReceptionMemberView | null = null;
   private refreshInterval: any;
   private persistentErrorToast: HTMLIonToastElement | null = null;
 
@@ -95,7 +96,7 @@ export class ReceptionPage implements OnInit, OnDestroy {
     private roleService: RoleService
   ) {
     // Register icons for use in template
-    addIcons({ refreshOutline, peopleOutline, searchOutline, qrCodeOutline });
+    addIcons({ refreshOutline, peopleOutline, searchOutline, qrCodeOutline, scanOutline, settings });
   }
 
   async ngOnInit() {
@@ -362,12 +363,58 @@ export class ReceptionPage implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Close QR code display
-   */
   closeQRCode(): void {
     this.campQRCode = null;
     this.qrPayload = null;
+  }
+
+  navigateToSettings(): void {
+    this.router.navigate(['/settings']);
+  }
+
+  closeScannedMember(): void {
+    this.scannedMember = null;
+  }
+
+  async scanMemberQR(): Promise<void> {
+    try {
+      const { BarcodeScanner, BarcodeFormat } = await import('@capacitor-mlkit/barcode-scanning');
+
+      const permResult = await BarcodeScanner.requestPermissions();
+      if (permResult.camera !== 'granted') {
+        await this.showErrorToast('Kamera toegang geweier. Gee asseblief toestemming.');
+        return;
+      }
+
+      const result = await BarcodeScanner.scan({ formats: [BarcodeFormat.QrCode] });
+      if (!result.barcodes?.length) return;
+
+      const rawValue = result.barcodes[0].rawValue;
+      if (!rawValue) return;
+
+      const qrData = JSON.parse(rawValue.trim());
+
+      if (!qrData.entryId) {
+        await this.showErrorToast('Ongeldige lid QR kode. Skandeer \'n lid se persoonlike QR kaart.');
+        return;
+      }
+
+      const found = this.members.find(m => m.id === qrData.entryId);
+      if (found) {
+        this.scannedMember = found;
+      } else {
+        // Member not yet synced — show what the QR carries
+        this.scannedMember = {
+          id: qrData.entryId,
+          fullName: [qrData.noemNaam, qrData.van].filter(Boolean).join(' ') || 'Onbekende Lid',
+          familySize: 1,
+          campAssignment: null,
+        };
+        await this.showErrorToast('Lid nie in stelsel nie — nog nie gesinkroniseer.');
+      }
+    } catch {
+      await this.showErrorToast('Kon nie QR skandeerder begin nie. Probeer op \'n fisiese toestel.');
+    }
   }
 
   /**

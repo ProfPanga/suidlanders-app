@@ -1,5 +1,5 @@
 <div [formGroup]="form">
-  <ion-button fill="outline" (click)="addDependent()">
+  <ion-button expand="block" color="primary" (click)="addDependent()">
     <ion-icon slot="start" name="add-circle-outline"></ion-icon>
     Voeg Afhanklike By
   </ion-button>
@@ -10,77 +10,185 @@
       *ngFor="let d of dependents.controls; let i = index"
       [formGroupName]="i"
     >
-      <div class="row">
-        <ion-item>
-          <ion-label position="stacked">Volle Naam</ion-label>
-          <ion-input formControlName="fullName"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Verhouding</ion-label>
-          <ion-select formControlName="verhouding">
-            <ion-select-option value="Seun">Seun</ion-select-option>
-            <ion-select-option value="Dogter">Dogter</ion-select-option>
-            <ion-select-option value="Maat">Maat</ion-select-option>
-            <ion-select-option value="Ander">Ander</ion-select-option>
-          </ion-select>
-        </ion-item>
-      </div>
+      <ion-item>
+        <ion-label position="stacked">Verhouding</ion-label>
+        <ion-select formControlName="verhouding">
+          <ion-select-option value="Seun">Seun</ion-select-option>
+          <ion-select-option value="Dogter">Dogter</ion-select-option>
+          <ion-select-option value="Maat">Maat</ion-select-option>
+          <ion-select-option value="Ander">Ander</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-      <div class="row">
-        <ion-item>
-          <ion-label position="stacked">ID Nommer</ion-label>
-          <ion-input formControlName="idNommer"></ion-input>
-        </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Van</ion-label>
+        <ion-input
+          type="text"
+          formControlName="van"
+          autocapitalize="words"
+          [class.ion-invalid]="isFieldInvalid(i, 'van')"
+          [class.ion-touched]="dependents.at(i).get('van')?.touched"
+        ></ion-input>
+        <ion-text color="danger" *ngIf="isFieldInvalid(i, 'van')">
+          {{ getErrorMessage(i, 'van') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Volle Naam</ion-label>
+        <ion-input
+          type="text"
+          formControlName="fullName"
+          autocapitalize="words"
+          [class.ion-invalid]="isFieldInvalid(i, 'fullName')"
+          [class.ion-touched]="dependents.at(i).get('fullName')?.touched"
+        ></ion-input>
+        <ion-text color="danger" *ngIf="isFieldInvalid(i, 'fullName')">
+          {{ getErrorMessage(i, 'fullName') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Huistaal</ion-label>
+        <ion-select formControlName="huistaal">
+          <ion-select-option value="afrikaans">Afrikaans</ion-select-option>
+          <ion-select-option value="engels">Engels</ion-select-option>
+          <ion-select-option value="ander">Ander</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="dependents.at(i).get('huistaal')?.value === 'ander'">
+        <ion-label position="stacked">Spesifiseer Huistaal</ion-label>
+        <ion-input
+          type="text"
+          formControlName="huistaalAnder"
+          autocapitalize="words"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">ID Nommer</ion-label>
+        <ion-input
+          type="text"
+          formControlName="idNommer"
+          maxlength="13"
+          [class.ion-invalid]="isFieldInvalid(i, 'idNommer')"
+          [class.ion-touched]="dependents.at(i).get('idNommer')?.touched"
+        ></ion-input>
+        <ion-text color="danger" *ngIf="isFieldInvalid(i, 'idNommer')">
+          {{ getErrorMessage(i, 'idNommer') }}
+        </ion-text>
+      </ion-item>
+
+      @if (isIdNommerValid(i)) {
         <ion-item>
           <ion-label position="stacked">Geboortedatum</ion-label>
-          <ion-input formControlName="geboorteDatum"></ion-input>
+          <ion-input type="date" formControlName="geboorteDatum" readonly></ion-input>
         </ion-item>
-      </div>
-
-      <div class="row">
         <ion-item>
           <ion-label position="stacked">Ouderdom</ion-label>
-          <ion-input type="number" formControlName="ouderdom"></ion-input>
+          <ion-input type="number" formControlName="ouderdom" readonly></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Geslag</ion-label>
-          <ion-input formControlName="geslag" placeholder="M/V"></ion-input>
+          <ion-input [value]="geslagLabel(i)" readonly></ion-input>
         </ion-item>
-      </div>
+      }
 
       <ion-item>
-        <ion-label position="stacked">Allergieë</ion-label>
-        <ion-textarea
-          formControlName="allergies"
-          [autoGrow]="true"
-        ></ion-textarea>
+        <ion-label position="stacked">Selfoon Nommer</ion-label>
+        <ion-input
+          type="tel"
+          formControlName="cellNommer"
+          [class.ion-invalid]="isFieldInvalid(i, 'cellNommer')"
+          [class.ion-touched]="dependents.at(i).get('cellNommer')?.touched"
+        ></ion-input>
+        <ion-text color="danger" *ngIf="isFieldInvalid(i, 'cellNommer')">
+          {{ getErrorMessage(i, 'cellNommer') }}
+        </ion-text>
       </ion-item>
+
       <ion-item>
-        <ion-label position="stacked">Chroniese Siektes</ion-label>
-        <ion-textarea
-          formControlName="chronies"
-          [autoGrow]="true"
-        ></ion-textarea>
+        <ion-label position="stacked">E-pos Adres</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+        ></ion-input>
       </ion-item>
+
       <ion-item>
-        <ion-label position="stacked">Medikasie</ion-label>
-        <ion-textarea
-          formControlName="medikasie"
-          [autoGrow]="true"
-        ></ion-textarea>
+        <ion-label position="stacked">Huwelikstatus</ion-label>
+        <ion-select formControlName="huwelikStatus">
+          <ion-select-option value="ongetroud">Ongetroud</ion-select-option>
+          <ion-select-option value="getroud">Getroud</ion-select-option>
+          <ion-select-option value="geskei">Geskei</ion-select-option>
+          <ion-select-option value="verloof">Verloof</ion-select-option>
+          <ion-select-option value="weduwee">Weduwee/Wewenaar</ion-select-option>
+        </ion-select>
       </ion-item>
+
+      <ion-item-divider>
+        <ion-label>Adres Inligting</ion-label>
+      </ion-item-divider>
+
       <ion-item>
-        <ion-label position="stacked">Notas</ion-label>
-        <ion-textarea formControlName="notas" [autoGrow]="true"></ion-textarea>
+        <ion-label position="stacked">Straat Adres</ion-label>
+        <ion-input type="text" formControlName="straatAdres" autocapitalize="words"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Dorp</ion-label>
+        <ion-input type="text" formControlName="voorstad" autocapitalize="words"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Provinsie</ion-label>
+        <ion-select formControlName="provinsie" placeholder="Kies provinsie">
+          <ion-select-option value="Gauteng">Gauteng</ion-select-option>
+          <ion-select-option value="KwaZulu-Natal">KwaZulu-Natal</ion-select-option>
+          <ion-select-option value="Limpopo">Limpopo</ion-select-option>
+          <ion-select-option value="Mpumalanga">Mpumalanga</ion-select-option>
+          <ion-select-option value="Noord-Kaap">Noord-Kaap</ion-select-option>
+          <ion-select-option value="Noordwes">Noordwes</ion-select-option>
+          <ion-select-option value="Oos-Kaap">Oos-Kaap</ion-select-option>
+          <ion-select-option value="Vrystaat">Vrystaat</ion-select-option>
+          <ion-select-option value="Wes-Kaap">Wes-Kaap</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Poskode</ion-label>
+        <ion-input
+          type="text"
+          formControlName="posKode"
+          maxlength="4"
+          inputmode="numeric"
+          [class.ion-invalid]="isFieldInvalid(i, 'posKode')"
+          [class.ion-touched]="dependents.at(i).get('posKode')?.touched"
+        ></ion-input>
+        <ion-text color="danger" *ngIf="isFieldInvalid(i, 'posKode')">
+          {{ getErrorMessage(i, 'posKode') }}
+        </ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Woonagtig</ion-label>
+        <ion-select formControlName="woonagtig">
+          <ion-select-option value="eienaar">Eienaar</ion-select-option>
+          <ion-select-option value="huurder">Huurder</ion-select-option>
+          <ion-select-option value="inwonend">Inwonend</ion-select-option>
+          <ion-select-option value="ander">Ander</ion-select-option>
+        </ion-select>
       </ion-item>
 
       <div class="actions">
-        <ion-button color="danger" fill="clear" (click)="removeDependent(i)">
-          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        <ion-button expand="block" color="danger" (click)="removeDependent(i)">
+          <ion-icon slot="start" name="trash-outline"></ion-icon>
+          Verwyder
         </ion-button>
-        <ion-button fill="outline" (click)="promoteDependent(i)"
-          >Bevorder na Lid</ion-button
-        >
+        <ion-button expand="block" color="primary" (click)="promoteDependent(i)">
+          Bevorder na Lid
+        </ion-button>
       </div>
     </div>
   </div>

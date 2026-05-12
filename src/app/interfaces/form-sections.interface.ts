@@ -27,8 +27,6 @@ export interface MemberInfo {
   noodKontakNaam: string;
   noodKontakNommer: string;
   noodKontakVerwantskap: string;
-  wapenlisensie: boolean;
-  skietervaring?: string;
 }
 
 export interface AddressInfo {
@@ -168,11 +166,6 @@ export interface EquipmentInfo {
     waterTenk: boolean;
     waterFiltrasieStelsel: boolean;
   };
-  verdediging: {
-    vuurwapens: boolean;
-    lisensies: boolean;
-    opleiding: boolean;
-  };
   kampering: {
     tent: boolean;
     slaapsak: boolean;
@@ -188,12 +181,23 @@ export interface EquipmentInfo {
 
 export interface DependentInfo {
   id?: string;
+  verhouding: string;
+  van?: string;
   fullName: string;
+  huistaal?: string;
+  huistaalAnder?: string;
   idNommer?: string;
   geboorteDatum?: string;
   ouderdom?: number;
   geslag?: string;
-  verhouding: string; // Seun/Dogter/Maat/Ander
+  cellNommer?: string;
+  email?: string;
+  huwelikStatus?: string;
+  straatAdres?: string;
+  voorstad?: string;
+  provinsie?: string;
+  posKode?: string;
+  woonagtig?: string;
   allergies?: string;
   chronies?: string;
   medikasie?: string;

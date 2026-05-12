@@ -688,16 +688,22 @@ export class DatabaseService {
         entryId: newId,
         basicInfo: {
           entryId: newId,
-          van: dep.fullName || '',
+          van: dep.van || '',
           noemNaam: dep.fullName || '',
-          huistaal: '',
+          huistaal: dep.huistaal || '',
+          huistaalAnder: dep.huistaalAnder || '',
           geslag: dep.geslag || '',
           ouderdom: dep.ouderdom || 0,
           geboorteDatum: dep.geboorteDatum || '',
           idNommer: dep.idNommer || '',
-          cellNommer: '',
-          email: '',
-          huwelikStatus: '',
+          cellNommer: dep.cellNommer || '',
+          email: dep.email || '',
+          huwelikStatus: dep.huwelikStatus || '',
+          straatAdres: dep.straatAdres || '',
+          voorstad: dep.voorstad || '',
+          provinsie: dep.provinsie || '',
+          posKode: dep.posKode || '',
+          woonagtig: dep.woonagtig || '',
         },
         addressInfo: parent.addressInfo || null,
       };
@@ -722,17 +728,23 @@ export class DatabaseService {
 
       // Seed basic info from dependent
       await this.saveBasicInfo(newId, {
-        van: dep.fullName || '',
+        van: dep.van || '',
         noemNaam: dep.fullName || '',
         tweedeNaam: '',
-        huistaal: '',
+        huistaal: dep.huistaal || '',
+        huistaalAnder: dep.huistaalAnder || '',
         geslag: dep.geslag || '',
         ouderdom: dep.ouderdom || 0,
         geboorteDatum: dep.geboorteDatum || '',
         idNommer: dep.idNommer || '',
-        cellNommer: '',
-        email: '',
-        huwelikStatus: '',
+        cellNommer: dep.cellNommer || '',
+        email: dep.email || '',
+        huwelikStatus: dep.huwelikStatus || '',
+        straatAdres: dep.straatAdres || '',
+        voorstad: dep.voorstad || '',
+        provinsie: dep.provinsie || '',
+        posKode: dep.posKode || '',
+        woonagtig: dep.woonagtig || '',
       });
 
       await this.db.execute('COMMIT;');
@@ -863,8 +875,8 @@ export class DatabaseService {
       INSERT OR REPLACE INTO member_info (
         member_id, lid_nommer, reddings_verwysing, bevelstruktuur,
         radio_roepsein, nood_kontak_naam, nood_kontak_nommer,
-        nood_kontak_verwantskap, wapenlisensie, skiet_ervaring
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        nood_kontak_verwantskap
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await this.db.run(query, [
@@ -876,8 +888,6 @@ export class DatabaseService {
       memberInfo.noodKontakNaam,
       memberInfo.noodKontakNommer,
       memberInfo.noodKontakVerwantskap,
-      memberInfo.wapenlisensie ? 1 : 0,
-      memberInfo.skietErvaring,
     ]);
   }
 

@@ -12,7 +12,6 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonToggle,
   IonText,
 } from '@ionic/angular/standalone';
 import { MemberInfo } from '../../../interfaces/form-sections.interface';
@@ -35,7 +34,6 @@ import { MemberInfo } from '../../../interfaces/form-sections.interface';
     IonItem,
     IonLabel,
     IonInput,
-    IonToggle,
     IonText,
   ],
   providers: [
@@ -59,8 +57,6 @@ export class MemberInfoComponent implements ControlValueAccessor {
       noodKontakNaam: [''],
       noodKontakNommer: ['', Validators.pattern(/^(\+27|0)\d{9}$/)],
       noodKontakVerwantskap: [''],
-      wapenlisensie: [false],
-      skietervaring: [''],
     });
   }
 

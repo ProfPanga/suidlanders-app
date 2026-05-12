@@ -116,6 +116,11 @@
   }
 }
 
+/* WiFi instruction alert — preserve \n line breaks in plain-text message */
+.wifi-instruction-alert .alert-message {
+  white-space: pre-line;
+}
+
 /* ML Kit Barcode Scanner Transparency */
 /* When scanner is active, make background transparent to show camera feed */
 body.scanner-active {

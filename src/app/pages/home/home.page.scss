@@ -89,3 +89,13 @@
   color: var(--ion-color-medium);
   line-height: 1.3;
 }
+
+:host-context(.dark) {
+  .home-circle ion-icon {
+    color: white;
+  }
+
+  .home-label {
+    color: white;
+  }
+}

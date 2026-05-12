@@ -14,6 +14,7 @@ import { CampInfoComponent } from '../../components/sections/camp-info/camp-info
 import { OtherInfoComponent } from '../../components/sections/other-info/other-info.component';
 import { DocumentsInfoComponent } from '../../components/sections/documents-info/documents-info.component';
 import { DependentsComponent } from '../../components/sections/dependents/dependents.component';
+import { SekuriteitsInfoComponent } from '../../components/sections/sekuriteits-info/sekuriteits-info.component';
 import { DatabaseService } from '../../services/database.service';
 import { MemberFormStateService } from '../../services/member-form-state.service';
 import { SyncService } from '../../services/sync.service';
@@ -28,8 +29,9 @@ const SECTION_LABELS: Record<string, string> = {
   equipmentInfo: 'Toerusting & Hulpbronne',
   campInfo:      'Kamp Inligting',
   otherInfo:     'Ander Inligting',
-  documentsInfo: 'Dokumente',
-  dependents:    'Afhanklikes',
+  documentsInfo:    'Dokumente',
+  dependents:       'Afhanklikes',
+  sekuriteitsInfo:  'Sekuriteits Inligting',
 };
 
 @Component({
@@ -54,6 +56,7 @@ const SECTION_LABELS: Record<string, string> = {
     OtherInfoComponent,
     DocumentsInfoComponent,
     DependentsComponent,
+    SekuriteitsInfoComponent,
   ],
 })
 export class MemberFormSectionPage implements OnInit, OnDestroy {
@@ -71,7 +74,7 @@ export class MemberFormSectionPage implements OnInit, OnDestroy {
     private readonly stateService: MemberFormStateService,
     private readonly syncService: SyncService,
   ) {
-    this.form = this.fb.group({ sectionData: [null] });
+    this.form = this.fb.group({ sectionData: [null], dependentsData: [[]], memberInfoData: [null] });
   }
 
   ngOnInit(): void {
@@ -80,9 +83,11 @@ export class MemberFormSectionPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.form.dirty) {
-      // Update cache immediately so the overview reflects the change on return
       this.stateService.updateSection(this.sectionKey, this.form.get('sectionData')?.value);
-      // Persist to DB in the background (fire-and-forget is safe here)
+      if (this.sectionKey === 'basicInfo') {
+        this.stateService.updateSection('dependents', this.form.get('dependentsData')?.value);
+        this.stateService.updateSection('memberInfo', this.form.get('memberInfoData')?.value);
+      }
       this.persistToDb();
     }
   }
@@ -91,6 +96,10 @@ export class MemberFormSectionPage implements OnInit, OnDestroy {
     this.isSaving = true;
     try {
       this.stateService.updateSection(this.sectionKey, this.form.get('sectionData')?.value);
+      if (this.sectionKey === 'basicInfo') {
+        this.stateService.updateSection('dependents', this.form.get('dependentsData')?.value);
+        this.stateService.updateSection('memberInfo', this.form.get('memberInfoData')?.value);
+      }
       await this.persistToDb();
       this.form.markAsPristine();
       this.showSuccessToast = true;
@@ -113,12 +122,20 @@ export class MemberFormSectionPage implements OnInit, OnDestroy {
 
     const defaultValue = this.sectionKey === 'dependents' ? [] : null;
     this.form.patchValue({ sectionData: entry[this.sectionKey] ?? defaultValue });
+    if (this.sectionKey === 'basicInfo') {
+      this.form.patchValue({ dependentsData: entry['dependents'] ?? [] });
+      this.form.patchValue({ memberInfoData: entry['memberInfo'] ?? null });
+    }
     this.form.markAsPristine();
   }
 
   private async persistToDb(): Promise<void> {
     const full = (await this.databaseService.getCurrentMemberEntry()) || {};
     full[this.sectionKey] = this.form.get('sectionData')?.value;
+    if (this.sectionKey === 'basicInfo') {
+      full['dependents'] = this.form.get('dependentsData')?.value;
+      full['memberInfo'] = this.form.get('memberInfoData')?.value;
+    }
     await this.databaseService.saveEntry(full);
     this.syncService.sync().subscribe({ error: () => {} });
   }

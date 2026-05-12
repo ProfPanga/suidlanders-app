@@ -5,9 +5,8 @@
     @switch (sectionKey) {
       @case ('basicInfo') {
         <app-basic-info formControlName="sectionData"></app-basic-info>
-      }
-      @case ('memberInfo') {
-        <app-member-info formControlName="sectionData"></app-member-info>
+        <app-member-info formControlName="memberInfoData"></app-member-info>
+        <app-dependents formControlName="dependentsData"></app-dependents>
       }
       @case ('addressInfo') {
         <app-address-info formControlName="sectionData"></app-address-info>
@@ -36,11 +35,14 @@
       @case ('dependents') {
         <app-dependents formControlName="sectionData"></app-dependents>
       }
+      @case ('sekuriteitsInfo') {
+        <app-sekuriteits-info formControlName="sectionData"></app-sekuriteits-info>
+      }
     }
   </form>
 
   <div class="save-button-container">
-    <ion-button expand="block" (click)="save()" [disabled]="isSaving">
+    <ion-button expand="block" color="success" (click)="save()" [disabled]="isSaving">
       {{ isSaving ? 'Stoor...' : 'Stoor' }}
     </ion-button>
   </div>
