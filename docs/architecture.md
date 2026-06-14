@@ -183,22 +183,20 @@ AppComponent (Root)
 │   └── Navigation Menu
 ├── Router Outlet
 │   ├── HomePage
-│   │   └── MemberFormComponent (Container)
+│   │   └── MemberFormSectionPage (host; renders one section by route key)
 │   │       ├── BasicInfoComponent
 │   │       ├── MemberInfoComponent
-│   │       ├── AddressInfoComponent
 │   │       ├── MedicalInfoComponent
 │   │       ├── VehicleInfoComponent
 │   │       ├── SkillsInfoComponent
 │   │       ├── EquipmentInfoComponent
-│   │       ├── OtherInfoComponent
 │   │       ├── CampInfoComponent
 │   │       ├── DocumentsInfoComponent
+│   │       ├── SekuriteitsInfoComponent
 │   │       └── DependentsComponent
 │   ├── LoginPage
 │   │   └── AuthService Integration
 │   └── QRTestPage
-│       ├── QRGeneratorComponent
 │       └── QRScannerComponent
 └── (Debug Routes)
     ├── DbTestComponent

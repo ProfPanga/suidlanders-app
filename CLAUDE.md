@@ -12,6 +12,8 @@ Built for 100% offline operation in emergency camp scenarios. Members register v
 
 **Tech Stack**: Angular 19, Ionic 8, Capacitor 7, TypeScript (frontend) · NestJS 10, SQLite, TypeORM (backend)
 
+**Status & roadmap**: see [`TODO.md`](./TODO.md) (this is a POC being prepared for handover). **Manual testing guides** (non-technical, cover every part of the app): see [`docs/testing/`](./docs/testing/).
+
 ## Common Commands
 
 ### Frontend
@@ -135,6 +137,8 @@ Built-in test routes (no auth required):
 3. Navigate to `/qr-debug`
 
 Always update these test components when modifying related services.
+
+For end-user / handover testing (non-technical, step-by-step, covering every feature), see [`docs/testing/`](./docs/testing/).
 
 ## Android Build Process
 

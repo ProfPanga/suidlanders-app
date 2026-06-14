@@ -42,7 +42,7 @@ backend/
 │   ├── dto/
 │   │   └── member.dto.ts              ReceptionMemberDTO, CreateMemberDTO
 │   ├── services/
-│   │   ├── triage.service.ts          Story 1.1: Triage logic
+│   │   ├── triage.service.ts          Red/Green camp triage logic
 │   │   └── members.service.ts         Business logic
 │   ├── controllers/
 │   │   └── members.controller.ts      API endpoints
@@ -113,7 +113,7 @@ Create new member with automatic triage.
 }
 ```
 
-## Triage Logic (Story 1.1)
+## Triage Logic
 
 **Triage Rule:**
 - Has chronic condition + no medication → **Red Camp** (requires medical oversight)
@@ -215,8 +215,8 @@ curl http://localhost:3000/api/members/<member-id>
 
 **Using Reception Dashboard:**
 1. Start backend: `npm start`
-2. Start frontend: `ionic serve` (from project root)
-3. Navigate to: http://localhost:8100/reception
+2. Start frontend: `npm start` (from project root)
+3. Navigate to: http://localhost:4200/reception
 4. See all members with camp badges
 
 ## Privacy & Security
@@ -357,6 +357,6 @@ For your use case, SQLite is the right choice!
 ## Related Documentation
 
 - **Frontend README**: See `/README.md`
-- **Story 1.1**: Triage Logic Implementation
-- **Story 1.2**: Reception Staff Dashboard (uses this backend)
+- **Manual testing guides**: See `/docs/testing/`
+- **Architecture**: See `/docs/architecture.md`
 - **CLAUDE.md**: Project guidelines and architecture decisions
