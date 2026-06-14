@@ -5,13 +5,11 @@ import { IonContent, IonButton, IonToast } from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../components/header/header.component';
 import { BasicInfoComponent } from '../../components/sections/basic-info/basic-info.component';
 import { MemberInfoComponent } from '../../components/sections/member-info/member-info.component';
-import { AddressInfoComponent } from '../../components/sections/address-info/address-info.component';
 import { MedicalInfoComponent } from '../../components/sections/medical-info/medical-info.component';
 import { VehicleInfoComponent } from '../../components/sections/vehicle-info/vehicle-info.component';
 import { SkillsInfoComponent } from '../../components/sections/skills-info/skills-info.component';
 import { EquipmentInfoComponent } from '../../components/sections/equipment-info/equipment-info.component';
 import { CampInfoComponent } from '../../components/sections/camp-info/camp-info.component';
-import { OtherInfoComponent } from '../../components/sections/other-info/other-info.component';
 import { DocumentsInfoComponent } from '../../components/sections/documents-info/documents-info.component';
 import { DependentsComponent } from '../../components/sections/dependents/dependents.component';
 import { SekuriteitsInfoComponent } from '../../components/sections/sekuriteits-info/sekuriteits-info.component';
@@ -22,13 +20,11 @@ import { SyncService } from '../../services/sync.service';
 const SECTION_LABELS: Record<string, string> = {
   basicInfo:     'Basiese Inligting',
   memberInfo:    'Lid Inligting',
-  addressInfo:   'Adres Inligting',
   medicalInfo:   'Mediese Inligting',
   vehicleInfo:   'Voertuig Inligting',
   skillsInfo:    'Vaardighede & Ervaring',
   equipmentInfo: 'Toerusting & Hulpbronne',
   campInfo:      'Kamp Inligting',
-  otherInfo:     'Ander Inligting',
   documentsInfo:    'Dokumente',
   dependents:       'Afhanklikes',
   sekuriteitsInfo:  'Sekuriteits Inligting',
@@ -47,13 +43,11 @@ const SECTION_LABELS: Record<string, string> = {
     HeaderComponent,
     BasicInfoComponent,
     MemberInfoComponent,
-    AddressInfoComponent,
     MedicalInfoComponent,
     VehicleInfoComponent,
     SkillsInfoComponent,
     EquipmentInfoComponent,
     CampInfoComponent,
-    OtherInfoComponent,
     DocumentsInfoComponent,
     DependentsComponent,
     SekuriteitsInfoComponent,

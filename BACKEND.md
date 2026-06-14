@@ -42,10 +42,12 @@ backend/
 │   ├── dto/
 │   │   └── member.dto.ts              ReceptionMemberDTO, CreateMemberDTO
 │   ├── services/
-│   │   ├── triage.service.ts          Story 1.1: Triage logic
-│   │   └── members.service.ts         Business logic
+│   │   ├── triage.service.ts          Red/Green camp triage logic
+│   │   ├── members.service.ts         Business logic
+│   │   └── camp-auth.service.ts       QR sync-code generation + exchange
 │   ├── controllers/
-│   │   └── members.controller.ts      API endpoints
+│   │   ├── members.controller.ts      Member + health endpoints
+│   │   └── camp-auth.controller.ts    Camp QR provisioning endpoints
 │   ├── app.module.ts                  NestJS module config
 │   ├── main.ts                        Server entry point
 │   └── seed.ts                        Demo data creation
@@ -57,6 +59,24 @@ backend/
 ```
 
 ## API Endpoints
+
+### GET /api/members/health
+
+Health check. Returns service status and the current member count. This is the
+endpoint the mobile app pings to find a reachable camp server during QR provisioning.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "service": "suidlanders-backend",
+  "members": 6,
+  "timestamp": "2026-03-04T10:00:00Z"
+}
+```
+
+> Note: the health route lives **under** `/api/members` (not `/api/health`), so that
+> it is matched before the `GET /api/members/:id` route.
 
 ### GET /api/members
 
@@ -113,7 +133,58 @@ Create new member with automatic triage.
 }
 ```
 
-## Triage Logic (Story 1.1)
+### GET /api/members/:id
+
+Returns a single member in the same Reception-safe shape as `GET /api/members`
+(no medical data). Responds `404` if the member is not found.
+
+## Camp Provisioning Endpoints (QR sync)
+
+These power the offline LAN sync flow. Staff generate a QR code on the camp server;
+a member's app scans it and exchanges the code for a short-lived sync token. See
+[Camp Sync Flow in CLAUDE.md](./CLAUDE.md#camp-sync-flow) for the end-to-end picture.
+
+### POST /api/auth/camp/generate-qr
+
+Generates the QR payload (WiFi details, `serverUrls[]`, a short-lived `syncCode`, and
+`campId`). Used by the Reception Dashboard "Genereer QR Kode" button.
+
+**Request:**
+```json
+{ "campId": "default-camp" }
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "payload": {
+    "syncCode": "ABC123XYZ",
+    "campId": "default-camp",
+    "serverUrls": ["http://camp.local:3000/api", "http://192.168.4.1:3000/api"]
+  },
+  "message": "QR code generated successfully"
+}
+```
+
+### POST /api/auth/camp/exchange
+
+Exchanges a short-lived `syncCode` for a temporary sync token. Used by the mobile app
+after scanning the QR code.
+
+**Request:**
+```json
+{ "syncCode": "ABC123XYZ", "campId": "default-camp" }
+```
+
+**Response:**
+```json
+{ "success": true, "syncToken": "<token>", "expiresIn": 3600 }
+```
+
+Returns `401` if the code is invalid or expired, and `400` if `syncCode`/`campId` are missing.
+
+## Triage Logic
 
 **Triage Rule:**
 - Has chronic condition + no medication → **Red Camp** (requires medical oversight)
@@ -215,8 +286,8 @@ curl http://localhost:3000/api/members/<member-id>
 
 **Using Reception Dashboard:**
 1. Start backend: `npm start`
-2. Start frontend: `ionic serve` (from project root)
-3. Navigate to: http://localhost:8100/reception
+2. Start frontend: `npm start` (from project root)
+3. Navigate to: http://localhost:4200/reception
 4. See all members with camp badges
 
 ## Privacy & Security
@@ -357,6 +428,6 @@ For your use case, SQLite is the right choice!
 ## Related Documentation
 
 - **Frontend README**: See `/README.md`
-- **Story 1.1**: Triage Logic Implementation
-- **Story 1.2**: Reception Staff Dashboard (uses this backend)
+- **Manual testing guides**: See `/docs/testing/`
+- **Architecture**: See `/docs/architecture.md`
 - **CLAUDE.md**: Project guidelines and architecture decisions

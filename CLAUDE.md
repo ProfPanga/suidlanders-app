@@ -12,6 +12,8 @@ Built for 100% offline operation in emergency camp scenarios. Members register v
 
 **Tech Stack**: Angular 19, Ionic 8, Capacitor 7, TypeScript (frontend) · NestJS 10, SQLite, TypeORM (backend)
 
+**Status & roadmap**: see [`TODO.md`](./TODO.md) (this is a POC being prepared for handover). **Manual testing guides** (non-technical, cover every part of the app): see [`docs/testing/`](./docs/testing/).
+
 ## Common Commands
 
 ### Frontend
@@ -72,6 +74,7 @@ Roles are managed by `RoleService` (`src/app/services/role.service.ts`) with `Us
 - `qr.service.ts` — QR code generation/scanning
 - `auth.service.ts` — JWT + short-lived sync tokens
 - `role.service.ts` — guest/staff role management
+- `member-form-state.service.ts` — in-memory cache of the current member entry shared across the form section pages
 - `export.service.ts` — HTML export and data formatting
 - `theme.service.ts` — dark/light mode
 
@@ -98,10 +101,13 @@ Roles are managed by `RoleService` (`src/app/services/role.service.ts`) with `Us
 - `/member-form/medicalStaff` — clinical triage fields (gait, vitals, symptoms, etc.)
 - `/member-form/securityStaff` — security personnel questionnaire (content TBD)
 
-### Database Schema (11 tables)
-`members`, `addresses`, `medical_info`, `vehicles`, `dependents`, `skills`, `equipment`, `inventory`, `camps`, `documents`, `sync_queue`
+### Database Schema (mobile/local — 12 tables)
+The device-local store (SQLite on Android, IndexedDB/Dexie on web) is normalized:
+`members`, `basic_info`, `member_info`, `address_info`, `medical_info`, `vehicle_info`, `skills_info`, `equipment_info`, `camp_info`, `other_info`, `documents`, `dependents`. Full field-level definition: [`src/app/database/schema.md`](src/app/database/schema.md).
 
-Sensitive fields are encrypted with CryptoJS. Sync queues changes through `sync_queue` and uses timestamp-based conflict resolution.
+The **backend camp server** is separate — a single flat `members` table (one TypeORM entity), not this schema.
+
+Sensitive fields are encrypted with CryptoJS. The offline sync queue is persisted in `localStorage` (key `sync_queue`) by `SyncQueueService` and uses timestamp-based conflict resolution.
 
 ### Backend (`backend/`)
 NestJS app using SQLite (`data/camp.db`) + TypeORM. Key modules:
@@ -111,7 +117,7 @@ NestJS app using SQLite (`data/camp.db`) + TypeORM. Key modules:
 
 ## Camp Sync Flow
 
-1. Staff calls `POST /api/auth/camp/init` → backend returns QR payload with WiFi credentials + `serverUrls[]` + sync code
+1. Staff calls `POST /api/auth/camp/generate-qr` → backend returns QR payload with WiFi credentials + `serverUrls[]` + sync code
 2. App scans QR → `QRProvisioningService.scanAndProvision()` orchestrates:
    - Connects to camp WiFi via `@falconeta/capacitor-wifi-connect` (Android only; iOS needs manual WiFi)
    - Tests `serverUrls` sequentially (10s timeout each) until one responds
@@ -135,6 +141,8 @@ Built-in test routes (no auth required):
 3. Navigate to `/qr-debug`
 
 Always update these test components when modifying related services.
+
+For end-user / handover testing (non-technical, step-by-step, covering every feature), see [`docs/testing/`](./docs/testing/).
 
 ## Android Build Process
 

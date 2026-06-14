@@ -8,9 +8,6 @@
         <app-member-info formControlName="memberInfoData"></app-member-info>
         <app-dependents formControlName="dependentsData"></app-dependents>
       }
-      @case ('addressInfo') {
-        <app-address-info formControlName="sectionData"></app-address-info>
-      }
       @case ('medicalInfo') {
         <app-medical-info formControlName="sectionData"></app-medical-info>
       }
@@ -25,9 +22,6 @@
       }
       @case ('campInfo') {
         <app-camp-info formControlName="sectionData"></app-camp-info>
-      }
-      @case ('otherInfo') {
-        <app-other-info formControlName="sectionData"></app-other-info>
       }
       @case ('documentsInfo') {
         <app-documents-info formControlName="sectionData"></app-documents-info>
