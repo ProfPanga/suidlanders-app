@@ -147,18 +147,10 @@ If SQLite initialization fails → automatically falls back to IndexedDB
 
 ### Database Schema
 
-**11 Normalized Tables:**
-1. `members` - Root table (UUID primary key)
-2. `basic_info` - Personal/contact information
-3. `member_info` - Emergency contacts, qualifications
-4. `address_info` - Location, GPS coordinates
-5. `medical_info` - Blood type, conditions, medication
-6. `vehicle_info` - Vehicles (multi-entry, 1:N relationship)
-7. `skills_info` - Occupation, licenses, skills
-8. `equipment_info` - Gear inventory (boolean flags)
-9. `camp_info` - Camp assignment
-10. `other_info` - Additional notes, supplies
-11. `documents` - File uploads (PDF/JPG/PNG)
+The schema is **11 normalized tables** rooted at `members`. The authoritative,
+field-by-field definition (table columns, Afrikaans field names, indexes, schema
+version) lives in [`src/app/database/schema.md`](../src/app/database/schema.md) —
+refer to that rather than duplicating it here, to avoid the two copies drifting apart.
 
 **Relationships:**
 - All tables use `member_id` foreign key → `members(id)`
@@ -551,8 +543,9 @@ npm run build
 | Route | Purpose |
 |-------|---------|
 | `/db-test` | Database CRUD operations |
-| `/data-viewer` | Inspect stored data |
+| `/data-viewer` | Inspect stored data (requires staff login) |
 | `/qr-test` | QR generation/scanning |
+| `/qr-debug` | Full QR provisioning debug (health check, generate codes, test exchange) |
 
 ### Platform Testing
 - **Android:** Emulator + physical devices
@@ -587,10 +580,10 @@ npm run build
 ### Current Limitations
 - **Single Device:** No multi-device sync (yet)
 - **File Storage:** Documents stored locally (no cloud backup)
-- **Sync Queue:** In-memory (cleared on app restart)
+- **Sync Queue:** Persisted in `localStorage` (key `sync_queue`) by `SyncQueueService` — survives app restart, but is not a relational table
 
 ### Future Enhancements
-- **Persistent Sync Queue:** Store in database table
+- **Sync Queue in the database:** Move the queue from `localStorage` into a relational table for richer querying/inspection
 - **Cloud Backup:** Optional cloud sync for documents
 - **Multi-Device:** Sync across multiple devices per member
 
