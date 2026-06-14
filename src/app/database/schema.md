@@ -9,6 +9,7 @@ CREATE TABLE members (
     created_at INTEGER NOT NULL,        -- UNIX timestamp
     updated_at INTEGER NOT NULL,        -- UNIX timestamp
     status TEXT NOT NULL,              -- 'active', 'inactive', 'deleted'
+    camp_assignment TEXT,              -- 'red' | 'green' (added in store version 3)
     version INTEGER NOT NULL DEFAULT 1  -- For schema versioning
 );
 ```
@@ -188,6 +189,18 @@ CREATE TABLE documents (
 );
 ```
 
+### 12. dependents
+```sql
+CREATE TABLE dependents (
+    id TEXT PRIMARY KEY,                -- UUID
+    parent_member_id TEXT NOT NULL,     -- The member this dependent belongs to
+    -- dependent's own details (verhouding/relationship, van, naam, etc.)
+    FOREIGN KEY (parent_member_id) REFERENCES members(id) ON DELETE CASCADE
+);
+```
+> Added in store **version 2**. On the web/desktop (Dexie/IndexedDB) build the index is
+> `dependents: 'id, parent_member_id'`.
+
 ## Indexes
 ```sql
 -- Performance indexes
@@ -197,6 +210,15 @@ CREATE INDEX idx_vehicle_member ON vehicle_info(member_id);
 ```
 
 ## Version Control
-- Schema version: 1.0.0
-- Migration tables will be added for schema updates
-- Each member record stores its own schema version for safe migrations 
+
+This is the **mobile/local** schema (SQLite on Android, IndexedDB/Dexie on web/desktop).
+The Dexie store has migrated through three versions:
+
+- **v1** — the 11 tables above (`members` … `documents`)
+- **v2** — added the `dependents` table
+- **v3** — added the `camp_assignment` column to `members`
+
+Each member record also stores its own `version` field for safe migrations.
+
+> Note: the **backend camp server** uses a different, single flat `members` table
+> (one TypeORM entity) — not this normalized schema. See [`BACKEND.md`](../../../BACKEND.md) at the repo root. 

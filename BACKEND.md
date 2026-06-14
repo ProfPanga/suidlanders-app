@@ -43,9 +43,11 @@ backend/
 │   │   └── member.dto.ts              ReceptionMemberDTO, CreateMemberDTO
 │   ├── services/
 │   │   ├── triage.service.ts          Red/Green camp triage logic
-│   │   └── members.service.ts         Business logic
+│   │   ├── members.service.ts         Business logic
+│   │   └── camp-auth.service.ts       QR sync-code generation + exchange
 │   ├── controllers/
-│   │   └── members.controller.ts      API endpoints
+│   │   ├── members.controller.ts      Member + health endpoints
+│   │   └── camp-auth.controller.ts    Camp QR provisioning endpoints
 │   ├── app.module.ts                  NestJS module config
 │   ├── main.ts                        Server entry point
 │   └── seed.ts                        Demo data creation
