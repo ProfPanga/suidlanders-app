@@ -58,6 +58,24 @@ backend/
 
 ## API Endpoints
 
+### GET /api/members/health
+
+Health check. Returns service status and the current member count. This is the
+endpoint the mobile app pings to find a reachable camp server during QR provisioning.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "service": "suidlanders-backend",
+  "members": 6,
+  "timestamp": "2026-03-04T10:00:00Z"
+}
+```
+
+> Note: the health route lives **under** `/api/members` (not `/api/health`), so that
+> it is matched before the `GET /api/members/:id` route.
+
 ### GET /api/members
 
 Returns all members with camp assignments (medical data excluded for privacy).
@@ -112,6 +130,57 @@ Create new member with automatic triage.
   "syncedAt": "2026-03-04T11:00:00Z"
 }
 ```
+
+### GET /api/members/:id
+
+Returns a single member in the same Reception-safe shape as `GET /api/members`
+(no medical data). Responds `404` if the member is not found.
+
+## Camp Provisioning Endpoints (QR sync)
+
+These power the offline LAN sync flow. Staff generate a QR code on the camp server;
+a member's app scans it and exchanges the code for a short-lived sync token. See
+[Camp Sync Flow in CLAUDE.md](./CLAUDE.md#camp-sync-flow) for the end-to-end picture.
+
+### POST /api/auth/camp/generate-qr
+
+Generates the QR payload (WiFi details, `serverUrls[]`, a short-lived `syncCode`, and
+`campId`). Used by the Reception Dashboard "Genereer QR Kode" button.
+
+**Request:**
+```json
+{ "campId": "default-camp" }
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "payload": {
+    "syncCode": "ABC123XYZ",
+    "campId": "default-camp",
+    "serverUrls": ["http://camp.local:3000/api", "http://192.168.4.1:3000/api"]
+  },
+  "message": "QR code generated successfully"
+}
+```
+
+### POST /api/auth/camp/exchange
+
+Exchanges a short-lived `syncCode` for a temporary sync token. Used by the mobile app
+after scanning the QR code.
+
+**Request:**
+```json
+{ "syncCode": "ABC123XYZ", "campId": "default-camp" }
+```
+
+**Response:**
+```json
+{ "success": true, "syncToken": "<token>", "expiresIn": 3600 }
+```
+
+Returns `401` if the code is invalid or expired, and `400` if `syncCode`/`campId` are missing.
 
 ## Triage Logic
 

@@ -132,7 +132,7 @@ This will update Android launcher icons and web favicon/manifest icons. Re-run a
 
 ## Camp Sync (LAN)
 
-1. Staff calls `POST /api/auth/camp/init` → backend returns QR with WiFi credentials + `serverUrls[]` + sync code
+1. Staff calls `POST /api/auth/camp/generate-qr` → backend returns QR with WiFi credentials + `serverUrls[]` + sync code
 2. App scans QR → automatically connects to camp WiFi (Android; iOS requires manual connect)
 3. Tests each URL sequentially until one responds (10s timeout each)
 4. Exchanges code for sync token via `CapacitorHttp` (bypasses WebView CORS on LAN)

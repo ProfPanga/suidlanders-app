@@ -113,7 +113,7 @@ NestJS app using SQLite (`data/camp.db`) + TypeORM. Key modules:
 
 ## Camp Sync Flow
 
-1. Staff calls `POST /api/auth/camp/init` → backend returns QR payload with WiFi credentials + `serverUrls[]` + sync code
+1. Staff calls `POST /api/auth/camp/generate-qr` → backend returns QR payload with WiFi credentials + `serverUrls[]` + sync code
 2. App scans QR → `QRProvisioningService.scanAndProvision()` orchestrates:
    - Connects to camp WiFi via `@falconeta/capacitor-wifi-connect` (Android only; iOS needs manual WiFi)
    - Tests `serverUrls` sequentially (10s timeout each) until one responds
