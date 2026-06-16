@@ -34,7 +34,7 @@
       <span class="home-label">Sinkroniseer</span>
     </button>
 
-    @if (!roleService.isMember()) {
+    @if (!isStaff) {
       <button class="home-card" (click)="navigateToLogin()">
         <div class="home-circle">
           <ion-icon name="log-in"></ion-icon>

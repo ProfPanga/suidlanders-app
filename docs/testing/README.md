@@ -16,6 +16,7 @@ Work through them in order the first time. After that, you can pick the guide fo
 | 6 | [QR codes & camp sync](./06-qr-and-camp-sync.md) | Generating/scanning QR codes and syncing to the camp server |
 | 7 | [Raspberry Pi deployment](./07-raspberry-pi-deployment.md) | The real-world camp test on the Pi (offline / WiFi) |
 | 8 | [Browser & device matrix](./08-browser-and-device-matrix.md) | Checking it works across browsers and phones |
+| 9 | [Login & accounts](./09-login-and-accounts.md) | Staff login, role access control, reception device setup, member recovery account |
 
 ## Before you start
 

@@ -59,8 +59,8 @@ The handover is considered ready when:
 ### Authentication & RBAC (in progress — `feature/auth` branch)
 - [x] **Backend auth** — `accounts` table, JWT login (`/api/auth/login`), `JwtAuthGuard` + `RolesGuard`, guarded member-read endpoints, `npm run seed:users`. Roles: member/reception/medical/security/admin.
 - [x] **Frontend wiring** — role-aware `roleGuard`, role captured from login, interceptor token-selection fix, login page (error UI + role redirect). Demo switcher honoured in `demoMode`, real login required in production.
-- [ ] **Member account-creation UI** — backend endpoint (`/api/auth/member`) + `auth.service.createMemberAccount()` exist; still need the in-app optional prompt for a member to create their recovery account.
-- [ ] **Reception device-token UI** — backend issues the token (`/api/auth/device`); still need the frontend to obtain/store/use it so reception works in production (it already works via the demo switcher).
+- [x] **Member account-creation UI** — optional recovery-account card on the member-form overview (email pre-filled + editable).
+- [x] **Reception device-token UI** — admin in-app action (Settings) provisions the device as a reception kiosk.
 - [ ] **Device-recovery restore flow** — the member account exists; restoring data onto a new phone from it is separate.
 - [ ] **Credential hardening** — member login uses **email + ID number** (POC choice; ID isn't secret). The hashing means it can be swapped for a member-chosen PIN with no schema change. Also: rotate the default seeded staff passwords and set a real `JWT_SECRET` on the Pi.
 
