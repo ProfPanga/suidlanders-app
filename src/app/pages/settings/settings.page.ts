@@ -62,6 +62,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       [UserRole.RECEPTION_STAFF]: '/reception',
       [UserRole.MEDICAL_STAFF]:   '/member-form/medicalStaff',
       [UserRole.SECURITY_STAFF]:  '/member-form/securityStaff',
+      [UserRole.ADMIN]:           '/reception',
     };
     this.router.navigate([destinations[role]]);
   }

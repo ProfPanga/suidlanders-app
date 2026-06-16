@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
+import { UserRole } from './services/role.service';
 import { environment } from '../environments/environment';
 
 export const routes: Routes = [
@@ -30,6 +32,7 @@ export const routes: Routes = [
   },
   {
     path: 'member-form/medicalStaff',
+    canActivate: [roleGuard([UserRole.MEDICAL_STAFF])],
     loadComponent: () =>
       import('./pages/member-form/staff-placeholder.page').then(
         (m) => m.StaffPlaceholderPage
@@ -38,6 +41,7 @@ export const routes: Routes = [
   },
   {
     path: 'member-form/securityStaff',
+    canActivate: [roleGuard([UserRole.SECURITY_STAFF])],
     loadComponent: () =>
       import('./pages/member-form/staff-placeholder.page').then(
         (m) => m.StaffPlaceholderPage
@@ -83,6 +87,7 @@ export const routes: Routes = [
   },
   {
     path: 'reception',
+    canActivate: [roleGuard([UserRole.RECEPTION_STAFF])],
     loadComponent: () => import('./pages/reception/reception.page').then( m => m.ReceptionPage)
   },
   {
