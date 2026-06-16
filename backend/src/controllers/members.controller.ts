@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { MembersService } from '../services/members.service';
 import { CreateMemberDTO, ReceptionMemberDTO } from '../dto/member.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 /**
  * Members Controller - API endpoints for member management
@@ -41,6 +44,8 @@ export class MembersController {
    * - Hides: medical data, ID numbers, contact info
    */
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('reception', 'medical', 'security', 'admin')
   async getAllMembers(): Promise<ReceptionMemberDTO[]> {
     return this.membersService.getAllMembersForReception();
   }
@@ -51,6 +56,8 @@ export class MembersController {
    * Returns specific member (Reception-safe view)
    */
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('reception', 'medical', 'security', 'admin')
   async getMember(@Param('id') id: string): Promise<ReceptionMemberDTO> {
     const member = await this.membersService.getMemberForReception(id);
 
