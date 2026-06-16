@@ -58,6 +58,28 @@
     </div>
   }
 
+  @if (isAdmin) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Toestel Opstelling (Admin)</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>
+          Stel hierdie toestel op as 'n <strong>Ontvangs toestel</strong>. Daarna meld dit
+          outomaties aan as Ontvangs — geen verdere wagwoord nodig nie.
+        </p>
+        @if (deviceMessage) {
+          <ion-text [color]="deviceError ? 'danger' : 'success'">
+            <p class="device-message">{{ deviceMessage }}</p>
+          </ion-text>
+        }
+        <ion-button expand="block" [disabled]="provisioning" (click)="provisionReceptionDevice()">
+          {{ provisioning ? 'Besig...' : 'Stel op as Ontvangs Toestel' }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  }
+
   <ion-card>
     <ion-card-header>
       <ion-card-title>App Instellings</ion-card-title>

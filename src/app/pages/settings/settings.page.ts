@@ -8,11 +8,14 @@ import {
   IonCardTitle,
   IonCardContent,
   IonIcon,
+  IonButton,
+  IonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { personOutline, peopleOutline, medkitOutline, shieldOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { RoleService, UserRole } from '../../services/role.service';
+import { AuthService } from '../../services/auth.service';
 import { HeaderComponent } from '../../components/header/header.component';
 import { environment } from '../../../environments/environment';
 
@@ -29,6 +32,8 @@ import { environment } from '../../../environments/environment';
     IonCardTitle,
     IonCardContent,
     IonIcon,
+    IonButton,
+    IonText,
     HeaderComponent,
   ],
 })
@@ -36,13 +41,39 @@ export class SettingsPage implements OnInit, OnDestroy {
   readonly UserRole = UserRole;
   currentRole: string = UserRole.MEMBER;
   isDemoMode = environment.demoMode;
+  provisioning = false;
+  deviceMessage = '';
+  deviceError = false;
   private roleSubscription?: Subscription;
 
   constructor(
     private readonly roleService: RoleService,
+    private readonly auth: AuthService,
     private readonly router: Router
   ) {
     addIcons({ personOutline, peopleOutline, medkitOutline, shieldOutline });
+  }
+
+  get isAdmin(): boolean {
+    return this.auth.getRole() === UserRole.ADMIN;
+  }
+
+  provisionReceptionDevice() {
+    if (this.provisioning) return;
+    this.provisioning = true;
+    this.deviceMessage = '';
+    this.deviceError = false;
+    this.auth.provisionReceptionDevice().subscribe({
+      next: () => {
+        this.provisioning = false;
+        this.router.navigate(['/reception']);
+      },
+      error: () => {
+        this.provisioning = false;
+        this.deviceError = true;
+        this.deviceMessage = 'Kon nie die toestel opstel nie. Probeer weer.';
+      },
+    });
   }
 
   ngOnInit() {

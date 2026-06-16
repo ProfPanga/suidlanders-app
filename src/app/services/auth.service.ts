@@ -76,6 +76,27 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/auth/member`, { email, idNumber, memberId });
   }
 
+  /**
+   * Admin action: turn THIS device into a reception kiosk. Exchanges the admin's
+   * session for a long-lived reception device token, so the device then acts as
+   * 'reception' with no further login. Requires the caller to be a logged-in admin
+   * (the request carries the admin JWT via the interceptor).
+   */
+  provisionReceptionDevice(): Observable<{ accessToken: string }> {
+    return this.http.post<{ accessToken: string }>(`${this.apiUrl}/auth/device`, {}).pipe(
+      tap((res) => {
+        this.setToken(res.accessToken);
+        this.setUser({
+          email: '',
+          displayName: 'Ontvangs Toestel',
+          role: UserRole.RECEPTION_STAFF,
+          memberId: null,
+        });
+        this.roleService.setRole(UserRole.RECEPTION_STAFF);
+      })
+    );
+  }
+
   logout(): void {
     this.setToken(null);
     this.setUser(null);
