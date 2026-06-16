@@ -34,15 +34,6 @@
       <span class="home-label">Sinkroniseer</span>
     </button>
 
-    @if (!isStaff) {
-      <button class="home-card" (click)="navigateToLogin()">
-        <div class="home-circle">
-          <ion-icon name="log-in"></ion-icon>
-        </div>
-        <span class="home-label">Personeel Aanmelding</span>
-      </button>
-    }
-
     @if (isStaff) {
       <button class="home-card coming-soon" disabled>
         <div class="home-circle">

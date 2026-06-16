@@ -12,10 +12,10 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personOutline, peopleOutline, medkitOutline, shieldOutline } from 'ionicons/icons';
+import { personOutline, peopleOutline, logInOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { RoleService, UserRole } from '../../services/role.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, AuthUser } from '../../services/auth.service';
 import { HeaderComponent } from '../../components/header/header.component';
 import { environment } from '../../../environments/environment';
 
@@ -51,11 +51,28 @@ export class SettingsPage implements OnInit, OnDestroy {
     private readonly auth: AuthService,
     private readonly router: Router
   ) {
-    addIcons({ personOutline, peopleOutline, medkitOutline, shieldOutline });
+    addIcons({ personOutline, peopleOutline, logInOutline });
   }
 
   get isAdmin(): boolean {
     return this.auth.getRole() === UserRole.ADMIN;
+  }
+
+  get isAuthenticated(): boolean {
+    return this.auth.isAuthenticated();
+  }
+
+  get currentUser(): AuthUser | null {
+    return this.auth.getUser();
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/home']);
   }
 
   provisionReceptionDevice() {

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { RoleService, UserRole } from '../services/role.service';
+import { UserRole } from '../services/role.service';
 import { environment } from '../../environments/environment';
 
 /**
@@ -16,15 +16,10 @@ import { environment } from '../../environments/environment';
  */
 export function roleGuard(allowed: UserRole[]): CanActivateFn {
   return () => {
+    // Demo build is a free-roaming testing playground — no enforcement.
+    if (environment.demoMode) return true;
+
     const router = inject(Router);
-
-    if (environment.demoMode) {
-      const role = inject(RoleService).getCurrentRole();
-      if (role === UserRole.ADMIN || allowed.includes(role)) return true;
-      router.navigate(['/settings']);
-      return false;
-    }
-
     const auth = inject(AuthService);
     const role = auth.getRole();
     if (auth.isAuthenticated() && role && (role === UserRole.ADMIN || allowed.includes(role))) {

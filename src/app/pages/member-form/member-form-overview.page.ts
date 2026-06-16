@@ -16,6 +16,7 @@ import { DatabaseService } from '../../services/database.service';
 import { QRService } from '../../services/qr.service';
 import { MemberFormStateService } from '../../services/member-form-state.service';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface SectionCard {
   key: string;
@@ -123,6 +124,12 @@ export class MemberFormOverviewPage implements OnInit {
 
   hasData(key: string): boolean {
     return this.stateService.hasData(key);
+  }
+
+  /** Staff access cards are visible in demo (testing) or to a logged-in staff member. */
+  get showStaffViews(): boolean {
+    const role = this.auth.getRole();
+    return environment.demoMode || ['reception', 'medical', 'security', 'admin'].includes(role ?? '');
   }
 
   navigateToSection(key: string) {

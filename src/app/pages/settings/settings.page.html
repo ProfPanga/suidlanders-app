@@ -31,32 +31,34 @@
           </div>
         </button>
 
-        <button
-          class="journey-card"
-          [class.active]="currentRole === UserRole.MEDICAL_STAFF"
-          (click)="startJourney(UserRole.MEDICAL_STAFF)"
-        >
-          <ion-icon name="medkit-outline"></ion-icon>
+        <button class="journey-card" (click)="goToLogin()">
+          <ion-icon name="log-in-outline"></ion-icon>
           <div class="journey-card__text">
-            <h3>Mediese Personeel</h3>
-            <p>Toegang tot mediese inligting van lede</p>
-          </div>
-        </button>
-
-        <button
-          class="journey-card"
-          [class.active]="currentRole === UserRole.SECURITY_STAFF"
-          (click)="startJourney(UserRole.SECURITY_STAFF)"
-        >
-          <ion-icon name="shield-outline"></ion-icon>
-          <div class="journey-card__text">
-            <h3>Sekuriteit</h3>
-            <p>Toegang tot toerusting en vuurwapen inligting</p>
+            <h3>Personeel</h3>
+            <p>Meld aan as mediese of sekuriteit personeel</p>
           </div>
         </button>
       </div>
     </div>
   }
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Rekening</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      @if (isAuthenticated) {
+        <p>
+          Aangemeld as <strong>{{ currentUser?.displayName || currentUser?.email }}</strong>
+          @if (currentUser?.role) { ({{ currentUser?.role }}) }
+        </p>
+        <ion-button expand="block" color="medium" (click)="logout()">Teken Uit</ion-button>
+      } @else {
+        <p>Is jy personeel? Meld aan om toegang tot jou afdeling te kry.</p>
+        <ion-button expand="block" (click)="goToLogin()">Personeel Aanmelding</ion-button>
+      }
+    </ion-card-content>
+  </ion-card>
 
   @if (isAdmin) {
     <ion-card>

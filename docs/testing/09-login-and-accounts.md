@@ -24,7 +24,9 @@
 
    > These are **first-time defaults** — they must be changed before real use.
 
-> **About demo mode:** while the app is in *demo mode* it starts on the **Settings** screen with the role switcher, which lets you jump between roles **without** logging in (handy for demos). To test **real** login and access control as below, use a build with demo mode **off**. In either case you can always reach the login screen directly at **http://localhost:4200/login**.
+> **How members vs staff differ:** the app is **member-first**. Anyone who opens it gets the member (guest) experience and never logs in to register. **Staff** identify themselves by logging in — reach the login screen via the **gear icon → Settings → "Personeel Aanmelding"**. Reception is set up once by an admin (Test C) and never logs in.
+>
+> **About demo mode:** while the app is in *demo mode* it starts on the **Settings** screen with a chooser (**Lid · Ontvangs Personeel · Personeel**), which lets you jump around **without** logging in (handy for demos); the **Personeel** option opens the login screen. To test **real** login and access control as below, use a build with demo mode **off**. You can always reach login directly at **http://localhost:4200/login**.
 
 ---
 
@@ -32,7 +34,7 @@
 
 | # | Step | Expected result |
 |---|------|-----------------|
-| A.1 | Go to the login screen (`/login`, or **Personeel Aanmelding** on Home) | A form with **E-pos** and **Wagwoord / ID Nommer** |
+| A.1 | Open the **gear icon → Settings → "Personeel Aanmelding"** (or, in demo, the **Personeel** chooser card) | The login form with **E-pos** and **Wagwoord / ID Nommer** |
 | A.2 | Log in as **Mediese** (`mediese@suidlanders.local` / `Suidlanders1!`) | You are taken straight to the **Medical Staff** page |
 | A.3 | Log out, log in as **Sekuriteit** | You are taken to the **Security Staff** page |
 | A.4 | Enter a **wrong** password | An Afrikaans error appears ("Ongeldige e-pos of wagwoord"), you stay on the login screen |
