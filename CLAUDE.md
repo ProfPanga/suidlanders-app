@@ -105,15 +105,18 @@ Roles are managed by `RoleService` (`src/app/services/role.service.ts`) with `Us
 The device-local store (SQLite on Android, IndexedDB/Dexie on web) is normalized:
 `members`, `basic_info`, `member_info`, `address_info`, `medical_info`, `vehicle_info`, `skills_info`, `equipment_info`, `camp_info`, `other_info`, `documents`, `dependents`. Full field-level definition: [`src/app/database/schema.md`](src/app/database/schema.md).
 
-The **backend camp server** is separate — a single flat `members` table (one TypeORM entity), not this schema.
+The **backend camp server** is separate — two flat tables (`members` intake record + `accounts` logins), not this schema.
 
 Sensitive fields are encrypted with CryptoJS. The offline sync queue is persisted in `localStorage` (key `sync_queue`) by `SyncQueueService` and uses timestamp-based conflict resolution.
 
 ### Backend (`backend/`)
-NestJS app using SQLite (`data/camp.db`) + TypeORM. Key modules:
-- `MembersController/Service` — member CRUD + triage logic
+NestJS app using SQLite (`data/camp.db`) + TypeORM. Two tables: `members` (flat intake record) and `accounts` (login credentials + role). Key modules:
+- `MembersController/Service` — member CRUD + triage logic; the read endpoints are role-guarded
 - `CampAuthController/Service` — generates short-lived sync codes, exchanges them for tokens
 - `TriageService` — assigns members to Red/Green camp based on criteria
+- `AuthModule` (`src/auth/`) — JWT login + RBAC: `POST /api/auth/login` (staff password OR member ID number), `/member`, `/device`, `/users`; `JwtAuthGuard` + `RolesGuard` + `@Roles()`. Roles: `member | reception | medical | security | admin`. Seed staff with `npm run seed:users`. See [`BACKEND.md`](./BACKEND.md#authentication--roles).
+
+**Auth model:** staff (medical/security/admin) log in with email + password and are redirected by role; members optionally create a recovery account (email + ID number); reception uses a Pi-issued device token (no human login). The frontend `roleGuard` honours the demo switcher when `demoMode`, and requires a real logged-in role in production. The credential secret is always bcrypt-hashed.
 
 ## Camp Sync Flow
 

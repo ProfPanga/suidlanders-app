@@ -38,9 +38,18 @@ Backend starts on **http://localhost:3000**
 backend/
 ├── src/
 │   ├── entities/
-│   │   └── member.entity.ts           Database schema
+│   │   ├── member.entity.ts           Member intake record (flat table)
+│   │   └── account.entity.ts          Login credentials + role
 │   ├── dto/
 │   │   └── member.dto.ts              ReceptionMemberDTO, CreateMemberDTO
+│   ├── auth/
+│   │   ├── auth.module.ts             JwtModule + auth wiring
+│   │   ├── auth.service.ts            login / member account / device token
+│   │   ├── auth.controller.ts         /api/auth/* endpoints
+│   │   ├── jwt-auth.guard.ts          verifies the Bearer JWT
+│   │   ├── roles.guard.ts             enforces @Roles(...)
+│   │   ├── roles.decorator.ts         @Roles() + ROLES_KEY
+│   │   └── roles.ts                   Role type + constants
 │   ├── services/
 │   │   ├── triage.service.ts          Red/Green camp triage logic
 │   │   ├── members.service.ts         Business logic
@@ -50,7 +59,8 @@ backend/
 │   │   └── camp-auth.controller.ts    Camp QR provisioning endpoints
 │   ├── app.module.ts                  NestJS module config
 │   ├── main.ts                        Server entry point
-│   └── seed.ts                        Demo data creation
+│   ├── seed.ts                        Demo member data
+│   └── seed-users.ts                  Default staff accounts
 ├── data/
 │   └── camp.db                        SQLite database (auto-created)
 ├── package.json
@@ -183,6 +193,43 @@ after scanning the QR code.
 ```
 
 Returns `401` if the code is invalid or expired, and `400` if `syncCode`/`campId` are missing.
+
+## Authentication & Roles
+
+Staff and members authenticate against the Pi backend, which issues a signed **JWT**
+carrying the account's role. Everything works offline (the Pi signs and verifies
+locally). Roles: `member` · `reception` · `medical` · `security` · `admin`.
+
+**`accounts` table** (`account.entity.ts`) — one credential store for all logins;
+`role` distinguishes them. The secret (staff password *or* member ID number) is always
+bcrypt-hashed into `passwordHash`, never stored in plaintext.
+
+> **Note (POC):** members log in with **email + ID number**. The ID isn't secret, so
+> this is accepted only for the POC; the hashing means it can be swapped for a member
+> PIN later with no schema change. Reception does **not** log in — it uses a
+> Pi-issued device token (no stored account).
+
+### Endpoints
+
+| Method + path | Auth | Purpose |
+|---|---|---|
+| `POST /api/auth/login` | public | `{ email, password }` → `{ accessToken, user }`. Staff use their password; members pass their ID number. `401` on failure. |
+| `POST /api/auth/member` | public | `{ email, idNumber, memberId }` → create the optional member recovery account (idempotent per email). |
+| `POST /api/auth/device` | `admin` | Issue a 30-day reception **device token** (role `reception`). |
+| `POST /api/auth/users` | `admin` | Create a staff account `{ email, password, role, displayName }`. |
+
+### Guarded endpoints
+
+`GET /api/members` and `GET /api/members/:id` require a JWT whose role is one of
+`reception, medical, security, admin` (`JwtAuthGuard` + `RolesGuard` + `@Roles`).
+`POST /api/members` stays open (the guest member sync path); `GET /api/members/health`
+and the `camp-auth` endpoints stay public.
+
+### Configuration & seeding
+
+- `JWT_SECRET` env var on the Pi (dev default in `auth.module.ts`); 12h token expiry.
+- `npm run seed:users` creates default `medical` / `security` / `admin` accounts (prints
+  the default password — change it before real use).
 
 ## Triage Logic
 
