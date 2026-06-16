@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonContent, IonButton, IonIcon } from '@ionic/angular/standalone';
+import {
+  IonContent, IonButton, IonIcon, IonCard, IonCardHeader, IonCardTitle,
+  IonCardContent, IonItem, IonLabel, IonInput, IonText,
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   personOutline, medkitOutline, carOutline,
@@ -11,6 +15,8 @@ import { HeaderComponent } from '../../components/header/header.component';
 import { DatabaseService } from '../../services/database.service';
 import { QRService } from '../../services/qr.service';
 import { MemberFormStateService } from '../../services/member-form-state.service';
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface SectionCard {
   key: string;
@@ -40,17 +46,28 @@ const SECTIONS: SectionCard[] = [
   templateUrl: './member-form-overview.page.html',
   styleUrls: ['./member-form-overview.page.scss'],
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, HeaderComponent],
+  imports: [
+    FormsModule, IonContent, IonButton, IonIcon, IonCard, IonCardHeader,
+    IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonText, HeaderComponent,
+  ],
 })
 export class MemberFormOverviewPage implements OnInit {
   sections = SECTIONS;
   staffViews = STAFF_VIEWS;
+
+  // Optional member recovery-account card
+  accountEmail = '';
+  accountMessage = '';
+  accountError = false;
+  creatingAccount = false;
+  accountCreated = false;
 
   constructor(
     private readonly router: Router,
     private readonly databaseService: DatabaseService,
     private readonly qrService: QRService,
     private readonly stateService: MemberFormStateService,
+    private readonly auth: AuthService,
   ) {
     addIcons({
       personOutline, medkitOutline, carOutline,
@@ -66,10 +83,53 @@ export class MemberFormOverviewPage implements OnInit {
   private async loadEntry(): Promise<void> {
     const entry = await this.databaseService.getCurrentMemberEntry();
     this.stateService.setEntry(entry || {});
+    // Pre-fill the recovery-account email from what the member already entered.
+    this.accountEmail = entry?.['basicInfo']?.email || '';
+  }
+
+  /** The recovery-account card only makes sense once a valid 13-digit ID is captured. */
+  get canCreateRecoveryAccount(): boolean {
+    const id = this.stateService.getEntry()?.['basicInfo']?.idNommer;
+    return typeof id === 'string' && /^\d{13}$/.test(id);
+  }
+
+  async createRecoveryAccount(): Promise<void> {
+    if (this.creatingAccount) return;
+    const entry = this.stateService.getEntry();
+    const idNommer: string = entry?.['basicInfo']?.idNommer;
+    const memberId: string = entry?.['entryId'];
+    const email = (this.accountEmail || '').trim();
+
+    if (!email) {
+      this.accountError = true;
+      this.accountMessage = 'Voer asseblief jou e-pos in.';
+      return;
+    }
+
+    this.creatingAccount = true;
+    this.accountError = false;
+    this.accountMessage = '';
+    this.auth.createMemberAccount(email, idNommer, memberId).subscribe({
+      next: () => {
+        this.creatingAccount = false;
+        this.accountCreated = true;
+      },
+      error: () => {
+        this.creatingAccount = false;
+        this.accountError = true;
+        this.accountMessage = 'Kon nie die rekening skep nie. Probeer weer.';
+      },
+    });
   }
 
   hasData(key: string): boolean {
     return this.stateService.hasData(key);
+  }
+
+  /** Staff access cards are visible in demo (testing) or to a logged-in staff member. */
+  get showStaffViews(): boolean {
+    const role = this.auth.getRole();
+    return environment.demoMode || ['reception', 'medical', 'security', 'admin'].includes(role ?? '');
   }
 
   navigateToSection(key: string) {

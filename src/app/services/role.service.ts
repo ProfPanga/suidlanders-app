@@ -10,6 +10,7 @@ export enum UserRole {
   RECEPTION_STAFF = 'reception',
   MEDICAL_STAFF = 'medical',
   SECURITY_STAFF = 'security',
+  ADMIN = 'admin',
 }
 
 /**

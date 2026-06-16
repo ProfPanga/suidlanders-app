@@ -12,19 +12,21 @@
     }
   </div>
 
-  <div class="staff-section">
-    <h3 class="staff-section__title">Personeel Toegang</h3>
-    <div class="sections-grid staff-grid">
-      @for (view of staffViews; track view.key) {
-        <button class="section-card staff-card" (click)="navigateToSection(view.key)">
-          <div class="section-circle">
-            <ion-icon [name]="view.icon"></ion-icon>
-          </div>
-          <span class="section-label">{{ view.label }}</span>
-        </button>
-      }
+  @if (showStaffViews) {
+    <div class="staff-section">
+      <h3 class="staff-section__title">Personeel Toegang</h3>
+      <div class="sections-grid staff-grid">
+        @for (view of staffViews; track view.key) {
+          <button class="section-card staff-card" (click)="navigateToSection(view.key)">
+            <div class="section-circle">
+              <ion-icon [name]="view.icon"></ion-icon>
+            </div>
+            <span class="section-label">{{ view.label }}</span>
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  }
 
   <div class="action-buttons">
     <ion-button expand="block" color="primary" (click)="generateQR()">
@@ -32,4 +34,41 @@
       Genereer QR Kode
     </ion-button>
   </div>
+
+  @if (canCreateRecoveryAccount) {
+    <ion-card class="recovery-card">
+      <ion-card-header>
+        <ion-card-title>Herstel-rekening (opsioneel)</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        @if (accountCreated) {
+          <ion-text color="success">
+            <p>Herstel-rekening geskep. Jy kan met jou e-pos en ID nommer op 'n nuwe foon aanmeld.</p>
+          </ion-text>
+        } @else {
+          <p>
+            Skep 'n rekening om jou inligting later op 'n nuwe of verlore foon te herwin.
+            Jy meld aan met jou <strong>e-pos</strong> en jou <strong>ID nommer</strong>.
+          </p>
+          <ion-item>
+            <ion-label position="stacked">E-pos</ion-label>
+            <ion-input type="email" [(ngModel)]="accountEmail" autocomplete="email"></ion-input>
+          </ion-item>
+          @if (accountMessage) {
+            <ion-text [color]="accountError ? 'danger' : 'success'">
+              <p class="acct-msg">{{ accountMessage }}</p>
+            </ion-text>
+          }
+          <ion-button
+            expand="block"
+            class="ion-margin-top"
+            [disabled]="creatingAccount"
+            (click)="createRecoveryAccount()"
+          >
+            {{ creatingAccount ? 'Besig...' : 'Skep Herstel-rekening' }}
+          </ion-button>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
 </ion-content>

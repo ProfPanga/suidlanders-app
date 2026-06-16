@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Member } from './entities/member.entity';
+import { Account } from './entities/account.entity';
 import { MembersController } from './controllers/members.controller';
 import { CampAuthController } from './controllers/camp-auth.controller';
 import { MembersService } from './services/members.service';
 import { TriageService } from './services/triage.service';
 import { CampAuthService } from './services/camp-auth.service';
+import { AuthModule } from './auth/auth.module';
 
 /**
  * App Module - Root module for Suidlanders Backend API
@@ -21,12 +23,13 @@ import { CampAuthService } from './services/camp-auth.service';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'data/camp.db', // SQLite file location
-      entities: [Member],
+      entities: [Member, Account],
       synchronize: true, // Auto-create tables in development
       logging: false, // Set to true for SQL query logging
     }),
     // Register Member entity for injection
     TypeOrmModule.forFeature([Member]),
+    AuthModule,
   ],
   controllers: [MembersController, CampAuthController],
   providers: [MembersService, TriageService, CampAuthService],

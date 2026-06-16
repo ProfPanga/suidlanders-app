@@ -56,9 +56,17 @@ The handover is considered ready when:
 - [ ] **Cross-browser validation** — Chrome / Firefox / Safari / Edge (see `docs/testing/08-browser-and-device-matrix.md`)
 - [ ] **Cross-device validation** — different phone types / screen sizes
 
+### Authentication & RBAC (in progress — `feature/auth` branch)
+- [x] **Backend auth** — `accounts` table, JWT login (`/api/auth/login`), `JwtAuthGuard` + `RolesGuard`, guarded member-read endpoints, `npm run seed:users`. Roles: member/reception/medical/security/admin.
+- [x] **Frontend wiring** — role-aware `roleGuard`, role captured from login, interceptor token-selection fix, login page (error UI + role redirect). Demo switcher honoured in `demoMode`, real login required in production.
+- [x] **Member account-creation UI** — optional recovery-account card on the member-form overview (email pre-filled + editable).
+- [x] **Reception device-token UI** — admin in-app action (Settings) provisions the device as a reception kiosk.
+- [x] **Member-first entry model** — app opens member-first; staff log in via the gear → Settings → "Personeel Aanmelding"; staff features hidden from members in production (visible in demo for testing); demo guards bypass for free roaming.
+- [ ] **Device-recovery restore flow** — the member account exists; restoring data onto a new phone from it is separate.
+- [ ] **Credential hardening** — member login uses **email + ID number** (POC choice; ID isn't secret). The hashing means it can be swapped for a member-chosen PIN with no schema change. Also: rotate the default seeded staff passwords and set a real `JWT_SECRET` on the Pi.
+
 ### Production-readiness (decisions for the new owner)
-- [ ] **Full RBAC** — replace the demo role switcher with real role-based access control
-- [ ] **`demoMode` for production** — `environment.prod.ts` has `demoMode: true`, so a production build currently boots into the `/settings` demo role-switcher (see `app.routes.ts` redirect). Set to `false` for a real handover.
+- [ ] **`demoMode` for production** — `environment.prod.ts` has `demoMode: true`, so a production build still boots into the `/settings` demo role-switcher and the role guards run in demo (bypass) mode. Set to `false` to switch to real login enforcement for a handover.
 - [ ] **Security** — investigate stronger at-rest/in-transit protections for sensitive fields (the original notes mentioned blockchain-style encryption — scope this realistically before committing)
 
 ---
