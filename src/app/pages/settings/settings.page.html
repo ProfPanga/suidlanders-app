@@ -42,23 +42,25 @@
     </div>
   }
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Rekening</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      @if (isAuthenticated) {
-        <p>
-          Aangemeld as <strong>{{ currentUser?.displayName || currentUser?.email }}</strong>
-          @if (currentUser?.role) { ({{ currentUser?.role }}) }
-        </p>
-        <ion-button expand="block" color="medium" (click)="logout()">Teken Uit</ion-button>
-      } @else {
-        <p>Is jy personeel? Meld aan om toegang tot jou afdeling te kry.</p>
-        <ion-button expand="block" (click)="goToLogin()">Personeel Aanmelding</ion-button>
-      }
-    </ion-card-content>
-  </ion-card>
+  @if (isAuthenticated || !isDemoMode) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Rekening</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        @if (isAuthenticated) {
+          <p>
+            Aangemeld as <strong>{{ currentUser?.displayName || currentUser?.email }}</strong>
+            @if (currentUser?.role) { ({{ currentUser?.role }}) }
+          </p>
+          <ion-button expand="block" color="medium" (click)="logout()">Teken Uit</ion-button>
+        } @else {
+          <p>Is jy personeel? Meld aan om toegang tot jou afdeling te kry.</p>
+          <ion-button expand="block" (click)="goToLogin()">Personeel Aanmelding</ion-button>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
 
   @if (isAdmin) {
     <ion-card>
